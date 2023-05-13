@@ -4,17 +4,13 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
-
-import java.util.Optional;
 
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class BinanceCancelAllOrdersRequest extends BinanceRequest {
+public class BinanceCancelAllOrdersRequestDto extends BinanceRequestBase {
 
     private String symbol;
 

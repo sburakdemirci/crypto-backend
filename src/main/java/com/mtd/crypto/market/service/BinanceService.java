@@ -11,10 +11,14 @@ import com.mtd.crypto.market.data.response.BinanceCandleStickResponse;
 import com.mtd.crypto.market.data.response.BinanceCurrentPriceResponse;
 import com.mtd.crypto.market.data.response.BinanceOcoSellResponse;
 import com.mtd.crypto.market.data.response.BinanceOrderResponse;
+import com.mtd.crypto.market.exception.BinanceException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.boot.configurationprocessor.json.JSONArray;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.configurationprocessor.json.JSONException;
-import org.springframework.http.*;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.codec.Hex;
 import org.springframework.stereotype.Service;
 import org.springframework.util.MultiValueMap;
@@ -24,13 +28,13 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
-import java.math.BigDecimal;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class BinanceService {
@@ -40,23 +44,23 @@ public class BinanceService {
     private final BinanceApiUrlProperties binanceApiUrlProperties;
 
     //todo burak log loglog log
+    //todo burak save request and response to database or log. But do not log the signature or any secret related thing
 
-    public Double getCurrentMarketPrice(String symbol) {
-        String url = binanceApiUrlProperties.getOrderApi() + "/ticker/price";
-        BinanceGetPriceRequest binanceGetPriceRequest = new BinanceGetPriceRequest(symbol);
-
+    public Double getPrice(String symbol) throws BinanceException {
+        String url = binanceApiUrlProperties.getOrderApi() + "/ticker/pricee";
+        BinanceGetPriceRequestDto binanceGetPriceRequest = new BinanceGetPriceRequestDto(symbol);
         ResponseEntity<BinanceCurrentPriceResponse> response = sendGetRequest(binanceGetPriceRequest, url, BinanceCurrentPriceResponse.class, false);
-        return response.getBody().price;
+        if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
+            return response.getBody().price;
+        }
     }
 
-
     public List<BinanceCandleStickResponse> getCandles(String symbol, BinanceCandleStickInterval interval, int limit) throws JSONException {
-
-        long endTime = System.currentTimeMillis() - (4 * 60 * 60 * 1000); // 4 hours ago
+        long endTime = System.currentTimeMillis() - interval.getMilliseconds();
 
         String url = binanceApiUrlProperties.getPriceApi() + "/klines";
 
-        BinanceGetCandleRequest binanceGetCandleRequest = BinanceGetCandleRequest.builder()
+        BinanceGetCandleRequestDto binanceGetCandleRequest = BinanceGetCandleRequestDto.builder()
                 .symbol(symbol)
                 .interval(interval)
                 .limit(limit)
@@ -64,23 +68,23 @@ public class BinanceService {
                 .build();
 
         ResponseEntity<String> response = sendGetRequest(binanceGetCandleRequest, url, String.class, false);
-        JSONArray jsonArray = new JSONArray(response.getBody());
-        if (response.getStatusCode() != HttpStatus.OK) {
-            throw new HttpClientErrorException(response.getStatusCode(), "Failed to get candles data");
+
+        if (response.getStatusCode().is2xxSuccessful()) {
+            return BinanceCandleStickResponse.parse(response.getBody());
         } else {
-            return BinanceCandleStickResponse.parse(jsonArray);
+/*
+            throw new BinanceException(String.format("Failed to fetch candles! Symbol : %s, Interval: %s, responseBody:","s","s"));
+*/
+
         }
     }
 
     //TODO burak CancelOrder
     //TODO burak get today's PNL and message to telegram
-    
 
+    public BinanceOrderResponse executeMarketBuyOrder(String symbol, Integer quantity) {
 
-
-    public BinanceOrderResponse placeMarketBuyOrder(String symbol, Integer quantity) {
-
-        BinanceMarketBuyRequest binanceMarketBuyRequest = BinanceMarketBuyRequest.builder()
+        BinanceMarketBuyRequestDto binanceMarketBuyRequest = BinanceMarketBuyRequestDto.builder()
                 .symbol(symbol)
                 .side(BinanceOrderSide.BUY)
                 .type(BinanceOrderType.MARKET)
@@ -90,7 +94,6 @@ public class BinanceService {
         ResponseEntity<BinanceOrderResponse> response = sendSignedPostRequest(
                 binanceMarketBuyRequest,
                 binanceApiUrlProperties.getOrderApi() + "/order",
-                HttpMethod.POST,
                 BinanceOrderResponse.class);
 
         if (!response.getStatusCode().is2xxSuccessful()) {
@@ -101,12 +104,12 @@ public class BinanceService {
     }
 
 
-    public BinanceOcoSellResponse placeOCOSellOrder(String symbol, Double quantity, Double limitPrice, Double stopPrice) {
-        Double currentPrice = getCurrentMarketPrice(symbol);
+    public BinanceOcoSellResponse executeOCOSellOrder(String symbol, Double quantity, Double limitPrice, Double stopPrice) {
+        Double currentPrice = getPrice(symbol);
 
-        BigDecimal calculatedQuantity = BigDecimal.valueOf(quantity / currentPrice);
+        Double calculatedQuantity = quantity / currentPrice;
 
-        BinanceOcoRequest orderRequest = BinanceOcoRequest.builder()
+        BinanceOcoRequestDto orderRequest = BinanceOcoRequestDto.builder()
                 .symbol(symbol)
                 .quantity(calculatedQuantity)
                 .side(BinanceOrderSide.SELL)
@@ -119,7 +122,6 @@ public class BinanceService {
         ResponseEntity<BinanceOcoSellResponse> response = sendSignedPostRequest(
                 orderRequest,
                 binanceApiUrlProperties.getOrderApi() + "/order/oco",
-                HttpMethod.POST,
                 BinanceOcoSellResponse.class);
 
         if (!response.getStatusCode().is2xxSuccessful()) {
@@ -132,21 +134,21 @@ public class BinanceService {
 
     public BinanceOrderResponse getAllOpenOrders() {
         String url = binanceApiUrlProperties.getOrderApi() + "/openOrders";
-        ResponseEntity<BinanceOrderResponse[]> response = sendGetRequest(new BinanceGetAllOpenOrdersRequest(), url, BinanceOrderResponse[].class, true);
+        ResponseEntity<BinanceOrderResponse[]> response = sendGetRequest(new BinanceGetAllOpenOrdersRequestDto(), url, BinanceOrderResponse[].class, true);
         return null;
     }
 
 
     public BinanceOrderResponse getAllOpenOrdersBySymbol(String symbol) {
         String url = binanceApiUrlProperties.getOrderApi() + "/openOrders";
-        BinanceGetAllOpenOrdersRequest binanceGetAllOpenOrdersRequest = new BinanceGetAllOpenOrdersRequest(symbol);
+        BinanceGetAllOpenOrdersRequestDto binanceGetAllOpenOrdersRequest = new BinanceGetAllOpenOrdersRequestDto(symbol);
         ResponseEntity<BinanceOrderResponse[]> response = sendGetRequest(binanceGetAllOpenOrdersRequest, url, BinanceOrderResponse[].class, true);
         return null;
     }
 
     public BinanceOrderResponse getOrderById(String symbol, Long id) {
         String url = binanceApiUrlProperties.getOrderApi() + "/order";
-        BinanceGetOrderRequest binanceGetOrderRequest = new BinanceGetOrderRequest(symbol, id);
+        BinanceGetOrderRequestDto binanceGetOrderRequest = new BinanceGetOrderRequestDto(symbol, id);
         ResponseEntity<BinanceOrderResponse> response = sendGetRequest(binanceGetOrderRequest, url, BinanceOrderResponse.class, true);
         return null;
     }
@@ -154,16 +156,16 @@ public class BinanceService {
     public BinanceOrderResponse cancelAllOrdersBySymbol(String symbol) {
         String url = binanceApiUrlProperties.getOrderApi() + "/openOrders";
 
-        BinanceCancelAllOrdersRequest binanceCancelAllOrdersRequest = new BinanceCancelAllOrdersRequest(symbol);
+        BinanceCancelAllOrdersRequestDto binanceCancelAllOrdersRequest = new BinanceCancelAllOrdersRequestDto(symbol);
         ResponseEntity<BinanceOrderResponse[]> response = sendDeleteRequest(binanceCancelAllOrdersRequest, url, BinanceOrderResponse[].class);
         return null;
     }
 
 
-    public BinanceOrderResponse cancelOcoOrdersBySymbolAndOrderListId(String symbol,Long orderListId) {
+    public BinanceOrderResponse cancelOcoOrdersBySymbolAndOrderListId(String symbol, Long orderListId) {
         String url = binanceApiUrlProperties.getOrderApi() + "/orderList";
 
-        BinanceCancelOCOOrderRequest binanceCancelOCOOrderRequest = new BinanceCancelOCOOrderRequest(symbol,orderListId);
+        BinanceCancelOCOOrderRequestDto binanceCancelOCOOrderRequest = new BinanceCancelOCOOrderRequestDto(symbol, orderListId);
         ResponseEntity<BinanceOrderResponse[]> response = sendDeleteRequest(binanceCancelOCOOrderRequest, url, BinanceOrderResponse[].class);
         return null;
     }
@@ -171,21 +173,18 @@ public class BinanceService {
 
     public BinanceOrderResponse getAllOCOOrders() {
         String url = binanceApiUrlProperties.getOrderApi() + "/allOrderList";
-        ResponseEntity<String> response = sendGetRequest(new BinanceGetAllOpenOrdersRequest(), url, String.class, true);
+        ResponseEntity<String> response = sendGetRequest(new BinanceGetAllOpenOrdersRequestDto(), url, String.class, true);
         return null;
     }
-
 
 
     public BinanceOrderResponse getAllOpenOCOOrders() {
         String url = binanceApiUrlProperties.getOrderApi() + "/openOrderList";
-        ResponseEntity<String> response = sendGetRequest(new BinanceGetAllOpenOrdersRequest(), url, String.class, true);
+        ResponseEntity<String> response = sendGetRequest(new BinanceGetAllOpenOrdersRequestDto(), url, String.class, true);
         return null;
     }
 
     //TODO burak get OCO orders. OCO orders response is different
-
-
 
 
     private Double calculateLimitPrice(Double stopPrice) {
@@ -193,21 +192,21 @@ public class BinanceService {
     }
 
 
-    public <T> ResponseEntity<T> sendSignedPostRequest(BinanceRequest binanceRequest, String url, HttpMethod httpMethod, Class<T> responseType) {
+    private <T> ResponseEntity<T> sendSignedPostRequest(BinanceRequestBase binanceRequestBase, String url, Class<T> responseType) {
         HttpHeaders headers = createHeaders();
-        MultiValueMap<String, String> multiValueMap = binanceRequest.toMultiValueMap();
+        MultiValueMap<String, String> multiValueMap = binanceRequestBase.toMultiValueMap();
 
         multiValueMap.add("timestamp", String.valueOf(Instant.now().toEpochMilli()));
         multiValueMap.add("signature", getSignedRequest(multiValueMap));
         HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(multiValueMap, headers);
 
-        return restTemplate.exchange(url, httpMethod, requestEntity, responseType);
+        return restTemplate.exchange(url, HttpMethod.POST, requestEntity, responseType);
     }
 
-    public <T> ResponseEntity<T> sendGetRequest(BinanceRequest binanceRequest, String url, Class<T> responseType, boolean isSigned) {
+    private <T> ResponseEntity<T> sendGetRequest(BinanceRequestBase binanceRequestBase, String url, Class<T> responseType, boolean isSigned) {
         HttpHeaders headers = createHeaders();
 
-        MultiValueMap<String, String> multiValueMap = binanceRequest.toMultiValueMap();
+        MultiValueMap<String, String> multiValueMap = binanceRequestBase.toMultiValueMap();
 
         if (isSigned) {
             multiValueMap.add("timestamp", String.valueOf(Instant.now().toEpochMilli()));
@@ -226,17 +225,21 @@ public class BinanceService {
 
         HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(headers);
 
-        return restTemplate.exchange(uriBuilder.toUriString(), HttpMethod.GET, requestEntity, responseType);
+        try {
+            return restTemplate.exchange(uriBuilder.toUriString(), HttpMethod.GET, requestEntity, responseType);
+
+        } catch (HttpClientErrorException e) {
+            throw new BinanceException(e.getMessage(), e.getStatusCode());
+        }
     }
 
 
-
-    public <T> ResponseEntity<T> sendDeleteRequest(BinanceRequest binanceRequest, String url, Class<T> responseType) {
+    private <T> ResponseEntity<T> sendDeleteRequest(BinanceRequestBase binanceRequestBase, String url, Class<T> responseType) {
         HttpHeaders headers = createHeaders();
 
-        MultiValueMap<String, String> multiValueMap = binanceRequest.toMultiValueMap();
-         multiValueMap.add("timestamp", String.valueOf(Instant.now().toEpochMilli()));
-            multiValueMap.add("signature", getSignedRequest(multiValueMap));
+        MultiValueMap<String, String> multiValueMap = binanceRequestBase.toMultiValueMap();
+        multiValueMap.add("timestamp", String.valueOf(Instant.now().toEpochMilli()));
+        multiValueMap.add("signature", getSignedRequest(multiValueMap));
 
 
         UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromUriString(url);
@@ -253,9 +256,6 @@ public class BinanceService {
 
         return restTemplate.exchange(uriBuilder.toUriString(), HttpMethod.DELETE, requestEntity, responseType);
     }
-
-
-
 
 
     private String getSignedRequest(MultiValueMap<String, String> multiValueMap) {

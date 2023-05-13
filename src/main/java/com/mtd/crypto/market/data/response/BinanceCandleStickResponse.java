@@ -47,7 +47,9 @@ public class BinanceCandleStickResponse {
     //TODO burak test this
 
 
-    public static List<BinanceCandleStickResponse> parse(JSONArray jsonArray) throws JSONException {
+    public static List<BinanceCandleStickResponse> parse(String responseToParse) throws JSONException {
+
+        JSONArray jsonArray = new JSONArray(responseToParse);
         List<BinanceCandleStickResponse> candles = new ArrayList<>();
         for (int i = 0; i < jsonArray.length(); i++) {
             JSONArray candleArray = jsonArray.getJSONArray(i);

@@ -1,6 +1,5 @@
 package com.mtd.crypto.parser.service;
 
-import com.mtd.crypto.market.data.response.BinanceCurrentPriceResponse;
 import com.mtd.crypto.market.service.BinanceService;
 import com.mtd.crypto.parser.data.dto.HalukDto;
 import com.mtd.crypto.parser.data.response.TradeDataProfit;
@@ -24,7 +23,7 @@ public class InitialTradeDataService {
         List<TradeDataResponse> tradeDataResponseList = new ArrayList<>();
         halukDtoList.forEach(halukDto -> {
 
-            Double currentPriceResponse = binanceService.getCurrentMarketPrice(halukDto.getCoin());
+            Double currentPriceResponse = binanceService.getPrice(halukDto.getCoin());
             Double currentPrice = currentPriceResponse;
 
             List<TradeDataProfit> profitList = new ArrayList<>();
