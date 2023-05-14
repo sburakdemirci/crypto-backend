@@ -18,7 +18,7 @@ public enum BinanceCandleStickInterval {
     ONE_MONTH("1M", 2592000000L);
 
     private final String intervalId;
-    private final long milliseconds;
+    private final Long milliseconds;
 
     BinanceCandleStickInterval(String intervalId, long milliseconds) {
         this.intervalId = intervalId;
@@ -29,7 +29,7 @@ public enum BinanceCandleStickInterval {
         return intervalId;
     }
 
-    public long getMilliseconds() {
+    public Long getMilliseconds() {
         return milliseconds;
     }
 }

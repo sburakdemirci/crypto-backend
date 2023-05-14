@@ -7,6 +7,6 @@ import lombok.Data;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class BinanceQueryOCOResponse_Order {
     private String symbol;
-    private long orderId;
+    private Long orderId;
     private String clientOrderId;
 }

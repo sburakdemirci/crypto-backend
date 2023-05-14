@@ -13,12 +13,12 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class BinanceNewOCOOrderResponse {
-    private long orderListId;
+    private Long orderListId;
     private BinanceContingencyType contingencyType;
     private BinanceListStatusType listStatusType;
     private BinanceListOrderStatus listOrderStatus;
     private String listClientOrderId;
-    private long transactionTime;
+    private Long transactionTime;
     private String symbol;
     private List<BinanceNewOCOOrderResponse_Order> orders;
     private List<BinanceNewOCOOrderResponse_OrderReport> orderReports;

@@ -1,7 +1,7 @@
 package com.mtd.crypto.market.data.request;
 
+import com.mtd.crypto.market.data.enumarator.BinanceNewOrderResponseType;
 import com.mtd.crypto.market.data.enumarator.BinanceOrderSide;
-import com.mtd.crypto.market.data.enumarator.BinanceOrderTimeInForce;
 import com.mtd.crypto.market.data.enumarator.BinanceOrderType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -13,11 +13,11 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class BinanceLimitBuyRequestDto extends BinanceRequestBase {
+public class BinanceCancelOrderRequestDto extends BinanceRequestBase {
     private String symbol;
-    private BinanceOrderSide side;
-    private BinanceOrderType type;
-    private BinanceOrderTimeInForce timeInForce;
-    private Double quantity;
-    private Double price;
+    private Long orderId;
+
+    //todo burak calculate average price
+
+
 }

@@ -8,10 +8,10 @@ import lombok.Data;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class BinanceNewOCOOrderResponse_OrderReport {
     private String symbol;
-    private long orderId;
-    private long orderListId;
+    private Long orderId;
+    private Long orderListId;
     private String clientOrderId;
-    private long transactTime;
+    private Long transactTime;
     private String price;
     private String origQty;
     private String executedQty;
@@ -21,6 +21,6 @@ public class BinanceNewOCOOrderResponse_OrderReport {
     private BinanceOrderType type;
     private BinanceOrderSide side;
     private String stopPrice;
-    private long workingTime;
+    private Long workingTime;
     private BinanceSelfTradePreventionMode selfTradePreventionMode;
 }

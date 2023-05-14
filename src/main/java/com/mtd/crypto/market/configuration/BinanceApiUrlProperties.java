@@ -25,6 +25,7 @@ public class BinanceApiUrlProperties {
             private String systemStatus;
             private String price;
             private String klines;
+            private String exchangeInfo;
             private String normalOrder;
             private String openOrders;
             private String ocoOrder;

@@ -11,24 +11,25 @@ import java.util.List;
 @Data
 public class TradeDataResponse {
     private String coin;
-    private double entryPrice;
-    private double stopPrice;
-    private double currentPrice;
-    private double estimatedLossRate;
-    private double currentLossRate;
+    private Double entryPrice;
+    private Double stopPrice;
+    private Double currentPrice;
+    private Double estimatedLossRate;
+    private Double currentLossRate;
     private boolean reverse;
     private List<TradeDataProfit> profitList;
 
 
     public List<Object> convertToSheetData() {
-        List<Object> list = new ArrayList<>(Arrays.asList(coin, entryPrice, currentPrice, stopPrice, reverse, RateCalculator.doubleTwoDigits(estimatedLossRate), RateCalculator.doubleTwoDigits(currentLossRate)));
+   /*     List<Object> list = new ArrayList<>(Arrays.asList(coin, entryPrice, currentPrice, stopPrice, reverse, RateCalculator.DoubleTwoDigits(estimatedLossRate), RateCalculator.DoubleTwoDigits(currentLossRate)));
         profitList.forEach(tradeDataProfit -> {
-            list.addAll(Arrays.asList(tradeDataProfit.getTakeProfitPrice(), RateCalculator.doubleTwoDigits(tradeDataProfit.getTakeProfitRate()), RateCalculator.doubleTwoDigits(tradeDataProfit.getCurrentTakeProfitRate())));
+            list.addAll(Arrays.asList(tradeDataProfit.getTakeProfitPrice(), RateCalculator.DoubleTwoDigits(tradeDataProfit.getTakeProfitRate()), RateCalculator.DoubleTwoDigits(tradeDataProfit.getCurrentTakeProfitRate())));
         });
-        return list;
+        return list;*/
+        return null;
     }
 
-    public TradeDataResponse(String coin, double entryPrice, double stopPrice, double currentPrice, boolean reverse, List<TradeDataProfit> profitList) {
+    public TradeDataResponse(String coin, Double entryPrice, Double stopPrice, Double currentPrice, boolean reverse, List<TradeDataProfit> profitList) {
         this.coin = coin;
         this.entryPrice = entryPrice;
         this.stopPrice = stopPrice;

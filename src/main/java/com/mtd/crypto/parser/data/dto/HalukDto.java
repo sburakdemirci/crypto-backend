@@ -7,9 +7,9 @@ import lombok.Data;
 @Data
 public class HalukDto {
     private String coin;
-    private double entryPrice;
-    private double stopPrice;
-    private double takeProfit1;
+    private Double entryPrice;
+    private Double stopPrice;
+    private Double takeProfit1;
     private Double takeProfit2;
     private boolean reverse;
 

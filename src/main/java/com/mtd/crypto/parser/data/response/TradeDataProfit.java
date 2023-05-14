@@ -6,11 +6,11 @@ import lombok.Data;
 
 @Data
 public class TradeDataProfit {
-    private double takeProfitPrice;
-    private double takeProfitRate;
-    private double currentTakeProfitRate;
+    private Double takeProfitPrice;
+    private Double takeProfitRate;
+    private Double currentTakeProfitRate;
 
-    public TradeDataProfit(double entryPrice, double currentPrice,double takeProfitPrice) {
+    public TradeDataProfit(Double entryPrice, Double currentPrice,Double takeProfitPrice) {
         this.takeProfitPrice = takeProfitPrice;
         this.takeProfitRate = RateCalculator.calculateRate(entryPrice, takeProfitPrice);
         this.currentTakeProfitRate = RateCalculator.calculateRate(currentPrice, takeProfitPrice);

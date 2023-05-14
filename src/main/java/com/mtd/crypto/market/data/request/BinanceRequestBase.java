@@ -8,7 +8,7 @@ import java.text.DecimalFormat;
 
 public abstract class BinanceRequestBase {
 
-    private static final String DECIMAL_FORMAT_PATTERN_FOR_BINANCE_API = "#0.0000";
+    private static final String DECIMAL_FORMAT_PATTERN_FOR_BINANCE_API = "#0.00";
 
     public MultiValueMap<String, String> toMultiValueMap() {
         MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
@@ -21,13 +21,16 @@ public abstract class BinanceRequestBase {
                 Object fieldValue = field.get(this);
 
                 if (fieldValue != null) {
-                    if (field.getType() == double.class || field.getType() == Double.class) {
+
+                    body.add(fieldName, fieldValue.toString());
+
+                /*    if (field.getType() == double.class || field.getType() == Double.class) {
                         DecimalFormat decimalFormat = new DecimalFormat(DECIMAL_FORMAT_PATTERN_FOR_BINANCE_API);
                         String formattedValue = decimalFormat.format(fieldValue);
                         body.add(fieldName, formattedValue);
                     } else {
                         body.add(fieldName, fieldValue.toString());
-                    }
+                    }*/
                 }
             }
         } catch (IllegalAccessException e) {

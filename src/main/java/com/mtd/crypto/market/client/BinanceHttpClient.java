@@ -9,6 +9,7 @@ import com.mtd.crypto.market.data.enumarator.BinanceOrderTimeInForce;
 import com.mtd.crypto.market.data.enumarator.BinanceOrderType;
 import com.mtd.crypto.market.data.request.*;
 import com.mtd.crypto.market.data.response.*;
+import com.mtd.crypto.market.data.response.exchange.info.BinanceExchangeInfoResponse;
 import com.mtd.crypto.market.exception.BinanceException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
+import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
 
@@ -54,8 +56,15 @@ public class BinanceHttpClient {
         return response.getBody().price;
     }
 
+    public BinanceExchangeInfoResponse getExchangeInfoBySymbol(String symbol) throws BinanceException {
+        String url = binanceApiUrlProperties.getOrderApi() + binanceApiUrlProperties.getPath().getExchangeInfo();
+        BinanceExchangeInfoRequestDto binanceExchangeInfoRequestDto = new BinanceExchangeInfoRequestDto(symbol);
+        ResponseEntity<BinanceExchangeInfoResponse> response = sendGetRequest(binanceExchangeInfoRequestDto, url, BinanceExchangeInfoResponse.class, false);
+        return response.getBody();
+    }
+
     public List<BinanceCandleStickResponse> getCandles(String symbol, BinanceCandleStickInterval interval, int limit) throws JSONException {
-        long endTime = System.currentTimeMillis() - interval.getMilliseconds();
+        Long endTime = System.currentTimeMillis() - interval.getMilliseconds();
         String url = binanceApiUrlProperties.getPriceApi() + binanceApiUrlProperties.getPath().getKlines();
 
         BinanceGetCandleRequestDto binanceGetCandleRequest = BinanceGetCandleRequestDto.builder()
@@ -69,7 +78,6 @@ public class BinanceHttpClient {
         return BinanceCandleStickResponse.parse(response.getBody());
     }
 
-    //TODO burak CancelOrder
     //TODO burak get today's PNL and message to telegram
 
     public BinanceOrderResponse executeMarketOrder(String symbol, BinanceOrderSide binanceOrderSide, Integer quantityInDollars) {
@@ -90,6 +98,22 @@ public class BinanceHttpClient {
     }
 
 
+    public BinanceOrderResponse cancelOrderBySymbolAndOrderId(String symbol, Long orderId) {
+
+        BinanceCancelOrderRequestDto binanceCancelOrderRequestDto = BinanceCancelOrderRequestDto.builder()
+                .symbol(symbol)
+                .orderId(orderId)
+                .build();
+
+        ResponseEntity<BinanceOrderResponse> response = sendDeleteRequest(
+                binanceCancelOrderRequestDto,
+                binanceApiUrlProperties.getOrderApi() + binanceApiUrlProperties.getPath().getNormalOrder(),
+                BinanceOrderResponse.class);
+
+        return response.getBody();
+    }
+
+
     public BinanceOrderResponse executeLimitOrder(String symbol, BinanceOrderSide binanceOrderSide, Integer quantityInDollars, double price) {
 
         Double calculatedQuantity = calculateQuoteOrderQty(symbol, quantityInDollars);
@@ -98,8 +122,8 @@ public class BinanceHttpClient {
                 .side(binanceOrderSide)
                 .type(BinanceOrderType.LIMIT)
                 .timeInForce(BinanceOrderTimeInForce.GTC)
-                .quantity(calculatedQuantity)
-                .price(price)
+                .quantity(adjustDoubleValue(calculatedQuantity, 0.00000100))
+                .price(adjustDoubleValue(price, 0.01000000))
                 .build();
 
         ResponseEntity<BinanceOrderResponse> response = sendPostRequest(
@@ -197,6 +221,14 @@ public class BinanceHttpClient {
     private Double calculateQuoteOrderQty(String symbol, Integer quantityInDollars) {
         Double price = getPrice(symbol);
         return quantityInDollars / price;
+    }
+
+
+    private Double adjustDoubleValue(Double value, Double tickPrice) {
+        BigDecimal bdValue = BigDecimal.valueOf(value);
+        BigDecimal bdTickPrice = BigDecimal.valueOf(tickPrice);
+        BigDecimal adjustedValue = bdValue.divide(bdTickPrice, 0, BigDecimal.ROUND_DOWN).multiply(bdTickPrice);
+        return adjustedValue.doubleValue();
     }
 
 
