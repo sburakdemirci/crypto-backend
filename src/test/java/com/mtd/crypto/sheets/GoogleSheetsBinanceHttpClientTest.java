@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-class GoogleSheetsBinanceServiceTest {
+class GoogleSheetsBinanceHttpClientTest {
 
     @Test
     public void saveGoogleSheets() throws GeneralSecurityException, IOException {

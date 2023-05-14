@@ -1,6 +1,6 @@
 package com.mtd.crypto.parser.service;
 
-import com.mtd.crypto.market.service.BinanceService;
+import com.mtd.crypto.market.client.BinanceHttpClient;
 import com.mtd.crypto.parser.data.dto.HalukDto;
 import com.mtd.crypto.parser.data.response.TradeDataProfit;
 import com.mtd.crypto.parser.data.response.TradeDataResponse;
@@ -16,14 +16,14 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class InitialTradeDataService {
 
-    private final BinanceService binanceService;
+    private final BinanceHttpClient binanceHttpClient;
 
 
     public List<TradeDataResponse> getTradeData(List<HalukDto> halukDtoList) {
         List<TradeDataResponse> tradeDataResponseList = new ArrayList<>();
         halukDtoList.forEach(halukDto -> {
 
-            Double currentPriceResponse = binanceService.getPrice(halukDto.getCoin());
+            Double currentPriceResponse = binanceHttpClient.getPrice(halukDto.getCoin());
             Double currentPrice = currentPriceResponse;
 
             List<TradeDataProfit> profitList = new ArrayList<>();

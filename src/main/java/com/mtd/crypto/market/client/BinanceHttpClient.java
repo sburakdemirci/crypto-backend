@@ -1,5 +1,6 @@
-package com.mtd.crypto.market.service;
+package com.mtd.crypto.market.client;
 
+import com.mtd.crypto.market.client.request.BinanceRequest;
 import com.mtd.crypto.market.configuration.BinanceApiUrlProperties;
 import com.mtd.crypto.market.configuration.BinanceSecretProperties;
 import com.mtd.crypto.market.data.enumarator.BinanceCandleStickInterval;
@@ -15,44 +16,36 @@ import com.mtd.crypto.market.exception.BinanceException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.configurationprocessor.json.JSONException;
-import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.codec.Hex;
 import org.springframework.stereotype.Service;
-import org.springframework.util.MultiValueMap;
-import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.util.UriComponentsBuilder;
 
-import javax.crypto.Mac;
-import javax.crypto.spec.SecretKeySpec;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.time.Instant;
 import java.util.List;
-import java.util.Map;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class BinanceService {
+public class BinanceHttpClient {
 
     private final RestTemplate restTemplate;
     private final BinanceSecretProperties binanceSecretProperties;
     private final BinanceApiUrlProperties binanceApiUrlProperties;
+    private static String BINANCE_API_KEY_HEADER = "X-MBX-APIKEY";
 
     //todo burak log loglog log
     //todo burak save request and response to database or log. But do not log the signature or any secret related thing
 
     public Double getPrice(String symbol) throws BinanceException {
-        String url = binanceApiUrlProperties.getOrderApi() + "/ticker/pricee";
+        String url = binanceApiUrlProperties.getOrderApi() + "/ticker/price";
         BinanceGetPriceRequestDto binanceGetPriceRequest = new BinanceGetPriceRequestDto(symbol);
         ResponseEntity<BinanceCurrentPriceResponse> response = sendGetRequest(binanceGetPriceRequest, url, BinanceCurrentPriceResponse.class, false);
         if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
             return response.getBody().price;
         }
+        return null;
     }
 
     public List<BinanceCandleStickResponse> getCandles(String symbol, BinanceCandleStickInterval interval, int limit) throws JSONException {
@@ -72,6 +65,7 @@ public class BinanceService {
         if (response.getStatusCode().is2xxSuccessful()) {
             return BinanceCandleStickResponse.parse(response.getBody());
         } else {
+            return null;
 /*
             throw new BinanceException(String.format("Failed to fetch candles! Symbol : %s, Interval: %s, responseBody:","s","s"));
 */
@@ -91,7 +85,7 @@ public class BinanceService {
                 .quoteOrderQty(quantity)
                 .build();
 
-        ResponseEntity<BinanceOrderResponse> response = sendSignedPostRequest(
+        ResponseEntity<BinanceOrderResponse> response = sendPostRequest(
                 binanceMarketBuyRequest,
                 binanceApiUrlProperties.getOrderApi() + "/order",
                 BinanceOrderResponse.class);
@@ -104,7 +98,7 @@ public class BinanceService {
     }
 
 
-    public BinanceOcoSellResponse executeOCOSellOrder(String symbol, Double quantity, Double limitPrice, Double stopPrice) {
+    public BinanceOcoSellResponse executeOCOSellOrder(String symbol, Double quantity, Double sellPrice,  Double stopPrice, Double limitPrice) {
         Double currentPrice = getPrice(symbol);
 
         Double calculatedQuantity = quantity / currentPrice;
@@ -114,12 +108,12 @@ public class BinanceService {
                 .quantity(calculatedQuantity)
                 .side(BinanceOrderSide.SELL)
                 .stopPrice(stopPrice)
-                .stopLimitPrice(calculateLimitPrice(stopPrice))
-                .price(limitPrice)
+                .stopLimitPrice(limitPrice)
+                .price(sellPrice)
                 .stopLimitTimeInForce(BinanceOrderTimeInForce.GTC)
                 .build();
 
-        ResponseEntity<BinanceOcoSellResponse> response = sendSignedPostRequest(
+        ResponseEntity<BinanceOcoSellResponse> response = sendPostRequest(
                 orderRequest,
                 binanceApiUrlProperties.getOrderApi() + "/order/oco",
                 BinanceOcoSellResponse.class);
@@ -161,12 +155,14 @@ public class BinanceService {
         return null;
     }
 
+    //TODO burak handle if request is successfull but there is a problem with response object parsing.
+
 
     public BinanceOrderResponse cancelOcoOrdersBySymbolAndOrderListId(String symbol, Long orderListId) {
         String url = binanceApiUrlProperties.getOrderApi() + "/orderList";
 
         BinanceCancelOCOOrderRequestDto binanceCancelOCOOrderRequest = new BinanceCancelOCOOrderRequestDto(symbol, orderListId);
-        ResponseEntity<BinanceOrderResponse[]> response = sendDeleteRequest(binanceCancelOCOOrderRequest, url, BinanceOrderResponse[].class);
+        ResponseEntity<String> response = sendDeleteRequest(binanceCancelOCOOrderRequest, url, String.class);
         return null;
     }
 
@@ -187,120 +183,69 @@ public class BinanceService {
     //TODO burak get OCO orders. OCO orders response is different
 
 
+    //TODO burak move this to binanceCalculator
     private Double calculateLimitPrice(Double stopPrice) {
         return stopPrice - (stopPrice / 1000);
     }
 
 
-    private <T> ResponseEntity<T> sendSignedPostRequest(BinanceRequestBase binanceRequestBase, String url, Class<T> responseType) {
-        HttpHeaders headers = createHeaders();
-        MultiValueMap<String, String> multiValueMap = binanceRequestBase.toMultiValueMap();
-
-        multiValueMap.add("timestamp", String.valueOf(Instant.now().toEpochMilli()));
-        multiValueMap.add("signature", getSignedRequest(multiValueMap));
-        HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(multiValueMap, headers);
-
-        return restTemplate.exchange(url, HttpMethod.POST, requestEntity, responseType);
-    }
-
     private <T> ResponseEntity<T> sendGetRequest(BinanceRequestBase binanceRequestBase, String url, Class<T> responseType, boolean isSigned) {
-        HttpHeaders headers = createHeaders();
 
-        MultiValueMap<String, String> multiValueMap = binanceRequestBase.toMultiValueMap();
+        BinanceRequest binanceRequest = BinanceRequest.builder()
+                .url(url)
+                .httpMethod(HttpMethod.GET)
+                .httpHeaders(getHttpHeaders())
+                .params(binanceRequestBase.toMultiValueMap())
+                .build();
 
         if (isSigned) {
-            multiValueMap.add("timestamp", String.valueOf(Instant.now().toEpochMilli()));
-            multiValueMap.add("signature", getSignedRequest(multiValueMap));
+            binanceRequest.signRequest(binanceSecretProperties.getSecretKey());
         }
 
-        UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromUriString(url);
+        binanceRequest.withQuery();
+        return sendRequest(binanceRequest, responseType);
+    }
 
-        for (Map.Entry<String, List<String>> entry : multiValueMap.entrySet()) {
-            String key = entry.getKey();
-            List<String> values = entry.getValue();
-            for (String value : values) {
-                uriBuilder.queryParam(key, value);
-            }
-        }
+    private <T> ResponseEntity<T> sendPostRequest(BinanceRequestBase binanceRequestBase, String url, Class<T> responseType) {
 
-        HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(headers);
+        BinanceRequest binanceRequest = BinanceRequest.builder()
+                .url(url)
+                .httpMethod(HttpMethod.POST)
+                .httpHeaders(getHttpHeaders())
+                .params(binanceRequestBase.toMultiValueMap())
+                .build()
+                .signRequest(binanceSecretProperties.getSecretKey())
+                .withRequestBody();
 
-        try {
-            return restTemplate.exchange(uriBuilder.toUriString(), HttpMethod.GET, requestEntity, responseType);
-
-        } catch (HttpClientErrorException e) {
-            throw new BinanceException(e.getMessage(), e.getStatusCode());
-        }
+        return sendRequest(binanceRequest, responseType);
     }
 
 
     private <T> ResponseEntity<T> sendDeleteRequest(BinanceRequestBase binanceRequestBase, String url, Class<T> responseType) {
-        HttpHeaders headers = createHeaders();
+        BinanceRequest binanceRequest = BinanceRequest.builder()
+                .url(url)
+                .httpMethod(HttpMethod.DELETE)
+                .httpHeaders(getHttpHeaders())
+                .params(binanceRequestBase.toMultiValueMap())
+                .build()
+                .signRequest(binanceSecretProperties.getSecretKey())
+                .withQuery();
 
-        MultiValueMap<String, String> multiValueMap = binanceRequestBase.toMultiValueMap();
-        multiValueMap.add("timestamp", String.valueOf(Instant.now().toEpochMilli()));
-        multiValueMap.add("signature", getSignedRequest(multiValueMap));
-
-
-        UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromUriString(url);
-
-        for (Map.Entry<String, List<String>> entry : multiValueMap.entrySet()) {
-            String key = entry.getKey();
-            List<String> values = entry.getValue();
-            for (String value : values) {
-                uriBuilder.queryParam(key, value);
-            }
-        }
-
-        HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(headers);
-
-        return restTemplate.exchange(uriBuilder.toUriString(), HttpMethod.DELETE, requestEntity, responseType);
+        return sendRequest(binanceRequest, responseType);
     }
 
 
-    private String getSignedRequest(MultiValueMap<String, String> multiValueMap) {
-        String queryString = createQueryString(multiValueMap);
-        return getSignature(queryString);
+    private <T> ResponseEntity<T> sendRequest(BinanceRequest binanceRequest, Class<T> responseEntity) {
+        return restTemplate.exchange(binanceRequest.getUrl(), binanceRequest.getHttpMethod(), binanceRequest.getHttpEntity(), responseEntity);
     }
 
 
-    private String getSignature(String queryString) {
-        try {
-            Mac sha256_HMAC = Mac.getInstance("HmacSHA256");
-            SecretKeySpec secret_key = new SecretKeySpec(binanceSecretProperties.getSecretKey().getBytes(StandardCharsets.UTF_8), "HmacSHA256");
-            sha256_HMAC.init(secret_key);
-            byte[] hash = sha256_HMAC.doFinal(queryString.getBytes(StandardCharsets.UTF_8));
-            return URLEncoder.encode(new String(Hex.encode(hash)), StandardCharsets.UTF_8);
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to generate signature: " + e.getMessage());
-        }
-    }
-
-    private HttpHeaders createHeaders() {
+    private HttpHeaders getHttpHeaders() {
         HttpHeaders headers = new HttpHeaders();
-        headers.set("X-MBX-APIKEY", binanceSecretProperties.getApiKey());
-        headers.set("Content-Type", "application/x-www-form-urlencoded");
+        headers.set(BINANCE_API_KEY_HEADER, binanceSecretProperties.getApiKey());
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
         return headers;
     }
-
-
-    private static String createQueryString(MultiValueMap<String, String> params) {
-        if (params == null || params.isEmpty()) {
-            return "";
-        }
-        StringBuilder sb = new StringBuilder();
-        for (String key : params.keySet()) {
-            List<String> values = params.get(key);
-            for (String value : values) {
-                if (sb.length() > 0) {
-                    sb.append("&");
-                }
-                sb.append(key).append("=").append(value);
-            }
-        }
-        return sb.toString();
-    }
-
 
 }
 

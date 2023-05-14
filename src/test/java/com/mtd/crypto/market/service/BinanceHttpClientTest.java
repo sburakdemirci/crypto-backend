@@ -1,5 +1,6 @@
 package com.mtd.crypto.market.service;
 
+import com.mtd.crypto.market.client.BinanceHttpClient;
 import com.mtd.crypto.market.data.enumarator.BinanceCandleStickInterval;
 import com.mtd.crypto.market.data.response.BinanceCandleStickResponse;
 import com.mtd.crypto.market.data.response.BinanceOcoSellResponse;
@@ -12,96 +13,89 @@ import org.springframework.boot.test.context.SpringBootTest;
 import java.util.List;
 
 @SpringBootTest
-class BinanceServiceTest {
+class BinanceHttpClientTest {
 
     @Autowired
-    private BinanceService binanceService;
+    private BinanceHttpClient binanceHttpClient;
 
 
     @Test
     public void getCurrentPrice() {
-        Double etcValue = binanceService.getPrice("BTCUSDT");
+        Double etcValue = binanceHttpClient.getPrice("BTCUSDT");
         System.out.println("s");
     }
 
     @Test
     public void getCandles() throws JSONException {
-        List<BinanceCandleStickResponse> btc = binanceService.getCandles("BTCUSDT", BinanceCandleStickInterval.FOUR_HOURS, 5);
+        List<BinanceCandleStickResponse> btc = binanceHttpClient.getCandles("BTCUSDT", BinanceCandleStickInterval.FOUR_HOURS, 5);
         System.out.println("s");
     }
 
 
     @Test
     public void placeMarketBuyOrder() throws Exception {
-        BinanceOrderResponse btc = binanceService.executeMarketBuyOrder("BTCUSDT", 200);
+        BinanceOrderResponse btc = binanceHttpClient.executeMarketBuyOrder("BTCUSDT", 200);
         System.out.println("s");
     }
 
 
     @Test
     public void placeOCOSellOrder() throws Exception {
-        BinanceOcoSellResponse ocoSellResponse = binanceService.executeOCOSellOrder("BTCUSDT", 100.0, 30000.0, 24000.0);
+        BinanceOcoSellResponse ocoSellResponse = binanceHttpClient.executeOCOSellOrder("BTCUSDT", 100.0, 30000.0, 24002.0, 24000.0);
+
         System.out.println("s");
     }
 
 
     @Test
     public void getAllOpenOrders() {
-        binanceService.getAllOpenOrders();
+        binanceHttpClient.getAllOpenOrders();
         System.out.println();
     }
 
     @Test
     public void getAllOpenOrdersBySymbol() {
-        binanceService.getAllOpenOrdersBySymbol("BTCUSDT");
+        binanceHttpClient.getAllOpenOrdersBySymbol("BTCUSDT");
         System.out.println();
     }
 
     @Test
     public void getOrderById() {
 
-        binanceService.getOrderById("BTCUSDT",2468092L);
+        binanceHttpClient.getOrderById("BTCUSDT", 2468092L);
         System.out.println("");
     }
-
 
 
     @Test
     public void cancelAllOpenOrdersBySymbol() {
 
-        binanceService.cancelAllOrdersBySymbol("BTCUSDT");
+        binanceHttpClient.cancelAllOrdersBySymbol("BTCUSDT");
         System.out.println("");
     }
-
 
 
     @Test
     public void getAllOCOOrders() {
 
-        binanceService.getAllOCOOrders();
+        binanceHttpClient.getAllOCOOrders();
         System.out.println("");
     }
-
 
 
     @Test
     public void getAllOpenOCOOrders() {
 
-        binanceService.getAllOpenOCOOrders();
+        BinanceOrderResponse allOpenOCOOrders = binanceHttpClient.getAllOpenOCOOrders();
         System.out.println("");
     }
 
     @Test
     public void cancelOCOOrderBySymbolAndOrderListId() {
 
-        binanceService.cancelOcoOrdersBySymbolAndOrderListId("BTCUSDT",4857L);
+        BinanceOrderResponse btcusdt = binanceHttpClient.cancelOcoOrdersBySymbolAndOrderListId("BTCUSDT", 8468L);
         System.out.println("");
     }
-
-
-
-
-
 
 
 }
