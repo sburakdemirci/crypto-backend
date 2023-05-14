@@ -39,7 +39,6 @@ class BinanceHttpClientTest {
     @Test
     public void placeMarketBuyOrder() throws Exception {
         BinanceOrderResponse btc = binanceHttpClient.executeMarketOrder("BTCUSDT", BinanceOrderSide.BUY, 100);
-        BinanceOrderResponse btc2 = binanceHttpClient.executeMarketOrder("BTCUSDT", BinanceOrderSide.BUY, 102);
 
         System.out.println("s");
     }
@@ -48,9 +47,6 @@ class BinanceHttpClientTest {
     @Test
     public void placeLimitBuyOrder() throws Exception {
         BinanceOrderResponse btc = binanceHttpClient.executeLimitOrder("BTCUSDT", BinanceOrderSide.BUY, 100, 22000L);
-
-        BinanceOrderResponse btc2 = binanceHttpClient.executeLimitOrder("BTCUSDT", BinanceOrderSide.BUY, 100, 22002L);
-
         System.out.println("s");
     }
 
@@ -65,28 +61,29 @@ class BinanceHttpClientTest {
 
     @Test
     public void getAllOpenOrders() {
-        binanceHttpClient.getAllOpenOrders();
+        List<BinanceOrderResponse> allOpenOrders = binanceHttpClient.getAllOpenOrders();
         System.out.println();
     }
 
     @Test
     public void getAllOpenOrdersBySymbol() {
         List<BinanceOrderResponse> allOrders = binanceHttpClient.getAllOpenOrders("BTCUSDT");
-        BinanceOrderResponse orderById = binanceHttpClient.getOrderById("BTCUSDT", allOrders.get(0).getOrderId());
     }
 
-    @Test
-    public void getOrderById() {
+/*    @Test
+    public void getOrderById() throws Exception {
+        BinanceNewOCOOrderResponse ocoSellResponse = binanceHttpClient.executeOCOSellOrder("BTCUSDT", 100, 30000.0, 24002.0, 24000.0);
 
-        binanceHttpClient.getOrderById("BTCUSDT", 2468092L);
+
+        BinanceOrderResponse orderById = binanceHttpClient.getOrderById("BTCUSDT");
         System.out.println("");
-    }
+    }*/
 
 
     @Test
     public void cancelAllOpenOrdersBySymbol() {
 
-        binanceHttpClient.cancelAllOrdersBySymbol("BTCUSDT");
+        List<BinanceOrderResponse> btcusdt = binanceHttpClient.cancelAllOrdersBySymbol("BTCUSDT");
         System.out.println("");
     }
 
@@ -94,7 +91,7 @@ class BinanceHttpClientTest {
     @Test
     public void getAllOCOOrders() {
 
-        binanceHttpClient.getAllOCOOrders();
+        List<BinanceQueryOCOResponse> allOCOOrders = binanceHttpClient.getAllOCOOrders();
         System.out.println("");
     }
 

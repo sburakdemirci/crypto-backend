@@ -32,6 +32,8 @@ public class BinanceHttpClient {
     private final BinanceSecretProperties binanceSecretProperties;
     private final BinanceApiUrlProperties binanceApiUrlProperties;
 
+    private static final int MAX_RETRY_COUNT = 5;
+
 
     //todo burak log loglog log
     //todo burak save request and response to database or log. But do not log the signature or any secret related thing
@@ -39,14 +41,14 @@ public class BinanceHttpClient {
 
 
     public BinanceSystemStatusResponse getSystemStatus() {
-        String url = binanceApiUrlProperties.getWalletApi() + "/system/status";
+        String url = binanceApiUrlProperties.getWalletApi() + binanceApiUrlProperties.getPath().getSystemStatus();
         BinanceSystemStatusRequestDto binanceSystemStatusRequestDto = new BinanceSystemStatusRequestDto();
         ResponseEntity<BinanceSystemStatusResponse> response = sendGetRequest(binanceSystemStatusRequestDto, url, BinanceSystemStatusResponse.class, false);
         return response.getBody();
     }
 
     public Double getPrice(String symbol) throws BinanceException {
-        String url = binanceApiUrlProperties.getOrderApi() + "/ticker/price";
+        String url = binanceApiUrlProperties.getPriceApi() + binanceApiUrlProperties.getPath().getPrice();
         BinanceGetPriceRequestDto binanceGetPriceRequest = new BinanceGetPriceRequestDto(symbol);
         ResponseEntity<BinanceCurrentPriceResponse> response = sendGetRequest(binanceGetPriceRequest, url, BinanceCurrentPriceResponse.class, false);
         return response.getBody().price;
@@ -54,7 +56,7 @@ public class BinanceHttpClient {
 
     public List<BinanceCandleStickResponse> getCandles(String symbol, BinanceCandleStickInterval interval, int limit) throws JSONException {
         long endTime = System.currentTimeMillis() - interval.getMilliseconds();
-        String url = binanceApiUrlProperties.getPriceApi() + "/klines";
+        String url = binanceApiUrlProperties.getPriceApi() + binanceApiUrlProperties.getPath().getKlines();
 
         BinanceGetCandleRequestDto binanceGetCandleRequest = BinanceGetCandleRequestDto.builder()
                 .symbol(symbol)
@@ -81,7 +83,7 @@ public class BinanceHttpClient {
 
         ResponseEntity<BinanceOrderResponse> response = sendPostRequest(
                 binanceMarketBuyRequest,
-                binanceApiUrlProperties.getOrderApi() + "/order",
+                binanceApiUrlProperties.getOrderApi() + binanceApiUrlProperties.getPath().getNormalOrder(),
                 BinanceOrderResponse.class);
 
         return response.getBody();
@@ -102,7 +104,7 @@ public class BinanceHttpClient {
 
         ResponseEntity<BinanceOrderResponse> response = sendPostRequest(
                 binanceLimitBuyRequest,
-                binanceApiUrlProperties.getOrderApi() + "/order",
+                binanceApiUrlProperties.getOrderApi() + binanceApiUrlProperties.getPath().getNormalOrder(),
                 BinanceOrderResponse.class);
 
         return response.getBody();
@@ -110,28 +112,28 @@ public class BinanceHttpClient {
 
 
     public List<BinanceOrderResponse> getAllOpenOrders() {
-        String url = binanceApiUrlProperties.getOrderApi() + "/openOrders";
+        String url = binanceApiUrlProperties.getOrderApi() + binanceApiUrlProperties.getPath().getOpenOrders();
         ResponseEntity<BinanceOrderResponse[]> response = sendGetRequest(new BinanceGetAllOpenOrdersRequestDto(), url, BinanceOrderResponse[].class, true);
         return Arrays.asList(response.getBody());
     }
 
 
     public List<BinanceOrderResponse> getAllOpenOrders(String symbol) {
-        String url = binanceApiUrlProperties.getOrderApi() + "/openOrders";
+        String url = binanceApiUrlProperties.getOrderApi() + binanceApiUrlProperties.getPath().getOpenOrders();
         BinanceGetAllOpenOrdersRequestDto binanceGetAllOpenOrdersRequest = new BinanceGetAllOpenOrdersRequestDto(symbol);
         ResponseEntity<BinanceOrderResponse[]> response = sendGetRequest(binanceGetAllOpenOrdersRequest, url, BinanceOrderResponse[].class, true);
         return Arrays.asList(response.getBody());
     }
 
     public BinanceOrderResponse getOrderById(String symbol, Long id) {
-        String url = binanceApiUrlProperties.getOrderApi() + "/order";
+        String url = binanceApiUrlProperties.getOrderApi() + binanceApiUrlProperties.getPath().getNormalOrder();
         BinanceGetOrderRequestDto binanceGetOrderRequest = new BinanceGetOrderRequestDto(symbol, id);
         ResponseEntity<BinanceOrderResponse> response = sendGetRequest(binanceGetOrderRequest, url, BinanceOrderResponse.class, true);
         return response.getBody();
     }
 
     public List<BinanceOrderResponse> cancelAllOrdersBySymbol(String symbol) {
-        String url = binanceApiUrlProperties.getOrderApi() + "/openOrders";
+        String url = binanceApiUrlProperties.getOrderApi() + binanceApiUrlProperties.getPath().getOpenOrders();
         BinanceCancelAllOrdersRequestDto binanceCancelAllOrdersRequest = new BinanceCancelAllOrdersRequestDto(symbol);
         ResponseEntity<BinanceOrderResponse[]> response = sendDeleteRequest(binanceCancelAllOrdersRequest, url, BinanceOrderResponse[].class);
         return Arrays.asList(response.getBody());
@@ -156,7 +158,7 @@ public class BinanceHttpClient {
 
         ResponseEntity<BinanceNewOCOOrderResponse> response = sendPostRequest(
                 orderRequest,
-                binanceApiUrlProperties.getOrderApi() + "/order/oco",
+                binanceApiUrlProperties.getOrderApi() + binanceApiUrlProperties.getPath().getOcoOrder(),
                 BinanceNewOCOOrderResponse.class);
 
         return response.getBody();
@@ -164,7 +166,7 @@ public class BinanceHttpClient {
 
 
     public BinanceCancelOCOResponse cancelOcoOrdersBySymbolAndOrderListId(String symbol, Long orderListId) {
-        String url = binanceApiUrlProperties.getOrderApi() + "/orderList";
+        String url = binanceApiUrlProperties.getOrderApi() + binanceApiUrlProperties.getPath().getOcoOrderList();
 
         BinanceCancelOCOOrderRequestDto binanceCancelOCOOrderRequest = BinanceCancelOCOOrderRequestDto.builder()
                 .symbol(symbol)
@@ -177,13 +179,13 @@ public class BinanceHttpClient {
     }
 
     public List<BinanceQueryOCOResponse> getAllOpenOCOOrders() {
-        String url = binanceApiUrlProperties.getOrderApi() + "/openOrderList";
+        String url = binanceApiUrlProperties.getOrderApi() + binanceApiUrlProperties.getPath().getOcoOpenOrderList();
         ResponseEntity<BinanceQueryOCOResponse[]> response = sendGetRequest(new BinanceGetAllOpenOrdersRequestDto(), url, BinanceQueryOCOResponse[].class, true);
         return Arrays.asList(response.getBody());
     }
 
     public List<BinanceQueryOCOResponse> getAllOCOOrders() {
-        String url = binanceApiUrlProperties.getOrderApi() + "/allOrderList";
+        String url = binanceApiUrlProperties.getOrderApi() + binanceApiUrlProperties.getPath().getOcoAllOrderList();
         ResponseEntity<BinanceQueryOCOResponse[]> response = sendGetRequest(new BinanceGetAllOpenOrdersRequestDto(), url, BinanceQueryOCOResponse[].class, true);
         return Arrays.asList(response.getBody());
     }
@@ -199,6 +201,7 @@ public class BinanceHttpClient {
 
 
     private <T> ResponseEntity<T> sendGetRequest(BinanceRequestBase binanceRequestBase, String url, Class<T> responseType, boolean isSigned) {
+        //todo put retry logic for 3 times with different urls
 
         BinanceRequest binanceRequest = BinanceRequest.builder()
                 .url(url)
@@ -249,8 +252,12 @@ public class BinanceHttpClient {
         //TODO Add retry mechanism except for the HttpClientErrorException.BadRequest. If server gives 500 or otheer than bad request retry 3 times
 
         try {
+            log.info("--URL--  " + binanceRequest.getUrl());
             return restTemplate.exchange(binanceRequest.getUrl(), binanceRequest.getHttpMethod(), binanceRequest.getHttpEntity(), responseEntity);
 
+        } catch (HttpClientErrorException.BadRequest e) {
+            e.printStackTrace();
+            throw new BinanceException(e.getMessage(), e.getStatusCode());
         } catch (HttpClientErrorException e) {
             e.printStackTrace();
             throw new BinanceException(e.getMessage(), e.getStatusCode());

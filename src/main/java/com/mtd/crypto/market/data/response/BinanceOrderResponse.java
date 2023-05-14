@@ -18,22 +18,15 @@ public class BinanceOrderResponse {
     private Long orderListId;
     private String clientOrderId;
     private Long transactTime;
-    private String price;
-    private String origQty;
-    private String executedQty;
-    private String cummulativeQuoteQty;
+    private Double price;
+    private Double origQty;
+    private Double executedQty;
+    private Double cummulativeQuoteQty;
     private BinanceOrderStatus status;
     private BinanceOrderTimeInForce timeInForce;
     private BinanceOrderType type;
     private BinanceOrderSide side;
-    private List<Fill> fills;
-
-    @Data
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    public class Fill {
-        private String price;
-        private String qty;
-        private String commission;
-        private String commissionAsset;
-    }
+    private List<BinanceOrderResponse_Fill> fills;
 }
+
+

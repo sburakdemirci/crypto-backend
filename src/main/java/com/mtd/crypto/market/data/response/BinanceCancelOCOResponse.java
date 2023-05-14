@@ -15,35 +15,8 @@ public class BinanceCancelOCOResponse {
     private String listClientOrderId;
     private Long transactionTime;
     private String symbol;
-    private List<BinanceCancelOCO_Order> orders;
-    private List<BinanceCancelOCO_OrderReport> orderReports;
+    private List<BinanceCancelOCOResponse_Order> orders;
+    private List<BinanceCancelOCOResponse_OrderReport> orderReports;
 
 }
 
-@Data
-@JsonIgnoreProperties(ignoreUnknown = true)
-class BinanceCancelOCO_Order {
-    private String symbol;
-    private Long orderId;
-    private String clientOrderId;
-}
-
-@Data
-@JsonIgnoreProperties(ignoreUnknown = true)
-class BinanceCancelOCO_OrderReport {
-    private String symbol;
-    private String origClientOrderId;
-    private Long orderId;
-    private Long orderListId;
-    private String clientOrderId;
-    private String price;
-    private String origQty;
-    private String executedQty;
-    private String cummulativeQuoteQty;
-    private String status;
-    private String timeInForce;
-    private String type;
-    private String side;
-    private String stopPrice;
-    private String selfTradePreventionMode;
-}

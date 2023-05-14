@@ -18,14 +18,7 @@ public class BinanceQueryOCOResponse {
     private String listClientOrderId;
     private long transactionTime;
     private String symbol;
-    private List<BinanceQueryOCO_Order> orders;
+    private List<BinanceQueryOCOResponse_Order> orders;
 }
 
 
-@Data
-@JsonIgnoreProperties(ignoreUnknown = true)
-class BinanceQueryOCO_Order {
-    private String symbol;
-    private long orderId;
-    private String clientOrderId;
-}
