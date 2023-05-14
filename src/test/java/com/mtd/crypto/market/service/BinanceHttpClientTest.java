@@ -2,6 +2,7 @@ package com.mtd.crypto.market.service;
 
 import com.mtd.crypto.market.client.BinanceHttpClient;
 import com.mtd.crypto.market.data.enumarator.BinanceCandleStickInterval;
+import com.mtd.crypto.market.data.enumarator.BinanceOrderSide;
 import com.mtd.crypto.market.data.response.BinanceCandleStickResponse;
 import com.mtd.crypto.market.data.response.BinanceOcoSellResponse;
 import com.mtd.crypto.market.data.response.BinanceOrderResponse;
@@ -34,14 +35,21 @@ class BinanceHttpClientTest {
 
     @Test
     public void placeMarketBuyOrder() throws Exception {
-        BinanceOrderResponse btc = binanceHttpClient.executeMarketBuyOrder("BTCUSDT", 200);
+        BinanceOrderResponse btc = binanceHttpClient.executeMarketOrder("BTCUSDT", BinanceOrderSide.BUY, 100);
+        System.out.println("s");
+    }
+
+
+    @Test
+    public void placeLimitBuyOrder() throws Exception {
+        BinanceOrderResponse btc = binanceHttpClient.executeLimitOrder("BTCUSDT", BinanceOrderSide.BUY, 100, 22000L);
         System.out.println("s");
     }
 
 
     @Test
     public void placeOCOSellOrder() throws Exception {
-        BinanceOcoSellResponse ocoSellResponse = binanceHttpClient.executeOCOSellOrder("BTCUSDT", 100.0, 30000.0, 24002.0, 24000.0);
+        BinanceOcoSellResponse ocoSellResponse = binanceHttpClient.executeOCOSellOrder("BTCUSDT", 100, 30000.0, 24002.0, 24000.0);
 
         System.out.println("s");
     }
@@ -55,8 +63,8 @@ class BinanceHttpClientTest {
 
     @Test
     public void getAllOpenOrdersBySymbol() {
-        binanceHttpClient.getAllOpenOrdersBySymbol("BTCUSDT");
-        System.out.println();
+        List<BinanceOrderResponse> allOrders = binanceHttpClient.getAllOpenOrders("BTCUSDT");
+        BinanceOrderResponse orderById = binanceHttpClient.getOrderById("BTCUSDT", allOrders.get(0).getOrderId());
     }
 
     @Test

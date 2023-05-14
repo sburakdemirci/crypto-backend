@@ -1,4 +1,4 @@
-package com.mtd.crypto.market.client.request;
+package com.mtd.crypto.market.client;
 
 import lombok.Builder;
 import lombok.Data;
@@ -21,20 +21,21 @@ import java.util.Map;
 public class BinanceRequest {
 
 
-    private static final String SIGNATURE_ALGORITHM ="HmacSHA256";
+    private static final String SIGNATURE_ALGORITHM = "HmacSHA256";
+    private static String BINANCE_API_KEY_HEADER = "X-MBX-APIKEY";
 
     private String url;
     private HttpMethod httpMethod;
-    private HttpHeaders httpHeaders;
+
     private MultiValueMap<String, String> params;
     private MultiValueMap<String, String> requestBody;
+    private HttpHeaders headers = new HttpHeaders();
 
 
     @Builder
-    public BinanceRequest(String url, HttpMethod httpMethod, HttpHeaders httpHeaders, MultiValueMap<String, String> params) {
+    public BinanceRequest(String url, HttpMethod httpMethod, MultiValueMap<String, String> params) {
         this.url = url;
         this.httpMethod = httpMethod;
-        this.httpHeaders = httpHeaders;
         this.params = params;
     }
 
@@ -58,6 +59,11 @@ public class BinanceRequest {
         }
     }
 
+    public BinanceRequest withApiKeyHeader(String apiKey) {
+        headers.add(BINANCE_API_KEY_HEADER, apiKey);
+        return this;
+    }
+
     public BinanceRequest withQuery() {
         this.url += constructQueryString();
         return this;
@@ -68,6 +74,11 @@ public class BinanceRequest {
         return this;
     }
 
+
+    public HttpEntity<MultiValueMap<String, String>> getHttpEntity() {
+        return new HttpEntity<>(requestBody, headers);
+    }
+
     private String constructQueryString() {
         UriComponentsBuilder uriBuilder = UriComponentsBuilder.newInstance();
         for (Map.Entry<String, List<String>> entry : this.params.entrySet()) {
@@ -75,11 +86,6 @@ public class BinanceRequest {
             uriBuilder.queryParam(key, entry.getValue().get(0));
         }
         return uriBuilder.toUriString();
-    }
-
-
-    public HttpEntity<MultiValueMap<String, String>> getHttpEntity() {
-        return new HttpEntity<>(requestBody, httpHeaders);
     }
 
 

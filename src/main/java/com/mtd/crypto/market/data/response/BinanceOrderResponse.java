@@ -13,6 +13,7 @@ import lombok.Data;
 public class BinanceOrderResponse {
     private String symbol;
     private long orderId;
+    private long orderListId;
     private String clientOrderId;
     private long transactTime;
     private String price;
