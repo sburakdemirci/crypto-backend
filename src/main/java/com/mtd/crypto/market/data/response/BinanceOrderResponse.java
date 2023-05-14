@@ -7,15 +7,17 @@ import com.mtd.crypto.market.data.enumarator.BinanceOrderTimeInForce;
 import com.mtd.crypto.market.data.enumarator.BinanceOrderType;
 import lombok.Data;
 
+import java.util.List;
+
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
 
 public class BinanceOrderResponse {
     private String symbol;
-    private long orderId;
-    private long orderListId;
+    private Long orderId;
+    private Long orderListId;
     private String clientOrderId;
-    private long transactTime;
+    private Long transactTime;
     private String price;
     private String origQty;
     private String executedQty;
@@ -24,4 +26,14 @@ public class BinanceOrderResponse {
     private BinanceOrderTimeInForce timeInForce;
     private BinanceOrderType type;
     private BinanceOrderSide side;
+    private List<Fill> fills;
+
+    @Data
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    public class Fill {
+        private String price;
+        private String qty;
+        private String commission;
+        private String commissionAsset;
+    }
 }
