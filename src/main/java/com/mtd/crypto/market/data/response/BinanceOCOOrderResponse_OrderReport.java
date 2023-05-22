@@ -1,12 +1,12 @@
 package com.mtd.crypto.market.data.response;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.mtd.crypto.market.data.enumarator.*;
+import com.mtd.crypto.market.data.enumarator.binance.*;
 import lombok.Data;
 
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class BinanceNewOCOOrderResponse_OrderReport {
+public class BinanceOCOOrderResponse_OrderReport {
     private String symbol;
     private Long orderId;
     private Long orderListId;

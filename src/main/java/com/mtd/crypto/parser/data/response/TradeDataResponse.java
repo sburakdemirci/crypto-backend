@@ -3,8 +3,6 @@ package com.mtd.crypto.parser.data.response;
 import com.mtd.crypto.parser.helper.RateCalculator;
 import lombok.Data;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 
@@ -20,15 +18,6 @@ public class TradeDataResponse {
     private List<TradeDataProfit> profitList;
 
 
-    public List<Object> convertToSheetData() {
-   /*     List<Object> list = new ArrayList<>(Arrays.asList(coin, entryPrice, currentPrice, stopPrice, reverse, RateCalculator.DoubleTwoDigits(estimatedLossRate), RateCalculator.DoubleTwoDigits(currentLossRate)));
-        profitList.forEach(tradeDataProfit -> {
-            list.addAll(Arrays.asList(tradeDataProfit.getTakeProfitPrice(), RateCalculator.DoubleTwoDigits(tradeDataProfit.getTakeProfitRate()), RateCalculator.DoubleTwoDigits(tradeDataProfit.getCurrentTakeProfitRate())));
-        });
-        return list;*/
-        return null;
-    }
-
     public TradeDataResponse(String coin, Double entryPrice, Double stopPrice, Double currentPrice, boolean reverse, List<TradeDataProfit> profitList) {
         this.coin = coin;
         this.entryPrice = entryPrice;
@@ -38,6 +27,15 @@ public class TradeDataResponse {
         this.currentLossRate = RateCalculator.calculateRate(currentPrice, stopPrice);
         this.profitList = profitList;
         this.reverse = reverse;
+    }
+
+    public List<Object> convertToSheetData() {
+   /*     List<Object> list = new ArrayList<>(Arrays.asList(coin, entryPrice, currentPrice, stopPrice, reverse, RateCalculator.DoubleTwoDigits(estimatedLossRate), RateCalculator.DoubleTwoDigits(currentLossRate)));
+        profitList.forEach(tradeDataProfit -> {
+            list.addAll(Arrays.asList(tradeDataProfit.getTakeProfitPrice(), RateCalculator.DoubleTwoDigits(tradeDataProfit.getTakeProfitRate()), RateCalculator.DoubleTwoDigits(tradeDataProfit.getCurrentTakeProfitRate())));
+        });
+        return list;*/
+        return null;
     }
 }
 

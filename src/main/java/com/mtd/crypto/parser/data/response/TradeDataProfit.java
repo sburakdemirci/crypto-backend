@@ -10,7 +10,7 @@ public class TradeDataProfit {
     private Double takeProfitRate;
     private Double currentTakeProfitRate;
 
-    public TradeDataProfit(Double entryPrice, Double currentPrice,Double takeProfitPrice) {
+    public TradeDataProfit(Double entryPrice, Double currentPrice, Double takeProfitPrice) {
         this.takeProfitPrice = takeProfitPrice;
         this.takeProfitRate = RateCalculator.calculateRate(entryPrice, takeProfitPrice);
         this.currentTakeProfitRate = RateCalculator.calculateRate(currentPrice, takeProfitPrice);

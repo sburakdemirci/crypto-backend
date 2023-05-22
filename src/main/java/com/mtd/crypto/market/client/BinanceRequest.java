@@ -26,17 +26,18 @@ public class BinanceRequest {
 
     private String url;
     private HttpMethod httpMethod;
-
     private MultiValueMap<String, String> params;
     private MultiValueMap<String, String> requestBody;
     private HttpHeaders headers = new HttpHeaders();
+    private Class<?> responseType;
 
 
     @Builder
-    public BinanceRequest(String url, HttpMethod httpMethod, MultiValueMap<String, String> params) {
+    public BinanceRequest(String url, HttpMethod httpMethod, MultiValueMap<String, String> params, Class<?> responseType) {
         this.url = url;
         this.httpMethod = httpMethod;
         this.params = params;
+        this.responseType = responseType;
     }
 
 
@@ -87,6 +88,5 @@ public class BinanceRequest {
         }
         return uriBuilder.toUriString();
     }
-
 
 }

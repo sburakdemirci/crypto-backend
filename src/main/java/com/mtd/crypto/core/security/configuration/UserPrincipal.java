@@ -1,11 +1,10 @@
 package com.mtd.crypto.core.security.configuration;
 
-import java.util.Collection;
-
+import com.mtd.crypto.core.user.data.entity.User;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import com.mtd.crypto.core.user.data.entity.User;
+import java.util.Collection;
 
 
 /*

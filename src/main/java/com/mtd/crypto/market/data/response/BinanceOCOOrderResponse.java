@@ -1,7 +1,9 @@
 package com.mtd.crypto.market.data.response;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.mtd.crypto.market.data.enumarator.*;
+import com.mtd.crypto.market.data.enumarator.binance.BinanceContingencyType;
+import com.mtd.crypto.market.data.enumarator.binance.BinanceListOrderStatus;
+import com.mtd.crypto.market.data.enumarator.binance.BinanceListStatusType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -12,7 +14,7 @@ import java.util.List;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @AllArgsConstructor
 @NoArgsConstructor
-public class BinanceNewOCOOrderResponse {
+public class BinanceOCOOrderResponse {
     private Long orderListId;
     private BinanceContingencyType contingencyType;
     private BinanceListStatusType listStatusType;
@@ -20,8 +22,8 @@ public class BinanceNewOCOOrderResponse {
     private String listClientOrderId;
     private Long transactionTime;
     private String symbol;
-    private List<BinanceNewOCOOrderResponse_Order> orders;
-    private List<BinanceNewOCOOrderResponse_OrderReport> orderReports;
+    private List<BinanceOCOOrderResponse_Order> orders;
+    private List<BinanceOCOOrderResponse_OrderReport> orderReports;
 
 }
 

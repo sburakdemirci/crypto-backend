@@ -37,8 +37,8 @@ public class HalukParser {
                 if (matcher.group(5) != null) {
                     halukDto.setTakeProfit2(Double.parseDouble(matcher.group(5)));
                 }
-                if(matcher.group(6)!= null){
-                halukDto.setReverse(true);
+                if (matcher.group(6) != null) {
+                    halukDto.setReverse(true);
                 }
 
                 halukDtoList.add(halukDto);

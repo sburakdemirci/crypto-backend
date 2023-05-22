@@ -13,26 +13,26 @@ import java.util.List;
 @ConfigurationProperties(prefix = "app.binance.url")
 public class BinanceApiUrlProperties {
 
-        private String orderApi;
-        private String priceApi;
-        private String walletApi;
-        private List<String> backupApis;
-        private Path path;
+    private String orderApi;
+    private String priceApi;
+    private String walletApi;
+    private List<String> backupApis;
+    private Path path;
 
-        @Getter
-        @Setter
-        public static class Path {
-            private String systemStatus;
-            private String price;
-            private String klines;
-            private String exchangeInfo;
-            private String normalOrder;
-            private String openOrders;
-            private String ocoOrder;
-            private String ocoOrderList;
-            private String ocoOpenOrderList;
-            private String ocoAllOrderList;
-        }
+    @Getter
+    @Setter
+    public static class Path {
+        private String systemStatus;
+        private String price;
+        private String klines;
+        private String exchangeInfo;
+        private String normalOrder;
+        private String openOrders;
+        private String ocoOrder;
+        private String ocoOrderList;
+        private String ocoOpenOrderList;
+        private String ocoAllOrderList;
     }
+}
 
 

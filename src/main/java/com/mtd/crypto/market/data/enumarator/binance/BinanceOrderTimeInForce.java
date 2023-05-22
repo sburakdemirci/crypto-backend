@@ -1,4 +1,4 @@
-package com.mtd.crypto.market.data.enumarator;
+package com.mtd.crypto.market.data.enumarator.binance;
 
 public enum BinanceOrderTimeInForce {
     GTC, // Good Till Cancel

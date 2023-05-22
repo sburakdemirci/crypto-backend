@@ -12,7 +12,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
-import java.nio.charset.StandardCharsets;
 import java.util.Date;
 
 
@@ -70,7 +69,7 @@ public class JwtTokenService {
 
 
     private SecretKey getKey() {
-      return Keys.hmacShaKeyFor(Decoders.BASE64.decode(jwtTokenProperties.getSecretKey()));
+        return Keys.hmacShaKeyFor(Decoders.BASE64.decode(jwtTokenProperties.getSecretKey()));
     }
 
     private Claims parseClaims(String token) {

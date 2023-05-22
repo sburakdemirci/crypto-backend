@@ -22,12 +22,9 @@ import java.util.List;
 @RequiredArgsConstructor
 public class GoogleSheetsConfiguration {
 
-    private final GoogleSheetsConfigurationProperties googleSheetsConfigurationProperties;
-
-
     private static final JsonFactory JSON_FACTORY = GsonFactory.getDefaultInstance();
     private static final List<String> SCOPES = Collections.singletonList(SheetsScopes.SPREADSHEETS);
-
+    private final GoogleSheetsConfigurationProperties googleSheetsConfigurationProperties;
 
     @Bean
     public GoogleCredentials getCredentials()

@@ -1,8 +1,8 @@
 package com.mtd.crypto.market.data.response.exchange.info;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.mtd.crypto.market.data.enumarator.BinanceExchangeInfoInterval;
-import com.mtd.crypto.market.data.enumarator.BinanceRateLimitType;
+import com.mtd.crypto.market.data.enumarator.binance.BinanceExchangeInfoInterval;
+import com.mtd.crypto.market.data.enumarator.binance.BinanceRateLimitType;
 import lombok.Data;
 
 @Data

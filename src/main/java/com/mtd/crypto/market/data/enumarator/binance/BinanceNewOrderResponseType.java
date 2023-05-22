@@ -1,4 +1,5 @@
-package com.mtd.crypto.market.data.enumarator;
+package com.mtd.crypto.market.data.enumarator.binance;
+
 public enum BinanceNewOrderResponseType {
     ACK("ACK"),
     RESULT("RESULT"),

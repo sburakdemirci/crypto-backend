@@ -1,10 +1,10 @@
 package com.mtd.crypto.market.data.response;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.mtd.crypto.market.data.enumarator.BinanceOrderSide;
-import com.mtd.crypto.market.data.enumarator.BinanceOrderStatus;
-import com.mtd.crypto.market.data.enumarator.BinanceOrderTimeInForce;
-import com.mtd.crypto.market.data.enumarator.BinanceOrderType;
+import com.mtd.crypto.market.data.enumarator.binance.BinanceOrderSide;
+import com.mtd.crypto.market.data.enumarator.binance.BinanceOrderStatus;
+import com.mtd.crypto.market.data.enumarator.binance.BinanceOrderTimeInForce;
+import com.mtd.crypto.market.data.enumarator.binance.BinanceOrderType;
 import lombok.Data;
 
 import java.util.List;

@@ -14,7 +14,7 @@ public class UserInitializer {
     private final PasswordEncoder passwordEncoder;
 
     @PostConstruct
-    public void createAdminUser(){
+    public void createAdminUser() {
 
       /*  userRepository.save(User.builder()
                 .name("")

@@ -1,4 +1,4 @@
-package com.mtd.crypto.market.data.enumarator;
+package com.mtd.crypto.market.data.enumarator.binance;
 
 public enum BinanceCandleStickInterval {
     ONE_MINUTE("1m", 60000),

@@ -5,7 +5,7 @@ import lombok.Data;
 
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class BinanceNewOCOOrderResponse_Order {
+public class BinanceOCOOrderResponse_Order {
     private String symbol;
     private Long orderId;
     private String clientOrderId;

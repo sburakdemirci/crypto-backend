@@ -28,15 +28,15 @@ public class InitialTradeDataService {
 
             List<TradeDataProfit> profitList = new ArrayList<>();
 
-            TradeDataProfit tradeDataProfit1 = new TradeDataProfit(halukDto.getEntryPrice(),currentPrice,halukDto.getTakeProfit1());
+            TradeDataProfit tradeDataProfit1 = new TradeDataProfit(halukDto.getEntryPrice(), currentPrice, halukDto.getTakeProfit1());
             profitList.add(tradeDataProfit1);
 
             if (Optional.ofNullable(halukDto.getTakeProfit2()).isPresent()) {
-                TradeDataProfit tradeDataProfit2 = new TradeDataProfit(halukDto.getEntryPrice(),currentPrice,halukDto.getTakeProfit2());
+                TradeDataProfit tradeDataProfit2 = new TradeDataProfit(halukDto.getEntryPrice(), currentPrice, halukDto.getTakeProfit2());
                 profitList.add(tradeDataProfit2);
             }
 
-            TradeDataResponse tradeDataResponse= new TradeDataResponse(halukDto.getCoin(),halukDto.getEntryPrice(),halukDto.getStopPrice(),currentPrice,halukDto.isReverse(),profitList);
+            TradeDataResponse tradeDataResponse = new TradeDataResponse(halukDto.getCoin(), halukDto.getEntryPrice(), halukDto.getStopPrice(), currentPrice, halukDto.isReverse(), profitList);
             tradeDataResponseList.add(tradeDataResponse);
 
         });
@@ -44,6 +44,6 @@ public class InitialTradeDataService {
     }
 
     public List<Object> getSheetHeaders() {
-        return Arrays.asList("Coin", "Entry", "Current", "Stop", "Loss", "Current Loss", "TP1 Price", "TP1 Rate", "TP1 Current Rate","TP2 Price", "TP2 Rate", "TP2 Current Rate" );
+        return Arrays.asList("Coin", "Entry", "Current", "Stop", "Loss", "Current Loss", "TP1 Price", "TP1 Rate", "TP1 Current Rate", "TP2 Price", "TP2 Rate", "TP2 Current Rate");
     }
 }

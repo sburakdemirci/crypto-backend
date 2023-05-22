@@ -15,7 +15,6 @@ import java.util.Arrays;
 @Component
 public class LoggingAspect {
 
-    private static final Logger logger = LoggerFactory.getLogger(LoggingAspect.class);
 
     @Around("@within(com.mtd.crypto.core.aspect.LoggableClass)")
     public Object logMethodExecution(ProceedingJoinPoint joinPoint) throws Throwable {
@@ -23,6 +22,8 @@ public class LoggingAspect {
         String className = joinPoint.getSignature().getDeclaringType().getSimpleName();
         String methodName = joinPoint.getSignature().getName();
         Object[] arguments = joinPoint.getArgs();
+         Logger logger = LoggerFactory.getLogger(LoggingAspect.class);
+
 
         // Start the stopwatch
         StopWatch stopWatch = new StopWatch();
@@ -30,10 +31,7 @@ public class LoggingAspect {
 
         // Log method invocation
 
-        logger.info("----METHOD LOGGING STARTED-----");
-        logger.info("Class: {}", className);
-        logger.info("Method: {}", methodName);
-        logger.info("Parameters: {}", Arrays.toString(arguments));
+        // Log method invocation
 
         // Proceed with the method execution
         Object result = joinPoint.proceed();
@@ -42,11 +40,15 @@ public class LoggingAspect {
         stopWatch.stop();
 
         // Log execution time
-        logger.info("Execution Time: {} ms", stopWatch.getTotalTimeMillis());
 
-        // Log method result
-        logger.info("Result: {}", result);
-        logger.info("------------");
+            logger.info("----METHOD LOGGING STARTED-----");
+            logger.info("Class: {}", className);
+            logger.info("Method: {}", methodName);
+            logger.info("Parameters: {}", Arrays.toString(arguments));
+            logger.info("Execution Time: {} ms", stopWatch.getTotalTimeMillis());
+            logger.info("Result: {}", result);
+            logger.info("------------");
+
 
 
         return result;

@@ -1,4 +1,4 @@
-package com.mtd.crypto.market.data.enumarator;
+package com.mtd.crypto.market.data.enumarator.binance;
 
 public enum BinanceFilterType {
     PRICE_FILTER,
@@ -49,9 +49,10 @@ public enum BinanceFilterType {
     UNKNOWN;
 
 
-    public static String getValue(BinanceFilterType binanceFilterType){
+    public static String getValue(BinanceFilterType binanceFilterType) {
         return binanceFilterType.toString();
     }
+
     // Method to convert a string value to BinanceFilterType enum
     public static BinanceFilterType fromString(String value) {
         for (BinanceFilterType type : BinanceFilterType.values()) {
