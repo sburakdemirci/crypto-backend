@@ -1,9 +1,9 @@
 package com.mtd.crypto.market.service;
 
-import com.mtd.crypto.market.data.dto.BinanceDecimalInfoDto;
 import com.mtd.crypto.market.data.enumarator.binance.BinanceCandleStickInterval;
 import com.mtd.crypto.market.data.enumarator.binance.BinanceOrderSide;
 import com.mtd.crypto.market.data.response.*;
+import com.mtd.crypto.market.data.response.exchange.info.BinanceExchangeInfoResponse;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
@@ -11,6 +11,7 @@ import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,6 +19,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
+@ActiveProfiles("dev")
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class BinanceServiceTest {
 
@@ -69,16 +71,32 @@ public class BinanceServiceTest {
     }
 
 
+    //TODO IMPORTANT NOW YOU CAN TEST THE LIMIT ORDERS. YOU WERE DOING IT WRONG
+    @Test
+    public void placeLimitBuyOrder() {
+
+        Double currentPrice = binanceService.getCurrentPrice(TEST_SYMBOL);
+        Double limitPrice = currentPrice * 0.99;
+
+        BinanceOrderResponse binanceOrderResponse = binanceService.executeLimitOrder(TEST_SYMBOL, BinanceOrderSide.BUY, 20, limitPrice);
+    }
+
+    @Test
+    public void placeMarketBuyOrder() {
+        BinanceOrderResponse binanceOrderResponse = binanceService.executeMarketOrder(TEST_SYMBOL, BinanceOrderSide.BUY, 100);
+    }
+
+
     @Test
     public void testCancelOrderById() {
         int ORDER_COUNT = 1;
         BinanceOCOOrderResponse createdOrder = createMultipleOcoOrders(TEST_SYMBOL, ORDER_COUNT, 100).get(0);
-        BinanceOCOOrderResponse cancelledOrder = binanceService.cancelOcoOrderBySymbolAndOrderListId(createdOrder.getSymbol(),createdOrder.getOrderListId());
+        BinanceOCOOrderResponse cancelledOrder = binanceService.cancelOcoOrderBySymbolAndOrderListId(createdOrder.getSymbol(), createdOrder.getOrderListId());
         assertNotNull(cancelledOrder);
         assertEquals(createdOrder.getOrderListId(), cancelledOrder.getOrderListId());
-        assertEquals(createdOrder.getSymbol(),cancelledOrder.getSymbol());
-        assertEquals(createdOrder.getSymbol(),TEST_SYMBOL);
-        assertEquals(cancelledOrder.getSymbol(),TEST_SYMBOL);
+        assertEquals(createdOrder.getSymbol(), cancelledOrder.getSymbol());
+        assertEquals(createdOrder.getSymbol(), TEST_SYMBOL);
+        assertEquals(cancelledOrder.getSymbol(), TEST_SYMBOL);
     }
 
     @Test
@@ -115,27 +133,27 @@ public class BinanceServiceTest {
 
     @Test
     public void testGetExchangeInfo() {
-        BinanceDecimalInfoDto decimalInfo = binanceService.getDecimalInfo(TEST_SYMBOL);
+
+        try {
+            BinanceExchangeInfoResponse abtusdt = binanceService.getExchangeInfo("ABTUSDT");
+
+        } catch (Exception e) {
+            System.out.println("");
+        }
+/*
+        BinanceExchangeInfoResponse abtusdt = binanceService.getExchangeInfo("ABTUSDT");
+*/
+/*
         assertNotNull(decimalInfo);
+*/
     }
 
-    // Helper method to create multiple limit orders
-    private List<BinanceOrderResponse> createMultipleLimitOrders(String symbol, BinanceOrderSide side, int count, int quantity) {
-        Double price = binanceService.getCurrentPrice(symbol);
-        price *= 1.10;
-        List<BinanceOrderResponse> createdOrders = new ArrayList<>();
-        for (int i = 0; i < count; i++) {
-            BinanceOrderResponse orderResponse = binanceService.executeLimitOrder(symbol, side, quantity, price);
-            createdOrders.add(orderResponse);
-        }
-        return createdOrders;
-    }
 
     // Helper method to create multiple oco sell orders
     private List<BinanceOCOOrderResponse> createMultipleOcoOrders(String symbol, int count, int quantity) {
         Double currentPrice = binanceService.getCurrentPrice(symbol);
         Double sellPrice = currentPrice * 1.10;
-        Double stop = currentPrice * 0.9;
+        Double stop = currentPrice * 0.98;
         List<BinanceOCOOrderResponse> createdOrders = new ArrayList<>();
         for (int i = 0; i < count; i++) {
             BinanceOCOOrderResponse binanceNewOCOOrderResponse = binanceService.executeOcoSellOrder(symbol, quantity, sellPrice, stop);
@@ -143,7 +161,6 @@ public class BinanceServiceTest {
         }
         return createdOrders;
     }
-
 
 
 }

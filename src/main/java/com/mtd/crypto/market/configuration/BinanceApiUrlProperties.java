@@ -13,9 +13,7 @@ import java.util.List;
 @ConfigurationProperties(prefix = "app.binance.url")
 public class BinanceApiUrlProperties {
 
-    private String orderApi;
-    private String priceApi;
-    private String walletApi;
+    private String api;
     private List<String> backupApis;
     private Path path;
 
@@ -32,6 +30,11 @@ public class BinanceApiUrlProperties {
         private String ocoOrderList;
         private String ocoOpenOrderList;
         private String ocoAllOrderList;
+        private String wallet;
+        private String account;
+        private String accountSnapshot;
+        private String userAsset;
+        private String myTrades;
     }
 }
 

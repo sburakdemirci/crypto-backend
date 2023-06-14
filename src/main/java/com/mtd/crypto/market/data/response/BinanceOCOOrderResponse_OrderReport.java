@@ -12,15 +12,15 @@ public class BinanceOCOOrderResponse_OrderReport {
     private Long orderListId;
     private String clientOrderId;
     private Long transactTime;
-    private String price;
-    private String origQty;
-    private String executedQty;
-    private String cummulativeQuoteQty;
+    private Double price;
+    private Double origQty;
+    private Double executedQty;
+    private Double cummulativeQuoteQty;
     private BinanceOrderStatus status;
     private BinanceOrderTimeInForce timeInForce;
     private BinanceOrderType type;
     private BinanceOrderSide side;
-    private String stopPrice;
+    private Double stopPrice;
     private Long workingTime;
     private BinanceSelfTradePreventionMode selfTradePreventionMode;
 }

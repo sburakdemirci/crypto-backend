@@ -24,24 +24,24 @@ class GoogleSheetsBinanceHttpClientTest {
         List<HalukDto> halukDtoList = new ArrayList<>();
 
 
-            Matcher matcher = pattern.matcher(input);
-            if (matcher.matches()) {
-                HalukDto halukDto = HalukDto.builder()
-                        .coin(matcher.group(1))
-                        .entryPrice(Double.parseDouble(matcher.group(2)))
-                        .stopPrice(Double.parseDouble(matcher.group(3)))
-                        .takeProfit1(Double.parseDouble(matcher.group(4))).build();
+        Matcher matcher = pattern.matcher(input);
+        if (matcher.matches()) {
+            HalukDto halukDto = HalukDto.builder()
+                    .coin(matcher.group(1))
+                    .entryPrice(Double.parseDouble(matcher.group(2)))
+                    .stopPrice(Double.parseDouble(matcher.group(3)))
+                    .takeProfit1(Double.parseDouble(matcher.group(4))).build();
 
-                if (matcher.group(5) != null) {
-                    halukDto.setTakeProfit2(Double.parseDouble(matcher.group(5)));
-                }
-
-                halukDtoList.add(halukDto);
-
+            if (matcher.group(5) != null) {
+                halukDto.setTakeProfit2(Double.parseDouble(matcher.group(5)));
             }
+
+            halukDtoList.add(halukDto);
+
+        }
 
         System.out.println("");
 
-        }
+    }
 
 }

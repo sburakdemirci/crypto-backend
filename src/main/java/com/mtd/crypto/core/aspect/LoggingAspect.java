@@ -22,7 +22,7 @@ public class LoggingAspect {
         String className = joinPoint.getSignature().getDeclaringType().getSimpleName();
         String methodName = joinPoint.getSignature().getName();
         Object[] arguments = joinPoint.getArgs();
-         Logger logger = LoggerFactory.getLogger(LoggingAspect.class);
+        Logger logger = LoggerFactory.getLogger(LoggingAspect.class);
 
 
         // Start the stopwatch
@@ -41,14 +41,13 @@ public class LoggingAspect {
 
         // Log execution time
 
-            logger.info("----METHOD LOGGING STARTED-----");
-            logger.info("Class: {}", className);
-            logger.info("Method: {}", methodName);
-            logger.info("Parameters: {}", Arrays.toString(arguments));
-            logger.info("Execution Time: {} ms", stopWatch.getTotalTimeMillis());
-            logger.info("Result: {}", result);
-            logger.info("------------");
-
+        logger.info("----METHOD LOGGING STARTED-----");
+        logger.info("Class: {}", className);
+        logger.info("Method: {}", methodName);
+        logger.info("Parameters: {}", Arrays.toString(arguments));
+        logger.info("Execution Time: {} ms", stopWatch.getTotalTimeMillis());
+        logger.info("Result: {}", result);
+        logger.info("------------");
 
 
         return result;

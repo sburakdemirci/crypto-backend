@@ -13,6 +13,7 @@ import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -21,6 +22,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
+@ActiveProfiles("dev")
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class BinanceHttpClientTest {
 
@@ -312,6 +314,20 @@ class BinanceHttpClientTest {
         });
     }
 
+
+    @Test
+    public void getAccountInfo() {
+
+        AccountData accountInfo = binanceHttpClient.getAccountInfo();
+        System.out.println("");
+    }
+
+    @Test
+    public void getUserAsset() {
+
+        List<UserAssetResponse> userAsset = binanceHttpClient.getUserAsset();
+        System.out.println("");
+    }
 
     @Test
     public void testGetExchangeInfo() {
