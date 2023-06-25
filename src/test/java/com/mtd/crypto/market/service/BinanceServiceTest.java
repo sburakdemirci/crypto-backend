@@ -83,7 +83,7 @@ public class BinanceServiceTest {
 
     @Test
     public void placeMarketBuyOrder() {
-        BinanceOrderResponse binanceOrderResponse = binanceService.executeMarketOrder(TEST_SYMBOL, BinanceOrderSide.BUY, 100);
+        BinanceOrderResponse binanceOrderResponse = binanceService.executeMarketOrderWithDollar(TEST_SYMBOL, BinanceOrderSide.BUY, 100);
     }
 
 
@@ -156,8 +156,8 @@ public class BinanceServiceTest {
         Double stop = currentPrice * 0.98;
         List<BinanceOCOOrderResponse> createdOrders = new ArrayList<>();
         for (int i = 0; i < count; i++) {
-            BinanceOCOOrderResponse binanceNewOCOOrderResponse = binanceService.executeOcoSellOrder(symbol, quantity, sellPrice, stop);
-            createdOrders.add(binanceNewOCOOrderResponse);
+            //BinanceOCOOrderResponse binanceNewOCOOrderResponse = binanceService.executeOcoSellOrder(symbol, quantity, sellPrice, stop);
+          //  createdOrders.add(binanceNewOCOOrderResponse);
         }
         return createdOrders;
     }

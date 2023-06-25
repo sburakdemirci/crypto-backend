@@ -20,4 +20,6 @@ public class ExceptionHandlerCustom
         return handleExceptionInternal(ex, bodyOfResponse,
                 new HttpHeaders(), HttpStatus.UNAUTHORIZED, request);
     }
+
+
 }

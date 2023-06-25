@@ -51,6 +51,16 @@ class BinanceHttpClientTest {
     }*/
 
 
+    @Test
+    public void placeOcoSellOrder() {
+        Double currentPrice = binanceService.getCurrentPrice(TEST_SYMBOL);
+        Double takeProfitPrice = currentPrice * 1.05;
+        Double stopPrice = currentPrice * 0.98;
+        BinanceOCOOrderResponse binanceOCOOrderResponse = binanceService.executeOcoSellOrder(TEST_SYMBOL, 0.0005, takeProfitPrice, stopPrice);
+        System.out.println("");
+    }
+
+
     @Order(1)
     @Test
     public void cancelAllOpenOcoOrders() {
@@ -90,16 +100,17 @@ class BinanceHttpClientTest {
         assertNotNull(candles);
         assertEquals(CANDLE_LIMIT, candles.size());
     }
-/*
+
+
     @Test
     public void testExecuteMarketBuyOrder() {
-        BinanceOrderResponse orderResponse = binanceHttpClient.executeMarketOrder(TEST_SYMBOL, BinanceOrderSide.BUY, 0.05);
+        BinanceOrderResponse orderResponse = binanceService.executeMarketOrderWithDollar(TEST_SYMBOL, BinanceOrderSide.BUY, 100);
         assertNotNull(orderResponse);
         assertNotNull(orderResponse.getOrderId());
         assertEquals(TEST_SYMBOL, orderResponse.getSymbol());
         assertEquals(BinanceOrderSide.BUY, orderResponse.getSide());
         // Add more assertions as needed
-    }*/
+    }
 
 /*
     @Test

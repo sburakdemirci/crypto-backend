@@ -12,7 +12,6 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 
 import java.time.Instant;
-import java.util.List;
 
 import static jakarta.persistence.TemporalType.TIMESTAMP;
 
@@ -22,12 +21,20 @@ import static jakarta.persistence.TemporalType.TIMESTAMP;
 @NoArgsConstructor
 @AllArgsConstructor
 public class SpotNormalTradeData {
+
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
 
+    @NotNull
+    @Enumerated(EnumType.STRING)
+    private TradeStatus tradeStatus = TradeStatus.APPROVAL_WAITING;
+
     @NotBlank(message = "Symbol is required")
     private String symbol;
+
+    @NotBlank(message = "Base trading symbol is required")
+    private String baseTradingSymbol;
 
     @Positive(message = "Entry must be greater than zero")
     private Double entry;
@@ -40,7 +47,7 @@ public class SpotNormalTradeData {
 
     private boolean isPriceDropRequired;
 
-    @NotBlank(message = "Source is required")
+    @NotNull(message = "Source is required")
     @Enumerated(EnumType.STRING)
     private TradeSource source;
 
@@ -48,31 +55,22 @@ public class SpotNormalTradeData {
     @Max(40)
     private Integer walletPercentage = 10; // Default value, can be overridden (min 1, max 100)
 
-    private Integer totalUsdExecuted;
-    private Integer averageEntryPrice;
+    @CreatedDate
+    @Temporal(TIMESTAMP)
+    @Column(updatable = false)
+    private Instant createdTime;
 
-    @NotNull
-    @Enumerated(EnumType.STRING)
-    private TradeStatus tradeStatus = TradeStatus.APPROVAL_WAITING;
+    private Double totalQuantity;
+    private Double averageEntryPrice;
+    private Double quantityLeftInPosition;
 
     private Instant approvedAt;
     private Instant cancelledAt;
     private Instant positionStartedAt;
     private Instant positionFinishedAt;
 
-    @CreatedDate
-    @Temporal(TIMESTAMP)
-    @Column(updatable = false)
-    private Instant createdTime;
-
     @LastModifiedDate
     @Temporal(TIMESTAMP)
     private Instant updatedTime;
-
-    @OneToMany(mappedBy = "parentTrade", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<SpotNormalTradeMarketOrder> marketOrders;
-
-    @OneToMany(mappedBy = "parentTrade", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<SpotNormalTradeOcoOrder> ocoOrders;
 
 }

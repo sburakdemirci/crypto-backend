@@ -37,32 +37,38 @@ public class BinanceService {
         return binanceHttpClient.getUserAsset();
     }
 
+    public AccountData getAccountInfo() {
+        return binanceHttpClient.getAccountInfo();
+    }
+
+    public Double getBalanceBySymbol(String symbol) {
+        AccountData accountInfo = binanceHttpClient.getAccountInfo();
+        return accountInfo.getBalances().stream().filter(balances -> balances.getAsset().equalsIgnoreCase(symbol)).findFirst().orElseThrow(() -> new RuntimeException("Asset could not found in the wallet")).getFree();
+    }
+
     //TODO test all the logic. Test it with given tick and quantity step prices. Make sure price is adjusting with correct values for AdjustedDecimal objects
 
     //TODO test getExchangeInfo method cache.
-    public BinanceOCOOrderResponse executeOcoSellOrder(String symbol, Integer quantityInDollars, Double takeProfitPrice, Double stopPrice) {
+    public BinanceOCOOrderResponse executeOcoSellOrder(String symbol, Double quantity, Double takeProfitPrice, Double stopPrice) {
+
         Double currentPrice = binanceHttpClient.getPrice(symbol);
         BinanceDecimalInfoDto decimalInfo = getDecimalInfo(symbol);
 
 
-        Double calculatedQuantity = convertQuantity(quantityInDollars, currentPrice);
+        AdjustedDecimal adjustedQuantity = new AdjustedDecimal(quantity, decimalInfo.getQuantityStepSize());
         Double calculatedLimitPrice = calculateStopLimitPrice(stopPrice, decimalInfo.getPriceTickSize());
-
-        AdjustedDecimal quantity = new AdjustedDecimal(calculatedQuantity, decimalInfo.getQuantityStepSize());
-
         AdjustedDecimal adjustedTakeProfit = new AdjustedDecimal(takeProfitPrice, decimalInfo.getPriceTickSize());
         AdjustedDecimal adjustedStop = new AdjustedDecimal(stopPrice, decimalInfo.getPriceTickSize());
         AdjustedDecimal adjustedLimit = new AdjustedDecimal(calculatedLimitPrice, decimalInfo.getPriceTickSize());
 
-
         validateOcoSellOrder(currentPrice, takeProfitPrice, stopPrice, calculatedLimitPrice);
-        validateQuantity(quantityInDollars);
+        validateQuantity(quantity.intValue());
 
-        return binanceHttpClient.executeOCOSellOrder(symbol, quantity, adjustedTakeProfit, adjustedStop, adjustedLimit);
+        return binanceHttpClient.executeOCOSellOrder(symbol, adjustedQuantity, adjustedTakeProfit, adjustedStop, adjustedLimit);
     }
 
 
-    public BinanceOrderResponse executeMarketOrder(String symbol, BinanceOrderSide binanceOrderSide, Integer quantityInDollars) {
+    public BinanceOrderResponse executeMarketOrderWithDollar(String symbol, BinanceOrderSide binanceOrderSide, Integer quantityInDollars) {
         Double currentPrice = binanceHttpClient.getPrice(symbol);
         BinanceDecimalInfoDto decimalInfoDto = getDecimalInfo(symbol);
 
@@ -70,6 +76,16 @@ public class BinanceService {
         AdjustedDecimal adjustedQuantity = new AdjustedDecimal(calculatedQuantity, decimalInfoDto.getQuantityStepSize());
 
         validateQuantity(quantityInDollars);
+        return binanceHttpClient.executeMarketOrder(symbol, binanceOrderSide, adjustedQuantity);
+    }
+
+
+    public BinanceOrderResponse executeMarketOrderWithQuantity(String symbol, BinanceOrderSide binanceOrderSide, Double quantity) {
+
+        BinanceDecimalInfoDto decimalInfoDto = getDecimalInfo(symbol);
+        AdjustedDecimal adjustedQuantity = new AdjustedDecimal(quantity, decimalInfoDto.getQuantityStepSize());
+
+        validateQuantity(quantity.intValue());
         return binanceHttpClient.executeMarketOrder(symbol, binanceOrderSide, adjustedQuantity);
     }
 

@@ -50,7 +50,7 @@ public class BinanceServiceProductionTest {
 
     @Test
     public void placeMarketBuyOrder() {
-        BinanceOrderResponse binanceOrderResponse = binanceService.executeMarketOrder(TEST_SYMBOL, BinanceOrderSide.BUY, QUANTITY_IN_DOLLARS);
+        BinanceOrderResponse binanceOrderResponse = binanceService.executeMarketOrderWithDollar(TEST_SYMBOL, BinanceOrderSide.BUY, QUANTITY_IN_DOLLARS);
     }
 
     @Test
@@ -67,14 +67,16 @@ public class BinanceServiceProductionTest {
         BinanceOrderResponse binanceOrderResponse = binanceService.executeLimitOrder(TEST_SYMBOL, BinanceOrderSide.SELL, QUANTITY_IN_DOLLARS, calculatedPrice);
     }
 
-    @Test
+
+
+ /*   @Test
     public void placeOcoSellOrder() {
         Double currentPrice = binanceService.getCurrentPrice(TEST_SYMBOL);
         Double takeProfitPrice = currentPrice * 1.05;
         Double stopPrice = currentPrice * 0.98;
         BinanceOCOOrderResponse binanceOCOOrderResponse = binanceService.executeOcoSellOrder(TEST_SYMBOL, QUANTITY_IN_DOLLARS, takeProfitPrice, stopPrice);
     }
-
+*/
     @Test
     public void cancelOcoOrder() {
         Long orderListId = 88186702L;
@@ -91,6 +93,18 @@ public class BinanceServiceProductionTest {
     @Test
     public void getUserData() {
         List<UserAssetResponse> userAsset = binanceService.getUserAsset();
+    }
+
+    @Test
+    public void getAccountInfo() {
+        AccountData accountInfo = binanceService.getAccountInfo();
+        System.out.println("");
+    }
+
+    @Test
+    public void getBalanceBySymbol() {
+        Double usdt = binanceService.getBalanceBySymbol("USDT");
+        System.out.println("");
     }
 
 

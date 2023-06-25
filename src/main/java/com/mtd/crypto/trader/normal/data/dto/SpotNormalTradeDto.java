@@ -16,6 +16,9 @@ public class SpotNormalTradeDto {
     @NotBlank(message = "Symbol is required")
     private String symbol;
 
+    @NotBlank(message = "Base trading symbol is required")
+    private String baseTradingSymbol;
+
     @Positive(message = "Entry must be greater than zero")
     private Double entry;
 

@@ -8,7 +8,6 @@ import com.mtd.crypto.trader.normal.configuration.SpotNormalTradingStrategyConfi
 import com.mtd.crypto.trader.normal.data.entity.SpotNormalTradeData;
 import com.mtd.crypto.trader.normal.data.entity.SpotNormalTradeMarketOrder;
 import com.mtd.crypto.trader.normal.enumarator.SpotNormalMarketOrderPositionCommandType;
-import com.mtd.crypto.trader.normal.enumarator.SpotNormalTradeMarketOrderType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.stereotype.Service;
@@ -23,15 +22,16 @@ public class SpotNormalTraderCalculatorService {
     private final SpotNormalTradingStrategyConfiguration spotNormalTradingStrategyConfiguration;
     private final BinanceService binanceService;
 
+
+    //TODO ONEMLI!!!!!   burayi iyi dusun. 4 saatlik mumda giris noktasi geldiyse ama mum cok buyukse, senin giris noktanda kari cok birakmis oluyorsun. Bunu iyi dusun
+    //belki once son yarim saatlik mum yukardaysa falan giris yapabilirsin. Ek olarak 4 saatlige de bakabilirsin. Yada son yarim saatte hep giris noktasinin ustundeyse giris yapabilirsin
+
     public boolean isPositionReadyToEnter(SpotNormalTradeData spotNormalTradeData) throws JSONException {
 
-        //TODO ONEMLI!!!!!   burayi iyi dusun. 4 saatlik mumda giris noktasi geldiyse ama mum cok buyukse, senin giris noktanda kari cok birakmis oluyorsun. Bunu iyi dusun
-        //belki once son yarim saatlik mum yukardaysa falan giris yapabilirsin. Ek olarak 4 saatlige de bakabilirsin. Yada son yarim saatte hep giris noktasinin ustundeyse giris yapabilirsin
         if (spotNormalTradeData.isPriceDropRequired()) {
-
             Double currentPrice = binanceService.getCurrentPrice(spotNormalTradeData.getSymbol());
-
-            if (currentPrice <= spotNormalTradeData.getEntry() * spotNormalTradingStrategyConfiguration.getPriceDropSafeEntryPercentage()) {
+            Double safeEntryPrice = (spotNormalTradeData.getEntry() * (1 + spotNormalTradingStrategyConfiguration.getPriceDropSafeEntryPercentage()));
+            if (currentPrice <= safeEntryPrice) {
                 return true;
             } else {
                 return false;
@@ -39,44 +39,48 @@ public class SpotNormalTraderCalculatorService {
         } else {
             List<BinanceCandleStickResponse> candles = binanceService.getCandles(spotNormalTradeData.getSymbol(), BinanceCandleStickInterval.FOUR_HOURS, 1);
             Double lastFourHourCandleClose = candles.get(0).getClose();
-            return lastFourHourCandleClose > spotNormalTradeData.getEntry();
+            return lastFourHourCandleClose >= spotNormalTradeData.getEntry();
         }
     }
 
     //Returns take partial profit or close position
     //todo if you take partial profit, change stoploss to average price
 
-    public SpotNormalMarketOrderPositionCommandType isPositionProfitReady(SpotNormalTradeData spotNormalTradeData) {
+    public SpotNormalMarketOrderPositionCommandType checkPartialOrFullExit(SpotNormalTradeData spotNormalTradeData, List<SpotNormalTradeMarketOrder> partialProfitOrders) {
 
         Double currentPrice = binanceService.getCurrentPrice(spotNormalTradeData.getSymbol());
 
-        Double firstPartialExit = spotNormalTradeData.getAverageEntryPrice() + (spotNormalTradeData.getTakeProfit() - spotNormalTradeData.getAverageEntryPrice()) / spotNormalTradingStrategyConfiguration.getPartialExitPercentageStep();
-        Double secondPartialExit = spotNormalTradeData.getAverageEntryPrice() + (spotNormalTradeData.getTakeProfit() - spotNormalTradeData.getAverageEntryPrice()) / spotNormalTradingStrategyConfiguration.getPartialExitPercentageStep() * 2;
-
-        if (currentPrice > firstPartialExit) {
-            List<SpotNormalTradeMarketOrder> marketOrders = spotNormalTradeData.getMarketOrders();
-            List<SpotNormalTradeMarketOrder> profitSales = marketOrders.stream().filter(o -> o.getType() == SpotNormalTradeMarketOrderType.PROFIT_SALE).toList();
-
-            if (profitSales.isEmpty()) {
-                //first profit sale market sell %33 of quantity
-                //update stop loss to entry price
-                return SpotNormalMarketOrderPositionCommandType.PROFIT_SALE_1;
-            } else if (profitSales.size() == 1 && currentPrice >= secondPartialExit) {
-                return SpotNormalMarketOrderPositionCommandType.PROFIT_SALE_2;
-                //second sale market %33 of quantity
-                //maybe change the stopLoss to first profit Sale
-            }
-
-       /*     else if (currentPrice >= spotNormalTradeData.getTakeProfit() * SAFE_EXIT_PERCENTAGE) {
-                //todo most probably you dont need this
-                return SpotNormalMarketOrderPositionCommandType.EXIT;
-                // eger take profit'e yuzde 1 kaldiysa cikabilirsin belki.  Yada stop noktasini ilk take profite cekersin ?
-                //exit
-                // return position still valid.
-            }*/
+        //Normal stop loss
+        //TODO if price dropped too much, you might keep the coin, without sales
+        if (partialProfitOrders.isEmpty() && currentPrice < spotNormalTradeData.getStop()) {
+            return SpotNormalMarketOrderPositionCommandType.EXIT_STOP_LOSS;
         }
 
-        return SpotNormalMarketOrderPositionCommandType.NONE;
+        //First partial profit executed before. This means stop limit is now the average entry price
+        //TODO if price dropped too much, you might keep the coin. Without sales
+        if (partialProfitOrders.size() > 0 && currentPrice < spotNormalTradeData.getAverageEntryPrice()) {
+            return SpotNormalMarketOrderPositionCommandType.EXIT_STOP_LOSS;
+        }
 
+        double firstPartialExit = spotNormalTradeData.getAverageEntryPrice() + (spotNormalTradeData.getTakeProfit() - spotNormalTradeData.getAverageEntryPrice()) / spotNormalTradingStrategyConfiguration.getPartialExitPercentageStep();
+        double secondPartialExit = spotNormalTradeData.getAverageEntryPrice() + (spotNormalTradeData.getTakeProfit() - spotNormalTradeData.getAverageEntryPrice()) / spotNormalTradingStrategyConfiguration.getPartialExitPercentageStep() * 2;
+
+        //Exit coin regardless.
+        if (currentPrice > spotNormalTradeData.getTakeProfit()) {
+            return SpotNormalMarketOrderPositionCommandType.EXIT_PROFIT;
+        }
+
+        //Second partial sale. If price reaches secondPartialExit without executing first partial exit, next cron will execute this one.
+        //Maybe in the future I can support hype price increases. I can sell directly secondPartialExit.
+        if (currentPrice > secondPartialExit && partialProfitOrders.size() == 1) {
+            return SpotNormalMarketOrderPositionCommandType.PROFIT_SALE_2;
+        }
+
+        //First partial sale.
+        if (currentPrice > firstPartialExit && partialProfitOrders.isEmpty()) {
+            return SpotNormalMarketOrderPositionCommandType.PROFIT_SALE_1;
+        }
+        return SpotNormalMarketOrderPositionCommandType.NONE;
     }
+
 }

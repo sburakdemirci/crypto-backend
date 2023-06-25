@@ -10,7 +10,6 @@ import java.util.List;
 @Repository
 public interface SpotNormalTradeDataRepository extends JpaRepository<SpotNormalTradeData, String> {
 
-
     List<SpotNormalTradeData> findAllByTradeStatus(TradeStatus tradeStatus);
 
     // Custom queries can be added here if needed

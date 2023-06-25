@@ -7,6 +7,6 @@ import lombok.Data;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class AccountData_Balance {
     private String asset;
-    private String free;
-    private String locked;
+    private Double free;
+    private Double locked;
 }
