@@ -37,10 +37,12 @@ public class SpotNormalTradeDataService {
                 .symbol(spotNormalTradeDto.getSymbol())
                 .baseTradingSymbol(spotNormalTradeDto.getBaseTradingSymbol())
                 .entry(spotNormalTradeDto.getEntry())
+                .isPriceDropRequired(spotNormalTradeDto.isPriceDropRequired())
                 .takeProfit(spotNormalTradeDto.getTakeProfit())
                 .stop(spotNormalTradeDto.getStop())
                 .source(spotNormalTradeDto.getSource())
                 .walletPercentage(spotNormalTradeDto.getWalletPercentage())
+                .tradeStatus(TradeStatus.APPROVAL_WAITING)
                 .build();
         return spotNormalTradeDataRepository.save(spotNormalTradeData);
     }

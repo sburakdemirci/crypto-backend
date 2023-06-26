@@ -22,7 +22,6 @@ public class SpotNormalTraderCalculatorService {
     private final SpotNormalTradingStrategyConfiguration spotNormalTradingStrategyConfiguration;
     private final BinanceService binanceService;
 
-
     //TODO ONEMLI!!!!!   burayi iyi dusun. 4 saatlik mumda giris noktasi geldiyse ama mum cok buyukse, senin giris noktanda kari cok birakmis oluyorsun. Bunu iyi dusun
     //belki once son yarim saatlik mum yukardaysa falan giris yapabilirsin. Ek olarak 4 saatlige de bakabilirsin. Yada son yarim saatte hep giris noktasinin ustundeyse giris yapabilirsin
 
@@ -62,22 +61,22 @@ public class SpotNormalTraderCalculatorService {
             return SpotNormalMarketOrderPositionCommandType.EXIT_STOP_LOSS;
         }
 
-        double firstPartialExit = spotNormalTradeData.getAverageEntryPrice() + (spotNormalTradeData.getTakeProfit() - spotNormalTradeData.getAverageEntryPrice()) / spotNormalTradingStrategyConfiguration.getPartialExitPercentageStep();
-        double secondPartialExit = spotNormalTradeData.getAverageEntryPrice() + (spotNormalTradeData.getTakeProfit() - spotNormalTradeData.getAverageEntryPrice()) / spotNormalTradingStrategyConfiguration.getPartialExitPercentageStep() * 2;
+        double firstPartialExit = spotNormalTradeData.getAverageEntryPrice() + ((spotNormalTradeData.getTakeProfit() - spotNormalTradeData.getAverageEntryPrice()) * spotNormalTradingStrategyConfiguration.getPartialExitPercentageStep());
+        double secondPartialExit = spotNormalTradeData.getAverageEntryPrice() + ((spotNormalTradeData.getTakeProfit() - spotNormalTradeData.getAverageEntryPrice()) * spotNormalTradingStrategyConfiguration.getPartialExitPercentageStep()*2);
 
         //Exit coin regardless.
-        if (currentPrice > spotNormalTradeData.getTakeProfit()) {
+        if (currentPrice >= spotNormalTradeData.getTakeProfit()) {
             return SpotNormalMarketOrderPositionCommandType.EXIT_PROFIT;
         }
 
         //Second partial sale. If price reaches secondPartialExit without executing first partial exit, next cron will execute this one.
         //Maybe in the future I can support hype price increases. I can sell directly secondPartialExit.
-        if (currentPrice > secondPartialExit && partialProfitOrders.size() == 1) {
+        if (currentPrice >= secondPartialExit && partialProfitOrders.size() == 1) {
             return SpotNormalMarketOrderPositionCommandType.PROFIT_SALE_2;
         }
 
         //First partial sale.
-        if (currentPrice > firstPartialExit && partialProfitOrders.isEmpty()) {
+        if (currentPrice >= firstPartialExit && partialProfitOrders.isEmpty()) {
             return SpotNormalMarketOrderPositionCommandType.PROFIT_SALE_1;
         }
         return SpotNormalMarketOrderPositionCommandType.NONE;

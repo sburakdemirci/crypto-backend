@@ -5,6 +5,8 @@ import com.mtd.crypto.market.data.response.BinanceCandleStickResponse;
 import com.mtd.crypto.market.service.BinanceService;
 import com.mtd.crypto.trader.normal.configuration.SpotNormalTradingStrategyConfiguration;
 import com.mtd.crypto.trader.normal.data.entity.SpotNormalTradeData;
+import com.mtd.crypto.trader.normal.data.entity.SpotNormalTradeMarketOrder;
+import com.mtd.crypto.trader.normal.enumarator.SpotNormalMarketOrderPositionCommandType;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -12,11 +14,11 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.configurationprocessor.json.JSONException;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
 
@@ -297,5 +299,323 @@ class SpotNormalTraderCalculatorServiceTest {
         assertTrue(result);
     }
 
+
+    @Test
+    void checkPartialOrFullExit_NoMarketSellOrders_GivenCurrentPriceGreaterThanStopAndLessThanFirstProfit_ShouldReturnNone() {
+
+        SpotNormalTradeData spotNormalTradeData = SpotNormalTradeData
+                .builder()
+                .stop(98.0)
+                .averageEntryPrice(100.0)
+                .takeProfit(110.0)
+                .symbol("some-symbol").
+                build();
+
+        List<SpotNormalTradeMarketOrder> marketOrders = Collections.emptyList();
+        when(mockBinanceService.getCurrentPrice(anyString())).thenReturn(102.0);
+        when(mockSpotNormalTradingStrategyConfiguration.getPartialExitPercentageStep()).thenReturn(0.33);
+
+        SpotNormalMarketOrderPositionCommandType spotNormalMarketOrderPositionCommandType = calculatorService.checkPartialOrFullExit(spotNormalTradeData, marketOrders);
+
+        assertEquals(SpotNormalMarketOrderPositionCommandType.NONE, spotNormalMarketOrderPositionCommandType);
+    }
+
+
+    @Test
+    void checkPartialOrFullExit_NoMarketSellOrders_GivenCurrentPriceGreaterThanFirstPartialProfit_ShouldReturnProfitSale1() {
+
+        SpotNormalTradeData spotNormalTradeData = SpotNormalTradeData
+                .builder()
+                .stop(98.0)
+                .averageEntryPrice(100.0)
+                .takeProfit(110.0)
+                .symbol("some-symbol").
+                build();
+
+        List<SpotNormalTradeMarketOrder> marketOrders = Collections.emptyList();
+        when(mockBinanceService.getCurrentPrice(anyString())).thenReturn(104.0);
+        when(mockSpotNormalTradingStrategyConfiguration.getPartialExitPercentageStep()).thenReturn(0.33);
+
+        SpotNormalMarketOrderPositionCommandType spotNormalMarketOrderPositionCommandType = calculatorService.checkPartialOrFullExit(spotNormalTradeData, marketOrders);
+
+        assertEquals(SpotNormalMarketOrderPositionCommandType.PROFIT_SALE_1, spotNormalMarketOrderPositionCommandType);
+    }
+
+
+    @Test
+    void checkPartialOrFullExit_NoMarketSellOrders_GivenCurrentPriceEqualsFirstPartialProfit_ShouldReturnProfitSale1() {
+
+        SpotNormalTradeData spotNormalTradeData = SpotNormalTradeData
+                .builder()
+                .stop(98.0)
+                .averageEntryPrice(100.0)
+                .takeProfit(110.0)
+                .symbol("some-symbol").
+                build();
+
+        List<SpotNormalTradeMarketOrder> marketOrders = Collections.emptyList();
+        when(mockBinanceService.getCurrentPrice(anyString())).thenReturn(103.3);
+        when(mockSpotNormalTradingStrategyConfiguration.getPartialExitPercentageStep()).thenReturn(0.33);
+
+        SpotNormalMarketOrderPositionCommandType spotNormalMarketOrderPositionCommandType = calculatorService.checkPartialOrFullExit(spotNormalTradeData, marketOrders);
+
+        assertEquals(SpotNormalMarketOrderPositionCommandType.PROFIT_SALE_1, spotNormalMarketOrderPositionCommandType);
+    }
+
+    @Test
+    void checkPartialOrFullExit_OneMarketSellOrders_GivenCurrentPriceGreaterThanSecondPartialProfit_ShouldReturnProfitSale2() {
+
+        SpotNormalTradeData spotNormalTradeData = SpotNormalTradeData
+                .builder()
+                .stop(98.0)
+                .averageEntryPrice(100.0)
+                .takeProfit(110.0)
+                .symbol("some-symbol").
+                build();
+
+        List<SpotNormalTradeMarketOrder> marketOrders = Collections.singletonList(new SpotNormalTradeMarketOrder());
+        when(mockBinanceService.getCurrentPrice(anyString())).thenReturn(107.0);
+        when(mockSpotNormalTradingStrategyConfiguration.getPartialExitPercentageStep()).thenReturn(0.33);
+
+        SpotNormalMarketOrderPositionCommandType spotNormalMarketOrderPositionCommandType = calculatorService.checkPartialOrFullExit(spotNormalTradeData, marketOrders);
+
+        assertEquals(SpotNormalMarketOrderPositionCommandType.PROFIT_SALE_2, spotNormalMarketOrderPositionCommandType);
+    }
+
+
+    @Test
+    void checkPartialOrFullExit_OneMarketSellOrders_GivenCurrentPriceEqualsSecondPartialProfit_ShouldReturnProfitSale2() {
+
+        SpotNormalTradeData spotNormalTradeData = SpotNormalTradeData
+                .builder()
+                .stop(98.0)
+                .averageEntryPrice(100.0)
+                .takeProfit(110.0)
+                .symbol("some-symbol").
+                build();
+
+        List<SpotNormalTradeMarketOrder> marketOrders = Collections.singletonList(new SpotNormalTradeMarketOrder());
+        when(mockBinanceService.getCurrentPrice(anyString())).thenReturn(106.6);
+        when(mockSpotNormalTradingStrategyConfiguration.getPartialExitPercentageStep()).thenReturn(0.33);
+
+        SpotNormalMarketOrderPositionCommandType spotNormalMarketOrderPositionCommandType = calculatorService.checkPartialOrFullExit(spotNormalTradeData, marketOrders);
+
+        assertEquals(SpotNormalMarketOrderPositionCommandType.PROFIT_SALE_2, spotNormalMarketOrderPositionCommandType);
+    }
+
+    @Test
+    void checkPartialOrFullExit_NoMarketSellOrders_GivenCurrentPriceGreaterThanTakeProfit_ShouldReturnExitProfit() {
+
+        SpotNormalTradeData spotNormalTradeData = SpotNormalTradeData
+                .builder()
+                .stop(98.0)
+                .averageEntryPrice(100.0)
+                .takeProfit(110.0)
+                .symbol("some-symbol").
+                build();
+
+        List<SpotNormalTradeMarketOrder> marketOrders = Collections.emptyList();
+        when(mockBinanceService.getCurrentPrice(anyString())).thenReturn(111.0);
+        when(mockSpotNormalTradingStrategyConfiguration.getPartialExitPercentageStep()).thenReturn(0.33);
+
+        SpotNormalMarketOrderPositionCommandType spotNormalMarketOrderPositionCommandType = calculatorService.checkPartialOrFullExit(spotNormalTradeData, marketOrders);
+
+        assertEquals(SpotNormalMarketOrderPositionCommandType.EXIT_PROFIT, spotNormalMarketOrderPositionCommandType);
+    }
+
+    @Test
+    void checkPartialOrFullExit_NoMarketSellOrders_GivenCurrentPriceEqualsTakeProfit_ShouldReturnExitProfit() {
+
+        SpotNormalTradeData spotNormalTradeData = SpotNormalTradeData
+                .builder()
+                .stop(98.0)
+                .averageEntryPrice(100.0)
+                .takeProfit(110.0)
+                .symbol("some-symbol").
+                build();
+
+        List<SpotNormalTradeMarketOrder> marketOrders = Collections.emptyList();
+        when(mockBinanceService.getCurrentPrice(anyString())).thenReturn(110.0);
+        when(mockSpotNormalTradingStrategyConfiguration.getPartialExitPercentageStep()).thenReturn(0.33);
+
+        SpotNormalMarketOrderPositionCommandType spotNormalMarketOrderPositionCommandType = calculatorService.checkPartialOrFullExit(spotNormalTradeData, marketOrders);
+
+        assertEquals(SpotNormalMarketOrderPositionCommandType.EXIT_PROFIT, spotNormalMarketOrderPositionCommandType);
+    }
+
+    @Test
+    void checkPartialOrFullExit_OneMarketSellOrders_GivenCurrentPriceLessThenAverageEntryPrice_ShouldReturnExitStopLoss() {
+
+        SpotNormalTradeData spotNormalTradeData = SpotNormalTradeData
+                .builder()
+                .stop(98.0)
+                .averageEntryPrice(100.0)
+                .takeProfit(110.0)
+                .symbol("some-symbol").
+                build();
+
+        List<SpotNormalTradeMarketOrder> marketOrders = Collections.singletonList(new SpotNormalTradeMarketOrder());
+        when(mockBinanceService.getCurrentPrice(anyString())).thenReturn(99.9);
+
+        SpotNormalMarketOrderPositionCommandType spotNormalMarketOrderPositionCommandType = calculatorService.checkPartialOrFullExit(spotNormalTradeData, marketOrders);
+
+        assertEquals(SpotNormalMarketOrderPositionCommandType.EXIT_STOP_LOSS, spotNormalMarketOrderPositionCommandType);
+    }
+
+
+    @Test
+    void checkPartialOrFullExit_OneMarketSellOrders_GivenCurrentPriceEqualsAverageEntryPrice_ShouldReturnNone() {
+
+        SpotNormalTradeData spotNormalTradeData = SpotNormalTradeData
+                .builder()
+                .stop(98.0)
+                .averageEntryPrice(100.0)
+                .takeProfit(110.0)
+                .symbol("some-symbol").
+                build();
+
+        List<SpotNormalTradeMarketOrder> marketOrders = Collections.singletonList(new SpotNormalTradeMarketOrder());
+        when(mockBinanceService.getCurrentPrice(anyString())).thenReturn(100.0);
+        when(mockSpotNormalTradingStrategyConfiguration.getPartialExitPercentageStep()).thenReturn(0.33);
+
+        SpotNormalMarketOrderPositionCommandType spotNormalMarketOrderPositionCommandType = calculatorService.checkPartialOrFullExit(spotNormalTradeData, marketOrders);
+
+        assertEquals(SpotNormalMarketOrderPositionCommandType.NONE, spotNormalMarketOrderPositionCommandType);
+    }
+
+    @Test
+    void checkPartialOrFullExit_NoMarketSellOrders_GivenCurrentPriceLessThenStopPrice_ShouldReturnExitStopLoss() {
+
+        SpotNormalTradeData spotNormalTradeData = SpotNormalTradeData
+                .builder()
+                .stop(98.0)
+                .averageEntryPrice(100.0)
+                .takeProfit(110.0)
+                .symbol("some-symbol").
+                build();
+
+        List<SpotNormalTradeMarketOrder> marketOrders = Collections.emptyList();
+        when(mockBinanceService.getCurrentPrice(anyString())).thenReturn(97.9);
+
+        SpotNormalMarketOrderPositionCommandType spotNormalMarketOrderPositionCommandType = calculatorService.checkPartialOrFullExit(spotNormalTradeData, marketOrders);
+
+        assertEquals(SpotNormalMarketOrderPositionCommandType.EXIT_STOP_LOSS, spotNormalMarketOrderPositionCommandType);
+    }
+
+
+    @Test
+    void checkPartialOrFullExit_NoMarketSellOrders_GivenCurrentPriceEqualsStopPrice_ShouldReturnNone() {
+
+        SpotNormalTradeData spotNormalTradeData = SpotNormalTradeData
+                .builder()
+                .stop(98.0)
+                .averageEntryPrice(100.0)
+                .takeProfit(110.0)
+                .symbol("some-symbol").
+                build();
+
+        List<SpotNormalTradeMarketOrder> marketOrders = Collections.emptyList();
+        when(mockBinanceService.getCurrentPrice(anyString())).thenReturn(98.0);
+
+        SpotNormalMarketOrderPositionCommandType spotNormalMarketOrderPositionCommandType = calculatorService.checkPartialOrFullExit(spotNormalTradeData, marketOrders);
+        assertEquals(SpotNormalMarketOrderPositionCommandType.NONE, spotNormalMarketOrderPositionCommandType);
+    }
+
+
+    @Test
+    void checkPartialOrFullExit_NoMarketSellOrders_GivenCurrentHypedUpAndLessThanTakeProfit_ShouldReturnPartialProfit1() {
+
+        SpotNormalTradeData spotNormalTradeData = SpotNormalTradeData
+                .builder()
+                .stop(98.0)
+                .averageEntryPrice(100.0)
+                .takeProfit(110.0)
+                .symbol("some-symbol").
+                build();
+
+        List<SpotNormalTradeMarketOrder> marketOrders = Collections.emptyList();
+        when(mockBinanceService.getCurrentPrice(anyString())).thenReturn(109.0);
+
+        SpotNormalMarketOrderPositionCommandType spotNormalMarketOrderPositionCommandType = calculatorService.checkPartialOrFullExit(spotNormalTradeData, marketOrders);
+
+        assertEquals(SpotNormalMarketOrderPositionCommandType.PROFIT_SALE_1, spotNormalMarketOrderPositionCommandType);
+    }
+
+
+    @Test
+    void checkPartialOrFullExit_NoMarketSellOrders_GivenCurrentHypedDown_ShouldReturnExitStopLoss() {
+
+        SpotNormalTradeData spotNormalTradeData = SpotNormalTradeData
+                .builder()
+                .stop(98.0)
+                .averageEntryPrice(100.0)
+                .takeProfit(110.0)
+                .symbol("some-symbol").
+                build();
+
+        List<SpotNormalTradeMarketOrder> marketOrders = Collections.emptyList();
+        when(mockBinanceService.getCurrentPrice(anyString())).thenReturn(60.0);
+
+        SpotNormalMarketOrderPositionCommandType spotNormalMarketOrderPositionCommandType = calculatorService.checkPartialOrFullExit(spotNormalTradeData, marketOrders);
+
+        assertEquals(SpotNormalMarketOrderPositionCommandType.EXIT_STOP_LOSS, spotNormalMarketOrderPositionCommandType);
+    }
+
+    @Test
+    void checkPartialOrFullExit_OneMarketSellOrders_GivenCurrentHypedDownAfterFirstProfitSale_ShouldReturnExitStopLoss() {
+
+        SpotNormalTradeData spotNormalTradeData = SpotNormalTradeData
+                .builder()
+                .stop(98.0)
+                .averageEntryPrice(100.0)
+                .takeProfit(110.0)
+                .symbol("some-symbol").
+                build();
+
+        List<SpotNormalTradeMarketOrder> marketOrders = Collections.singletonList(new SpotNormalTradeMarketOrder());
+        when(mockBinanceService.getCurrentPrice(anyString())).thenReturn(60.0);
+
+        SpotNormalMarketOrderPositionCommandType spotNormalMarketOrderPositionCommandType = calculatorService.checkPartialOrFullExit(spotNormalTradeData, marketOrders);
+
+        assertEquals(SpotNormalMarketOrderPositionCommandType.EXIT_STOP_LOSS, spotNormalMarketOrderPositionCommandType);
+    }
+
+    @Test
+    void checkPartialOrFullExit_TwoMarketSellOrders_GivenCurrentHypedDownAfterSecondProfitSale_ShouldReturnExitStopLoss() {
+
+        SpotNormalTradeData spotNormalTradeData = SpotNormalTradeData
+                .builder()
+                .stop(98.0)
+                .averageEntryPrice(100.0)
+                .takeProfit(110.0)
+                .symbol("some-symbol").
+                build();
+
+        List<SpotNormalTradeMarketOrder> marketOrders = Arrays.asList(new SpotNormalTradeMarketOrder(), new SpotNormalTradeMarketOrder());
+        when(mockBinanceService.getCurrentPrice(anyString())).thenReturn(60.0);
+
+        SpotNormalMarketOrderPositionCommandType spotNormalMarketOrderPositionCommandType = calculatorService.checkPartialOrFullExit(spotNormalTradeData, marketOrders);
+
+        assertEquals(SpotNormalMarketOrderPositionCommandType.EXIT_STOP_LOSS, spotNormalMarketOrderPositionCommandType);
+    }
+
+    @Test
+    void checkPartialOrFullExit_OneMarketSellOrders_GivenCurrentPriceBetweenStopAndAverageEntryPrice_ShouldReturnExitStopLoss() {
+
+        SpotNormalTradeData spotNormalTradeData = SpotNormalTradeData
+                .builder()
+                .stop(98.0)
+                .averageEntryPrice(100.0)
+                .takeProfit(110.0)
+                .symbol("some-symbol").
+                build();
+
+        List<SpotNormalTradeMarketOrder> marketOrders = Arrays.asList(new SpotNormalTradeMarketOrder());
+        when(mockBinanceService.getCurrentPrice(anyString())).thenReturn(99.0);
+
+        SpotNormalMarketOrderPositionCommandType spotNormalMarketOrderPositionCommandType = calculatorService.checkPartialOrFullExit(spotNormalTradeData, marketOrders);
+
+        assertEquals(SpotNormalMarketOrderPositionCommandType.EXIT_STOP_LOSS, spotNormalMarketOrderPositionCommandType);
+    }
 
 }

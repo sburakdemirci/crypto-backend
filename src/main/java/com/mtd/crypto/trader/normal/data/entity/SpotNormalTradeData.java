@@ -1,5 +1,6 @@
 package com.mtd.crypto.trader.normal.data.entity;
 
+import com.mtd.crypto.core.configuration.EntityAuditBase;
 import com.mtd.crypto.trader.common.enumarator.TradeSource;
 import com.mtd.crypto.trader.common.enumarator.TradeStatus;
 import jakarta.persistence.*;
@@ -20,7 +21,7 @@ import static jakarta.persistence.TemporalType.TIMESTAMP;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class SpotNormalTradeData {
+public class SpotNormalTradeData extends EntityAuditBase {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -28,7 +29,7 @@ public class SpotNormalTradeData {
 
     @NotNull
     @Enumerated(EnumType.STRING)
-    private TradeStatus tradeStatus = TradeStatus.APPROVAL_WAITING;
+    private TradeStatus tradeStatus;
 
     @NotBlank(message = "Symbol is required")
     private String symbol;
@@ -55,10 +56,15 @@ public class SpotNormalTradeData {
     @Max(40)
     private Integer walletPercentage = 10; // Default value, can be overridden (min 1, max 100)
 
-    @CreatedDate
+ /*   @CreatedDate
     @Temporal(TIMESTAMP)
     @Column(updatable = false)
-    private Instant createdTime;
+    private Instant createdTime;*/
+
+
+   /* @LastModifiedDate
+    @Temporal(TIMESTAMP)
+    private Instant updatedTime;*/
 
     private Double totalQuantity;
     private Double averageEntryPrice;
@@ -69,8 +75,6 @@ public class SpotNormalTradeData {
     private Instant positionStartedAt;
     private Instant positionFinishedAt;
 
-    @LastModifiedDate
-    @Temporal(TIMESTAMP)
-    private Instant updatedTime;
+
 
 }

@@ -7,7 +7,6 @@ import com.mtd.crypto.market.service.BinanceService;
 import com.mtd.crypto.notification.service.TelegramService;
 import com.mtd.crypto.trader.normal.data.entity.SpotNormalTradeData;
 import com.mtd.crypto.trader.normal.data.entity.SpotNormalTradeMarketOrder;
-import com.mtd.crypto.trader.normal.enumarator.SpotNormalMarketOrderPositionCommandType;
 import com.mtd.crypto.trader.normal.enumarator.SpotNormalTradeMarketOrderType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

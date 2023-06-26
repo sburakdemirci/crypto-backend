@@ -37,5 +37,4 @@ public class SpotNormalTradeDto {
     @Max(40)
     private Integer walletPercentage;
 
-
 }
