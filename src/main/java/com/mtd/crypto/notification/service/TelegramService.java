@@ -15,15 +15,14 @@ public class TelegramService {
     private final RestTemplate restTemplate;
     private final TelegramSecretProperties telegramSecretProperties;
 
-
-    public void sendMessage(String message) {
+    public void sendMessage(String chatId, String message) {
         String url = telegramSecretProperties.getBaseUrl() + telegramSecretProperties.getApiKey() + "/sendMessage";
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
         MultiValueMap<String, String> multiValueMap = new LinkedMultiValueMap<>();
-        multiValueMap.add("chat_id", telegramSecretProperties.getChatId());
+        multiValueMap.add("chat_id", chatId);
         multiValueMap.add("text", message);
         HttpEntity<MultiValueMap<String, String>> httpEntity = new HttpEntity<>(multiValueMap, headers);
 

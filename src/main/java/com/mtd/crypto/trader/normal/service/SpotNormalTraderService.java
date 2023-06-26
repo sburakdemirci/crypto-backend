@@ -4,23 +4,22 @@ import com.mtd.crypto.core.aspect.LoggableClass;
 import com.mtd.crypto.market.data.enumarator.binance.BinanceOrderSide;
 import com.mtd.crypto.market.data.response.BinanceOrderResponse;
 import com.mtd.crypto.market.service.BinanceService;
-import com.mtd.crypto.notification.service.TelegramService;
 import com.mtd.crypto.trader.normal.data.entity.SpotNormalTradeData;
 import com.mtd.crypto.trader.normal.data.entity.SpotNormalTradeMarketOrder;
 import com.mtd.crypto.trader.normal.enumarator.SpotNormalTradeMarketOrderType;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 
+@Slf4j
 @Service
 @LoggableClass
 @RequiredArgsConstructor
 public class SpotNormalTraderService {
 
     private final SpotNormalTradeDataService dataService;
-    private final SpotNormalTraderCalculatorService calculatorService;
     private final BinanceService binanceService;
-    private final TelegramService telegramService;
 
 
     //TODO important, if one coin fails log it and send a message to telegram. Do not throw any responses from execute methods for enter and exit

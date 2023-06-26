@@ -12,6 +12,5 @@ import org.springframework.stereotype.Component;
 public class TelegramSecretProperties {
 
     private String apiKey;
-    private String chatId;
     private String baseUrl;
 }
