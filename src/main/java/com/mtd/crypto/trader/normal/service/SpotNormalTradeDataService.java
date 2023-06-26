@@ -47,7 +47,6 @@ public class SpotNormalTradeDataService {
         return spotNormalTradeDataRepository.save(spotNormalTradeData);
     }
 
-
     public void approveTrade(String tradeDataId) {
         SpotNormalTradeData spotNormalTradeData = spotNormalTradeDataRepository.findById(tradeDataId).orElseThrow(() -> new RuntimeException("Cannot found trade with id :" + tradeDataId));
         if (spotNormalTradeData.getTradeStatus() != TradeStatus.APPROVAL_WAITING) {
@@ -57,7 +56,6 @@ public class SpotNormalTradeDataService {
         spotNormalTradeData.setTradeStatus(TradeStatus.POSITION_WAITING);
         spotNormalTradeDataRepository.save(spotNormalTradeData);
     }
-
 
     public void enterPosition(String tradeDataId, SpotNormalTradeMarketOrder marketBuyOrder) {
         SpotNormalTradeData spotNormalTradeData = spotNormalTradeDataRepository.findById(tradeDataId).orElseThrow(() -> new RuntimeException("Cannot found trade with id :" + tradeDataId));

@@ -68,15 +68,14 @@ public class BinanceServiceProductionTest {
     }
 
 
-
- /*   @Test
-    public void placeOcoSellOrder() {
-        Double currentPrice = binanceService.getCurrentPrice(TEST_SYMBOL);
-        Double takeProfitPrice = currentPrice * 1.05;
-        Double stopPrice = currentPrice * 0.98;
-        BinanceOCOOrderResponse binanceOCOOrderResponse = binanceService.executeOcoSellOrder(TEST_SYMBOL, QUANTITY_IN_DOLLARS, takeProfitPrice, stopPrice);
-    }
-*/
+    /*   @Test
+       public void placeOcoSellOrder() {
+           Double currentPrice = binanceService.getCurrentPrice(TEST_SYMBOL);
+           Double takeProfitPrice = currentPrice * 1.05;
+           Double stopPrice = currentPrice * 0.98;
+           BinanceOCOOrderResponse binanceOCOOrderResponse = binanceService.executeOcoSellOrder(TEST_SYMBOL, QUANTITY_IN_DOLLARS, takeProfitPrice, stopPrice);
+       }
+   */
     @Test
     public void cancelOcoOrder() {
         Long orderListId = 88186702L;

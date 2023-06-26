@@ -62,7 +62,7 @@ public class SpotNormalTraderCalculatorService {
         }
 
         double firstPartialExit = spotNormalTradeData.getAverageEntryPrice() + ((spotNormalTradeData.getTakeProfit() - spotNormalTradeData.getAverageEntryPrice()) * spotNormalTradingStrategyConfiguration.getPartialExitPercentageStep());
-        double secondPartialExit = spotNormalTradeData.getAverageEntryPrice() + ((spotNormalTradeData.getTakeProfit() - spotNormalTradeData.getAverageEntryPrice()) * spotNormalTradingStrategyConfiguration.getPartialExitPercentageStep()*2);
+        double secondPartialExit = spotNormalTradeData.getAverageEntryPrice() + ((spotNormalTradeData.getTakeProfit() - spotNormalTradeData.getAverageEntryPrice()) * spotNormalTradingStrategyConfiguration.getPartialExitPercentageStep() * 2);
 
         //Exit coin regardless.
         if (currentPrice >= spotNormalTradeData.getTakeProfit()) {

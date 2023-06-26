@@ -157,7 +157,7 @@ public class BinanceServiceTest {
         List<BinanceOCOOrderResponse> createdOrders = new ArrayList<>();
         for (int i = 0; i < count; i++) {
             //BinanceOCOOrderResponse binanceNewOCOOrderResponse = binanceService.executeOcoSellOrder(symbol, quantity, sellPrice, stop);
-          //  createdOrders.add(binanceNewOCOOrderResponse);
+            //  createdOrders.add(binanceNewOCOOrderResponse);
         }
         return createdOrders;
     }

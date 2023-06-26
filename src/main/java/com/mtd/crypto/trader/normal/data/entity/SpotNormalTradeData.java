@@ -9,12 +9,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
 
 import java.time.Instant;
-
-import static jakarta.persistence.TemporalType.TIMESTAMP;
 
 @Entity
 @Data
@@ -74,7 +70,6 @@ public class SpotNormalTradeData extends EntityAuditBase {
     private Instant cancelledAt;
     private Instant positionStartedAt;
     private Instant positionFinishedAt;
-
 
 
 }

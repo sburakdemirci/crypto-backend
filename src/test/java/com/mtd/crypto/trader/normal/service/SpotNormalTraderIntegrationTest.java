@@ -4,12 +4,9 @@ package com.mtd.crypto.trader.normal.service;
 import com.mtd.crypto.market.service.BinanceService;
 import com.mtd.crypto.trader.common.enumarator.TradeSource;
 import com.mtd.crypto.trader.common.enumarator.TradeStatus;
-import com.mtd.crypto.trader.normal.cron.SpotNormalTradeCron;
 import com.mtd.crypto.trader.normal.data.dto.SpotNormalTradeDto;
 import com.mtd.crypto.trader.normal.data.entity.SpotNormalTradeData;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -33,6 +30,12 @@ public class SpotNormalTraderIntegrationTest {
     static MySQLContainer mySQLContainer = new MySQLContainer<>(DockerImageName.parse("mysql:8.0")).withDatabaseName("cryptotest")
             .withUsername("root")
             .withPassword("test");
+    @Autowired
+    SpotNormalTraderProxyService spotNormalTraderProxyService;
+    @Autowired
+    SpotNormalTradeDataService spotNormalTradeDataService;
+    @MockBean
+    private BinanceService binanceService;
 
     @DynamicPropertySource
     static void mySqlProperties(DynamicPropertyRegistry registry) {
@@ -40,17 +43,6 @@ public class SpotNormalTraderIntegrationTest {
         registry.add("spring.datasource.username", mySQLContainer::getUsername);
         registry.add("spring.datasource.password", mySQLContainer::getPassword);
     }
-
-    @Autowired
-    SpotNormalTraderProxyService spotNormalTraderProxyService;
-
-    @Autowired
-    SpotNormalTradeDataService spotNormalTradeDataService;
-
-    @MockBean
-    private BinanceService binanceService;
-
-
 
     @Test
     public void test() {
