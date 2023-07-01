@@ -11,7 +11,7 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
  * These annotations are important. Make sure you add them to each Application class if you split this app into microservices
  */
 @SpringBootApplication
-@EnableMethodSecurity()
+@EnableMethodSecurity
 @EnableJpaAuditing
 @EnableCaching
 @EnableScheduling
@@ -21,6 +21,5 @@ public class Application {
     public static void main(String[] args) {
         SpringApplication.run(Application.class, args);
     }
-
 
 }

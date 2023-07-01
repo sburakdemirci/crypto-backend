@@ -7,24 +7,24 @@ import org.springframework.test.context.ActiveProfiles;
 
 
 @SpringBootTest
-@ActiveProfiles("dev")
+@ActiveProfiles("testci")
 class SpotNormalTradeNotificationServiceTest {
 
     @Autowired
     SpotNormalTradeNotificationService spotNormalTradeNotificationService;
     @Test
     void sendErrorMessage() {
-        spotNormalTradeNotificationService.sendErrorMessage("error message");
+        spotNormalTradeNotificationService.sendErrorMessage("Test Error message");
     }
 
     @Test
     void sendInfoMessage() {
-        spotNormalTradeNotificationService.sendInfoMessage("info message");
+        spotNormalTradeNotificationService.sendInfoMessage("Test Info message");
     }
 
     @Test
     void sendReportMessage() {
-        spotNormalTradeNotificationService.sendReportMessage("report message");
+        spotNormalTradeNotificationService.sendReportMessage("Test Report message");
 
     }
 }
