@@ -18,6 +18,7 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
+      
 
     steps:
     - uses: actions/checkout@v3
@@ -31,6 +32,15 @@ jobs:
       run: mvn clean package
     
     - name: Run integration tests
+      env:
+        BINANCE_API_KEY: ${{BINANCE_API_KEY}}
+        BINANCE_SECRET: ${{BINANCE_SECRET}}
+        TELEGRAM_API_KEY: ${{TELEGRAM_API_KEY}}
+        TELEGRAM_ERROR_CHANNEL_ID: ${{TELEGRAM_ERROR_CHANNEL_ID}}
+        TELEGRAM_INFO_CHANNEL_ID: ${{TELEGRAM_INFO_CHANNEL_ID}}
+        TELEGRAM_MAIN_CHAT_ID: ${{TELEGRAM_MAIN_CHAT_ID}}
+        TELEGRAM_REPORT_CHANNEL_ID: ${{TELEGRAM_REPORT_CHANNEL_ID}}
+    
       run: mvn integration-test --fail-at-end
 
     # Optional: Uploads the full dependency graph to GitHub to improve the quality of Dependabot alerts this repository can receive
