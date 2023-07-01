@@ -23,7 +23,7 @@ import java.util.List;
 
 @SpringBootTest
 @Testcontainers
-@ActiveProfiles("testci")
+@ActiveProfiles("dev")
 public class SpotNormalTraderIntegrationTest {
 
     @Container

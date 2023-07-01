@@ -26,7 +26,7 @@ public class GoogleSheetsConfiguration {
     private static final List<String> SCOPES = Collections.singletonList(SheetsScopes.SPREADSHEETS);
     private final GoogleSheetsConfigurationProperties googleSheetsConfigurationProperties;
 
-    @Bean
+    //@Bean
     public GoogleCredentials getCredentials()
             throws IOException {
 
@@ -38,7 +38,7 @@ public class GoogleSheetsConfiguration {
     }
 
 
-    @Bean
+    //@Bean
     public Sheets getSheets() throws IOException, GeneralSecurityException {
         final NetHttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
         GoogleCredentials credential = getCredentials();

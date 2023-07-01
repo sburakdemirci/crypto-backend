@@ -7,7 +7,7 @@ import org.springframework.test.context.ActiveProfiles;
 
 
 @SpringBootTest
-@ActiveProfiles("testci")
+@ActiveProfiles("dev")
 
 class TelegramServiceTest {
 

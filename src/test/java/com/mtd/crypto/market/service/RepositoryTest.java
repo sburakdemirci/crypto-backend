@@ -12,7 +12,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
 @SpringBootTest
-@ActiveProfiles("testci")
+@ActiveProfiles("dev")
 public class RepositoryTest {
 
     @Autowired

@@ -23,6 +23,13 @@ spring:
     show-sql: true
 
 app:
+  security:
+    resources:
+      unauthorized-patterns:
+        - /authentication/login
+        - /v3/api-docs/**
+        - /swagger-ui/**
+        - /test/**
   binance:
     secure:
       secret-key: ${BINANCE_SECRET}
