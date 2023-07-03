@@ -38,7 +38,7 @@ class SpotNormalTraderCalculatorServiceTest {
 
     @Test
     void isPositionReadyToEnter_NonDrop_GivenCurrentPriceHigherThanEntryPrice_ShouldReturnTrue() throws JSONException {
-        SpotNormalTradeData spotNormalTradeData = SpotNormalTradeData.builder().symbol("some-symbol").entry(100.0).isPriceDropRequired(false).build();
+        SpotNormalTradeData spotNormalTradeData = SpotNormalTradeData.builder().symbol("some-symbol").entry(100.0).takeProfit(110.0).stop(95.0).isPriceDropRequired(false).build();
         BinanceCandleStickResponse candle = new BinanceCandleStickResponse();
         candle.setClose(101.0);
         List<BinanceCandleStickResponse> candles = Collections.singletonList(candle);
@@ -50,7 +50,7 @@ class SpotNormalTraderCalculatorServiceTest {
 
     @Test
     void isPositionReadyToEnter_NonDrop_Decimals_GivenCurrentPriceHigherThanEntryPrice_ShouldReturnTrue() throws JSONException {
-        SpotNormalTradeData spotNormalTradeData = SpotNormalTradeData.builder().symbol("some-symbol").entry(0.00045).isPriceDropRequired(false).build();
+        SpotNormalTradeData spotNormalTradeData = SpotNormalTradeData.builder().symbol("some-symbol").entry(0.00045).takeProfit(110.0).stop(0.00043).isPriceDropRequired(false).build();
         BinanceCandleStickResponse candle = new BinanceCandleStickResponse();
         candle.setClose(0.00046);
         List<BinanceCandleStickResponse> candles = Collections.singletonList(candle);
@@ -60,10 +60,12 @@ class SpotNormalTraderCalculatorServiceTest {
     }
 
     @Test
-    void isPositionReadyToEnter_NonDrop_GivenCurrentPriceLowerThanEntryPrice_ShouldReturnFalse() throws JSONException {
+    void isPositionReadyToEnter_NonDrop_GivenCurrentPriceLowerThanEntryPrice_HighLoss_ShouldReturnFalse() throws JSONException {
         SpotNormalTradeData spotNormalTradeData = SpotNormalTradeData.builder()
                 .symbol("some-symbol")
                 .entry(100.0)
+                .takeProfit(110.0)
+                .stop(95.0)
                 .isPriceDropRequired(false)
                 .build();
         BinanceCandleStickResponse candle = new BinanceCandleStickResponse();
@@ -78,10 +80,12 @@ class SpotNormalTraderCalculatorServiceTest {
 
 
     @Test
-    void isPositionReadyToEnter_NonDrop_Decimals_GivenCurrentPriceLowerThanEntryPrice_ShouldReturnFalse() throws JSONException {
+    void isPositionReadyToEnter_NonDrop_Decimals_GivenCurrentPriceLowerThanEntryPrice_HighLoss_ShouldReturnFalse() throws JSONException {
         SpotNormalTradeData spotNormalTradeData = SpotNormalTradeData.builder()
                 .symbol("some-symbol")
                 .entry(0.00045)
+                .takeProfit(0.00050)
+                .stop(0.00042)
                 .isPriceDropRequired(false)
                 .build();
         BinanceCandleStickResponse candle = new BinanceCandleStickResponse();
@@ -100,6 +104,8 @@ class SpotNormalTraderCalculatorServiceTest {
         SpotNormalTradeData spotNormalTradeData = SpotNormalTradeData.builder()
                 .symbol("some-symbol")
                 .entry(100.0)
+                .takeProfit(110.0)
+                .stop(95.0)
                 .isPriceDropRequired(false)
                 .build();
         BinanceCandleStickResponse candle = new BinanceCandleStickResponse();
@@ -117,6 +123,8 @@ class SpotNormalTraderCalculatorServiceTest {
         SpotNormalTradeData spotNormalTradeData = SpotNormalTradeData.builder()
                 .symbol("some-symbol")
                 .entry(0.00045)
+                .takeProfit(0.00050)
+                .stop(0.00043)
                 .isPriceDropRequired(false)
                 .build();
         BinanceCandleStickResponse candle = new BinanceCandleStickResponse();
@@ -130,10 +138,12 @@ class SpotNormalTraderCalculatorServiceTest {
     }
 
     @Test
-    void isPositionReadyToEnter_NonDrop_GivenCurrentPriceSlightlyLessThanEntryPrice_ReturnsFalse() throws JSONException {
+    void isPositionReadyToEnter_NonDrop_GivenCurrentPriceSlightlyLessThanEntryPrice_HighLoss_ReturnsFalse() throws JSONException {
         SpotNormalTradeData spotNormalTradeData = SpotNormalTradeData.builder()
                 .symbol("some-symbol")
                 .entry(100.0)
+                .takeProfit(110.0)
+                .stop(96.0)
                 .isPriceDropRequired(false)
                 .build();
         BinanceCandleStickResponse candle = new BinanceCandleStickResponse();
@@ -152,6 +162,8 @@ class SpotNormalTraderCalculatorServiceTest {
         SpotNormalTradeData spotNormalTradeData = SpotNormalTradeData.builder()
                 .symbol("some-symbol")
                 .entry(100.0)
+                .takeProfit(110.0)
+                .stop(96.0)
                 .isPriceDropRequired(false)
                 .build();
         BinanceCandleStickResponse candle = new BinanceCandleStickResponse();
@@ -170,6 +182,8 @@ class SpotNormalTraderCalculatorServiceTest {
         SpotNormalTradeData spotNormalTradeData = SpotNormalTradeData.builder()
                 .symbol("some-symbol")
                 .entry(100.0)
+                .takeProfit(110.0)
+                .stop(95.0)
                 .isPriceDropRequired(true)
                 .build();
         double safeEntryPercentage = 0.1; // Adjust this value as needed
@@ -187,6 +201,8 @@ class SpotNormalTraderCalculatorServiceTest {
         SpotNormalTradeData spotNormalTradeData = SpotNormalTradeData.builder()
                 .symbol("some-symbol")
                 .entry(0.00045)
+                .takeProfit(0.00070)
+                .stop(0.00043)
                 .isPriceDropRequired(true)
                 .build();
         double safeEntryPercentage = 0.1; // Adjust this value as needed
@@ -204,6 +220,8 @@ class SpotNormalTraderCalculatorServiceTest {
         SpotNormalTradeData spotNormalTradeData = SpotNormalTradeData.builder()
                 .symbol("some-symbol")
                 .entry(100.0)
+                .stop(95.0)
+                .takeProfit(140.0)
                 .isPriceDropRequired(true)
                 .build();
         double safeEntryPercentage = 0.1; // =110
@@ -216,10 +234,12 @@ class SpotNormalTraderCalculatorServiceTest {
     }
 
     @Test
-    void isPositionReadyToEnter_Decimal_PriceDropRequired_CurrentPriceEqualToSafeEntryPrice_ReturnsTrue() throws JSONException {
+    void isPositionReadyToEnter_Decimal_PriceDropRequired_CurrentPriceEqualToSafeEntryPrice_StopLossHigh_ReturnsFalse() throws JSONException {
         SpotNormalTradeData spotNormalTradeData = SpotNormalTradeData.builder()
                 .symbol("some-symbol")
                 .entry(0.00045)
+                .takeProfit(0.00050)
+                .stop(0.00043)
                 .isPriceDropRequired(true)
                 .build();
         double safeEntryPercentage = 0.1; // =110
@@ -228,14 +248,16 @@ class SpotNormalTraderCalculatorServiceTest {
 
         boolean result = calculatorService.isPositionReadyToEnter(spotNormalTradeData);
 
-        assertTrue(result);
+        assertFalse(result);
     }
 
     @Test
-    void isPositionReadyToEnter_PriceDropRequired_CurrentPriceLessThanSafeEntryPrice_ReturnsTrue() throws JSONException {
+    void isPositionReadyToEnter_PriceDropRequired_CurrentPriceLessThanSafeEntryPrice_HighLoss_ReturnsFalse() throws JSONException {
         SpotNormalTradeData spotNormalTradeData = SpotNormalTradeData.builder()
                 .symbol("some-symbol")
                 .entry(100.0)
+                .takeProfit(110.0)
+                .stop(96.0)
                 .isPriceDropRequired(true)
                 .build();
         double safeEntryPercentage = 0.1; // = 110
@@ -244,7 +266,7 @@ class SpotNormalTraderCalculatorServiceTest {
 
         boolean result = calculatorService.isPositionReadyToEnter(spotNormalTradeData);
 
-        assertTrue(result);
+        assertFalse(result);
     }
 
 
@@ -253,6 +275,8 @@ class SpotNormalTraderCalculatorServiceTest {
         SpotNormalTradeData spotNormalTradeData = SpotNormalTradeData.builder()
                 .symbol("some-symbol")
                 .entry(0.00045)
+                .takeProfit(0.00050)
+                .stop(0.00043)
                 .isPriceDropRequired(true)
                 .build();
         double safeEntryPercentage = 0.1; // = 110
@@ -266,10 +290,12 @@ class SpotNormalTraderCalculatorServiceTest {
 
 
     @Test
-    void isPositionReadyToEnter_PriceDropRequired_CurrentPriceSlightlyGreaterThanSafeEntryPrice_ReturnsFalse() throws JSONException {
+    void isPositionReadyToEnter_PriceDropRequired_CurrentPriceSlightlyGreaterThanSafeEntryPrice_HighLoss_ReturnsFalse() throws JSONException {
         SpotNormalTradeData spotNormalTradeData = SpotNormalTradeData.builder()
                 .symbol("some-symbol")
                 .entry(100.0)
+                .stop(95.0)
+                .takeProfit(110.0)
                 .isPriceDropRequired(true)
                 .build();
         double safeEntryPercentage = 0.1; // Adjust this value as needed
@@ -287,6 +313,8 @@ class SpotNormalTraderCalculatorServiceTest {
         SpotNormalTradeData spotNormalTradeData = SpotNormalTradeData.builder()
                 .symbol("some-symbol")
                 .entry(100.0)
+                .takeProfit(110.0)
+                .stop(95.0)
                 .isPriceDropRequired(true)
                 .build();
         double safeEntryPercentage = 0.001; // Adjust this value as needed
@@ -459,7 +487,7 @@ class SpotNormalTraderCalculatorServiceTest {
 
         SpotNormalMarketOrderPositionCommandType spotNormalMarketOrderPositionCommandType = calculatorService.checkPartialOrFullExit(spotNormalTradeData, marketOrders);
 
-        assertEquals(SpotNormalMarketOrderPositionCommandType.EXIT_STOP_LOSS, spotNormalMarketOrderPositionCommandType);
+        assertEquals(SpotNormalMarketOrderPositionCommandType.EXIT_STOP_AFTER_PROFIT, spotNormalMarketOrderPositionCommandType);
     }
 
 
@@ -577,7 +605,7 @@ class SpotNormalTraderCalculatorServiceTest {
 
         SpotNormalMarketOrderPositionCommandType spotNormalMarketOrderPositionCommandType = calculatorService.checkPartialOrFullExit(spotNormalTradeData, marketOrders);
 
-        assertEquals(SpotNormalMarketOrderPositionCommandType.EXIT_STOP_LOSS, spotNormalMarketOrderPositionCommandType);
+        assertEquals(SpotNormalMarketOrderPositionCommandType.EXIT_STOP_AFTER_PROFIT, spotNormalMarketOrderPositionCommandType);
     }
 
     @Test
@@ -596,7 +624,7 @@ class SpotNormalTraderCalculatorServiceTest {
 
         SpotNormalMarketOrderPositionCommandType spotNormalMarketOrderPositionCommandType = calculatorService.checkPartialOrFullExit(spotNormalTradeData, marketOrders);
 
-        assertEquals(SpotNormalMarketOrderPositionCommandType.EXIT_STOP_LOSS, spotNormalMarketOrderPositionCommandType);
+        assertEquals(SpotNormalMarketOrderPositionCommandType.EXIT_STOP_AFTER_PROFIT, spotNormalMarketOrderPositionCommandType);
     }
 
     @Test
@@ -615,7 +643,7 @@ class SpotNormalTraderCalculatorServiceTest {
 
         SpotNormalMarketOrderPositionCommandType spotNormalMarketOrderPositionCommandType = calculatorService.checkPartialOrFullExit(spotNormalTradeData, marketOrders);
 
-        assertEquals(SpotNormalMarketOrderPositionCommandType.EXIT_STOP_LOSS, spotNormalMarketOrderPositionCommandType);
+        assertEquals(SpotNormalMarketOrderPositionCommandType.EXIT_STOP_AFTER_PROFIT, spotNormalMarketOrderPositionCommandType);
     }
 
 }

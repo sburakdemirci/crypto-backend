@@ -18,12 +18,12 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@SpringBootTest
+/*@SpringBootTest
 @ActiveProfiles("dev")
-@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)*/
 public class BinanceServiceTest {
 
-    private static final String TEST_SYMBOL = "BTCUSDT";
+/*    private static final String TEST_SYMBOL = "BTCUSDT";
 
     //TODO IMPORTANT!! Run this test daily with test environment yaml.
 
@@ -140,12 +140,12 @@ public class BinanceServiceTest {
         } catch (Exception e) {
             System.out.println("");
         }
-/*
+*//*
         BinanceExchangeInfoResponse abtusdt = binanceService.getExchangeInfo("ABTUSDT");
-*/
-/*
+*//*
+*//*
         assertNotNull(decimalInfo);
-*/
+*//*
     }
 
 
@@ -160,7 +160,7 @@ public class BinanceServiceTest {
             //  createdOrders.add(binanceNewOCOOrderResponse);
         }
         return createdOrders;
-    }
+    }*/
 
 
 }

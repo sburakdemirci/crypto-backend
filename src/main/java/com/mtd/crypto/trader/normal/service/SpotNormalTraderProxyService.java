@@ -51,6 +51,7 @@ public class SpotNormalTraderProxyService {
                     case PROFIT_SALE_1 -> traderService.firstPartialProfit(trade);
                     case PROFIT_SALE_2 -> traderService.secondPartialProfit(trade);
                     case EXIT_PROFIT -> traderService.fullProfitExit(trade);
+                    case EXIT_STOP_AFTER_PROFIT -> traderService.fullStopLossExitAfterProfit(trade);
                     default ->
                             log.info("Position is not ready to exit. TradeId: {} TradePair: {} CommandType: {}", trade.getId(), trade.getSymbol(), spotNormalMarketOrderPositionCommandType);
                 }

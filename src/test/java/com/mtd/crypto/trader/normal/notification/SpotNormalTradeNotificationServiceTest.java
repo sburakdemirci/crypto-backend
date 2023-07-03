@@ -16,6 +16,7 @@ class SpotNormalTradeNotificationServiceTest {
 
     @Autowired
     SpotNormalTradeNotificationService spotNormalTradeNotificationService;
+
     @Test
     void sendErrorMessage() {
         spotNormalTradeNotificationService.sendErrorMessage("Test Error message");

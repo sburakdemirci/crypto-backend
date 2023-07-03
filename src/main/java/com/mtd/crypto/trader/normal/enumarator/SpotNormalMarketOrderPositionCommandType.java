@@ -6,6 +6,7 @@ public enum SpotNormalMarketOrderPositionCommandType {
     PROFIT_SALE_2,
     EXIT_PROFIT,
     EXIT_STOP_LOSS,
+    EXIT_STOP_AFTER_PROFIT,
     NONE
 
 }

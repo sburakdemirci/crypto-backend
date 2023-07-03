@@ -17,7 +17,6 @@ public class SpotNormalTradeScheduler {
     @Scheduled(cron = "0 * * * * *")
     public void myScheduledMethod() {
         log.info("Evicting exchanceInfo cache with cron");
-
     }
 
     //TODO check OCO orders is placed or not

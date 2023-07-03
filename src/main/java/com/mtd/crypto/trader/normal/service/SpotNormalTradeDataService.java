@@ -9,6 +9,7 @@ import com.mtd.crypto.trader.normal.data.entity.SpotNormalTradeMarketOrder;
 import com.mtd.crypto.trader.normal.data.repository.SpotNormalTradeDataRepository;
 import com.mtd.crypto.trader.normal.data.repository.SpotNormalTradeMarketOrderRepository;
 import com.mtd.crypto.trader.normal.enumarator.SpotNormalTradeMarketOrderType;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -26,12 +27,9 @@ public class SpotNormalTradeDataService {
     private final SpotNormalTradeDataRepository spotNormalTradeDataRepository;
     private final SpotNormalTradeMarketOrderRepository spotNormalTradeMarketOrderRepository;
 
-
-    //TODO validate if coin exists in binance before this method
     @Transactional(rollbackFor = Exception.class)
-    public SpotNormalTradeData createTradeData(SpotNormalTradeDto spotNormalTradeDto) {
+    public SpotNormalTradeData createTradeData(@Valid SpotNormalTradeDto spotNormalTradeDto) {
 
-        //Check if pricedropRequred is false and current price greater than %2 of entry price
         SpotNormalTradeData spotNormalTradeData = SpotNormalTradeData
                 .builder()
                 .symbol(spotNormalTradeDto.getSymbol())
@@ -41,10 +39,27 @@ public class SpotNormalTradeDataService {
                 .takeProfit(spotNormalTradeDto.getTakeProfit())
                 .stop(spotNormalTradeDto.getStop())
                 .source(spotNormalTradeDto.getSource())
-                .walletPercentage(spotNormalTradeDto.getWalletPercentage())
+                .walletPercentage(((double) spotNormalTradeDto.getWalletPercentage() / 100))
                 .tradeStatus(TradeStatus.APPROVAL_WAITING)
                 .build();
         return spotNormalTradeDataRepository.save(spotNormalTradeData);
+    }
+
+
+    public SpotNormalTradeMarketOrder saveMarketOrder(String parentTradeId, BinanceOrderResponse binanceOrderResponse, SpotNormalTradeMarketOrderType spotNormalTradeMarketOrderType) {
+
+        Double averagePrice = binanceOrderResponse.getCummulativeQuoteQty() / binanceOrderResponse.getExecutedQty();
+        SpotNormalTradeData spotNormalTradeData = spotNormalTradeDataRepository.getReferenceById(parentTradeId);
+
+        SpotNormalTradeMarketOrder spotNormalTradeMarketOrder = SpotNormalTradeMarketOrder.builder()
+                .parentTrade(spotNormalTradeData)
+                .binanceOrderId(binanceOrderResponse.getOrderId())
+                .side(binanceOrderResponse.getSide())
+                .quantity(binanceOrderResponse.getExecutedQty())
+                .averagePrice(averagePrice)
+                .type(spotNormalTradeMarketOrderType)
+                .build();
+        return spotNormalTradeMarketOrderRepository.save(spotNormalTradeMarketOrder);
     }
 
     public void approveTrade(String tradeDataId) {
@@ -68,24 +83,34 @@ public class SpotNormalTradeDataService {
     }
 
 
-    public void partialProfit(String tradeDataId, SpotNormalTradeMarketOrder marketBuyOrder) {
+    public void partialProfit(String tradeDataId, SpotNormalTradeMarketOrder marketSellOrder) {
         SpotNormalTradeData spotNormalTradeData = spotNormalTradeDataRepository.findById(tradeDataId).orElseThrow(() -> new RuntimeException("Cannot found trade with id :" + tradeDataId));
-        spotNormalTradeData.setQuantityLeftInPosition(spotNormalTradeData.getQuantityLeftInPosition() - marketBuyOrder.getQuantity());
+        spotNormalTradeData.setQuantityLeftInPosition(spotNormalTradeData.getQuantityLeftInPosition() - marketSellOrder.getQuantity());
         spotNormalTradeDataRepository.save(spotNormalTradeData);
     }
 
 
-    public void fullProfitExit(String tradeDataId, SpotNormalTradeMarketOrder marketBuyOrder) {
+    public void fullProfitExit(String tradeDataId, SpotNormalTradeMarketOrder marketSellOrder) {
         SpotNormalTradeData spotNormalTradeData = spotNormalTradeDataRepository.findById(tradeDataId).orElseThrow(() -> new RuntimeException("Cannot found trade with id :" + tradeDataId));
-        spotNormalTradeData.setQuantityLeftInPosition(spotNormalTradeData.getQuantityLeftInPosition() - marketBuyOrder.getQuantity());
+        spotNormalTradeData.setQuantityLeftInPosition(spotNormalTradeData.getQuantityLeftInPosition() - marketSellOrder.getQuantity());
         spotNormalTradeData.setTradeStatus(TradeStatus.POSITION_FINISHED_WITH_PROFIT);
+        spotNormalTradeData.setPositionFinishedAt(Instant.now());
         spotNormalTradeDataRepository.save(spotNormalTradeData);
     }
 
-    public void fullStopLossExit(String tradeDataId, SpotNormalTradeMarketOrder marketBuyOrder) {
+    public void fullStopLossExit(String tradeDataId, SpotNormalTradeMarketOrder marketSellOrder) {
         SpotNormalTradeData spotNormalTradeData = spotNormalTradeDataRepository.findById(tradeDataId).orElseThrow(() -> new RuntimeException("Cannot found trade with id :" + tradeDataId));
-        spotNormalTradeData.setQuantityLeftInPosition(spotNormalTradeData.getQuantityLeftInPosition() - marketBuyOrder.getQuantity());
+        spotNormalTradeData.setQuantityLeftInPosition(spotNormalTradeData.getQuantityLeftInPosition() - marketSellOrder.getQuantity());
         spotNormalTradeData.setTradeStatus(TradeStatus.POSITION_FINISHED_WITH_LOSS);
+        spotNormalTradeData.setPositionFinishedAt(Instant.now());
+        spotNormalTradeDataRepository.save(spotNormalTradeData);
+    }
+
+    public void fullStopLossExitAfterProfit(String tradeDataId, SpotNormalTradeMarketOrder marketSellOrder) {
+        SpotNormalTradeData spotNormalTradeData = spotNormalTradeDataRepository.findById(tradeDataId).orElseThrow(() -> new RuntimeException("Cannot found trade with id :" + tradeDataId));
+        spotNormalTradeData.setQuantityLeftInPosition(spotNormalTradeData.getQuantityLeftInPosition() - marketSellOrder.getQuantity());
+        spotNormalTradeData.setTradeStatus(TradeStatus.POSITION_FINISHED_WITH_PROFIT);
+        spotNormalTradeData.setPositionFinishedAt(Instant.now());
         spotNormalTradeDataRepository.save(spotNormalTradeData);
     }
 
@@ -117,6 +142,10 @@ public class SpotNormalTradeDataService {
         return spotNormalTradeDataRepository.findAllByTradeStatus(tradeStatus);
     }
 
+    public SpotNormalTradeData findById(String tradeId) {
+        return spotNormalTradeDataRepository.findById(tradeId).orElseThrow(() -> new RuntimeException("Trade not found with given id: " + tradeId));
+    }
+
     public List<SpotNormalTradeMarketOrder> findMarketOrderByParentTradeAndType(String parentTradeId, SpotNormalTradeMarketOrderType spotNormalTradeMarketOrderType) {
         return spotNormalTradeMarketOrderRepository.findAllByParentTradeIdAndType(parentTradeId, spotNormalTradeMarketOrderType);
     }
@@ -126,21 +155,5 @@ public class SpotNormalTradeDataService {
         return spotNormalTradeMarketOrderRepository.findAllByParentTradeId(parentTradeId);
     }
 
-
-    public SpotNormalTradeMarketOrder saveMarketOrder(String parentTradeId, BinanceOrderResponse binanceOrderResponse, SpotNormalTradeMarketOrderType spotNormalTradeMarketOrderType) {
-
-        Double averagePrice = binanceOrderResponse.getCummulativeQuoteQty() / binanceOrderResponse.getExecutedQty();
-        SpotNormalTradeData spotNormalTradeData = spotNormalTradeDataRepository.getReferenceById(parentTradeId);
-
-        SpotNormalTradeMarketOrder spotNormalTradeMarketOrder = SpotNormalTradeMarketOrder.builder()
-                .parentTrade(spotNormalTradeData)
-                .binanceOrderId(binanceOrderResponse.getOrderId())
-                .side(binanceOrderResponse.getSide())
-                .quantity(binanceOrderResponse.getExecutedQty())
-                .averagePrice(averagePrice)
-                .type(spotNormalTradeMarketOrderType)
-                .build();
-        return spotNormalTradeMarketOrderRepository.save(spotNormalTradeMarketOrder);
-    }
 
 }

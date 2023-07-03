@@ -48,19 +48,7 @@ public class SpotNormalTradeData extends EntityAuditBase {
     @Enumerated(EnumType.STRING)
     private TradeSource source;
 
-    @Min(1)
-    @Max(40)
-    private Integer walletPercentage = 10; // Default value, can be overridden (min 1, max 100)
-
- /*   @CreatedDate
-    @Temporal(TIMESTAMP)
-    @Column(updatable = false)
-    private Instant createdTime;*/
-
-
-   /* @LastModifiedDate
-    @Temporal(TIMESTAMP)
-    private Instant updatedTime;*/
+    private Double walletPercentage;
 
     private Double totalQuantity;
     private Double averageEntryPrice;

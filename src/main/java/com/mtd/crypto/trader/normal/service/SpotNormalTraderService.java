@@ -27,7 +27,7 @@ public class SpotNormalTraderService {
 
     public void enterPosition(SpotNormalTradeData parentTrade) {
         Double walletBalance = binanceService.getBalanceBySymbol(parentTrade.getBaseTradingSymbol());
-        Double tradeAmountInDollars = walletBalance / parentTrade.getWalletPercentage();
+        Double tradeAmountInDollars = walletBalance * parentTrade.getWalletPercentage();
 
         try {
             BinanceOrderResponse binanceOrderResponse = binanceService.executeMarketOrderWithDollar(parentTrade.getSymbol(), BinanceOrderSide.BUY, tradeAmountInDollars.intValue());
@@ -63,9 +63,8 @@ public class SpotNormalTraderService {
 
         Double quantityToSell = parentTrade.getQuantityLeftInPosition();
         BinanceOrderResponse binanceOrderResponse = binanceService.executeMarketOrderWithQuantity(parentTrade.getSymbol(), BinanceOrderSide.SELL, quantityToSell);
-        SpotNormalTradeMarketOrder spotNormalTradeMarketOrder = dataService.saveMarketOrder(parentTrade.getId(), binanceOrderResponse, SpotNormalTradeMarketOrderType.PARTIAL_PROFIT);
+        SpotNormalTradeMarketOrder spotNormalTradeMarketOrder = dataService.saveMarketOrder(parentTrade.getId(), binanceOrderResponse, SpotNormalTradeMarketOrderType.EXIT_ALL_PROFIT);
         dataService.fullProfitExit(parentTrade.getId(), spotNormalTradeMarketOrder);
-        //save market order
         //todo update quantity left and all other necessary columns
     }
 
@@ -73,9 +72,17 @@ public class SpotNormalTraderService {
 
         Double quantityToSell = parentTrade.getQuantityLeftInPosition();
         BinanceOrderResponse binanceOrderResponse = binanceService.executeMarketOrderWithQuantity(parentTrade.getSymbol(), BinanceOrderSide.SELL, quantityToSell);
-        SpotNormalTradeMarketOrder spotNormalTradeMarketOrder = dataService.saveMarketOrder(parentTrade.getId(), binanceOrderResponse, SpotNormalTradeMarketOrderType.PARTIAL_PROFIT);
+        SpotNormalTradeMarketOrder spotNormalTradeMarketOrder = dataService.saveMarketOrder(parentTrade.getId(), binanceOrderResponse, SpotNormalTradeMarketOrderType.EXIT_ALL_STOP_LOSS);
         dataService.fullStopLossExit(parentTrade.getId(), spotNormalTradeMarketOrder);
-        //save market order
+        //todo update quantity left and all other necessary columns
+    }
+
+
+    public void fullStopLossExitAfterProfit(SpotNormalTradeData parentTrade) {
+        Double quantityToSell = parentTrade.getQuantityLeftInPosition();
+        BinanceOrderResponse binanceOrderResponse = binanceService.executeMarketOrderWithQuantity(parentTrade.getSymbol(), BinanceOrderSide.SELL, quantityToSell);
+        SpotNormalTradeMarketOrder spotNormalTradeMarketOrder = dataService.saveMarketOrder(parentTrade.getId(), binanceOrderResponse, SpotNormalTradeMarketOrderType.EXIT_STOP_AFTER_PROFIT);
+        dataService.fullStopLossExitAfterProfit(parentTrade.getId(), spotNormalTradeMarketOrder);
         //todo update quantity left and all other necessary columns
     }
 
