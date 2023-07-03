@@ -1,23 +1,27 @@
 package com.mtd.crypto.trader.normal.controller;
 
+import com.mtd.crypto.core.security.annotation.CurrentUser;
+import com.mtd.crypto.core.security.configuration.UserPrincipal;
 import com.mtd.crypto.market.service.BinanceService;
+import com.mtd.crypto.trader.common.enumarator.TradeStatus;
 import com.mtd.crypto.trader.normal.data.dto.SpotNormalTradeDto;
 import com.mtd.crypto.trader.normal.data.entity.SpotNormalTradeData;
+import com.mtd.crypto.trader.normal.notification.SpotNormalTradeNotificationService;
 import com.mtd.crypto.trader.normal.service.SpotNormalTradeDataService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("spot/normal")
 @RequiredArgsConstructor
 public class SpotNormalTradeController {
 
-    private final SpotNormalTradeDataService spotNormalTradeDataService;
+    private final SpotNormalTradeDataService dataService;
     private final BinanceService binanceService;
+    private final SpotNormalTradeNotificationService notificationService;
 
     @PostMapping("data")
     public SpotNormalTradeData save(@RequestBody @Valid SpotNormalTradeDto spotNormalTradeDto) {
@@ -27,13 +31,27 @@ public class SpotNormalTradeController {
             throw new RuntimeException("Entry price cannot be lower than current price when price drop required!");
         }
 
-        return spotNormalTradeDataService.createTradeData(spotNormalTradeDto);
+        return dataService.createTradeData(spotNormalTradeDto);
         //todo test here with mockMVC to get expected validation result for currentPrice
         //TODO add controllerADvice for binanceException and all other exceptions. Return response entity with exception message
         //Check if coin exists in binance
         //validate stop and limit price
     }
 
+    @PatchMapping("trade/{tradeId}/approve")
+    public void approveTrade(@PathVariable String tradeId, @CurrentUser UserPrincipal userPrincipal) {
+        dataService.approveTrade(tradeId);
+        SpotNormalTradeData tradeData = dataService.findById(tradeId);
+        notificationService.sendInfoMessage(String.format("Trade Approved \nCoin: %s\nEntry:%,.4f  TakeProfit:%,.4f  Stop:%,.4f\nTradeId: %s \nApproved By: %s", tradeData.getSymbol(), tradeData.getEntry(), tradeData.getTakeProfit(), tradeData.getStop(), tradeId, userPrincipal.getUsername()));
+    }
+
+    @GetMapping("trade")
+    public List<SpotNormalTradeData> getTradesByFilter(@RequestParam List<TradeStatus> tradeStatusList) {
+        return dataService.findAllByTradeStatusIn(tradeStatusList);
+    }
+
+
+    //cancel trade should be checking if trade is in position. If its in position it should first execute sell order, than update trade data as cancelled.
 
     //Get All By Filter
     //Approve Trade

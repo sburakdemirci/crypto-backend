@@ -21,6 +21,6 @@ public class SpotNormalTradeCron {
 
     @Scheduled(cron = "${app.trading.normal.cron.position-exit}")
     public void checkAndExitPositions() {
-        spotNormalTraderProxyService.checkAndExitPositions();
+        spotNormalTraderProxyService.checkProfitOrExitPosition();
     }
 }

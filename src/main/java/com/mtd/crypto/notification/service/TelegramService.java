@@ -15,6 +15,13 @@ public class TelegramService {
     private final RestTemplate restTemplate;
     private final TelegramSecretProperties telegramSecretProperties;
 
+    /**
+     * @param chatId
+     * @param message Blue text `Hello`
+     *                Bold text *SomeText*
+     *                But you need to set parsemode to markdownV2.
+     *                But its not accepting characters like '-' which is used in your String database ids. So don't use it if its not necessary
+     */
     public void sendMessage(String chatId, String message) {
         String url = telegramSecretProperties.getBaseUrl() + telegramSecretProperties.getApiKey() + "/sendMessage";
 
@@ -24,6 +31,10 @@ public class TelegramService {
         MultiValueMap<String, String> multiValueMap = new LinkedMultiValueMap<>();
         multiValueMap.add("chat_id", chatId);
         multiValueMap.add("text", message);
+/*
+        multiValueMap.add("parse_mode", "MarkdownV2");
+*/
+
         HttpEntity<MultiValueMap<String, String>> httpEntity = new HttpEntity<>(multiValueMap, headers);
 
         ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.POST, httpEntity, String.class);

@@ -114,7 +114,7 @@ public class SpotNormalTraderIntegrationTest {
         Double firstPartialExit = SpotNormalTradePriceCalculatorHelper.calculateFirstPartialExitPrice(tradeBeforeFirstPartialExit, spotNormalTradingStrategyConfiguration.getPartialExitPercentageStep());
         when(binanceService.getCurrentPrice(TEST_SYMBOL)).thenReturn(firstPartialExit);
         when(binanceService.executeMarketOrderWithQuantity(TEST_SYMBOL, BinanceOrderSide.SELL, tradeBeforeFirstPartialExit.getQuantityLeftInPosition() / 3)).thenReturn(createBinanceMarketOrder(tradeBeforeFirstPartialExit.getQuantityLeftInPosition() / 3, firstPartialExit * tradeBeforeFirstPartialExit.getQuantityLeftInPosition() / 3, BinanceOrderSide.SELL));
-        proxyService.checkAndExitPositions();
+        proxyService.checkProfitOrExitPosition();
         verify(binanceService).executeMarketOrderWithQuantity(TEST_SYMBOL, BinanceOrderSide.SELL, tradeBeforeFirstPartialExit.getQuantityLeftInPosition() / 3);
         reset(binanceService);
 
@@ -123,7 +123,7 @@ public class SpotNormalTraderIntegrationTest {
         Double secondPartialExitPrice = SpotNormalTradePriceCalculatorHelper.calculateSecondPartialExitPrice(tradeBeforeSecondPartialExit, spotNormalTradingStrategyConfiguration.getPartialExitPercentageStep());
         when(binanceService.getCurrentPrice(TEST_SYMBOL)).thenReturn(secondPartialExitPrice);
         when(binanceService.executeMarketOrderWithQuantity(TEST_SYMBOL, BinanceOrderSide.SELL, tradeBeforeSecondPartialExit.getQuantityLeftInPosition() / 2)).thenReturn(createBinanceMarketOrder(tradeBeforeSecondPartialExit.getQuantityLeftInPosition() / 2, secondPartialExitPrice * tradeBeforeSecondPartialExit.getQuantityLeftInPosition() / 2, BinanceOrderSide.SELL));
-        proxyService.checkAndExitPositions();
+        proxyService.checkProfitOrExitPosition();
         verify(binanceService).executeMarketOrderWithQuantity(TEST_SYMBOL, BinanceOrderSide.SELL, tradeBeforeSecondPartialExit.getQuantityLeftInPosition() / 2);
         reset(binanceService);
 
@@ -132,7 +132,7 @@ public class SpotNormalTraderIntegrationTest {
         SpotNormalTradeData tradeBeforeAllProfitExit = dataService.findById(tradeData.getId());
         when(binanceService.getCurrentPrice(TEST_SYMBOL)).thenReturn(tradeBeforeAllProfitExit.getTakeProfit());
         when(binanceService.executeMarketOrderWithQuantity(TEST_SYMBOL, BinanceOrderSide.SELL, tradeBeforeAllProfitExit.getQuantityLeftInPosition())).thenReturn(createBinanceMarketOrder(tradeBeforeAllProfitExit.getQuantityLeftInPosition(), tradeBeforeAllProfitExit.getTakeProfit() * tradeBeforeAllProfitExit.getQuantityLeftInPosition(), BinanceOrderSide.SELL));
-        proxyService.checkAndExitPositions();
+        proxyService.checkProfitOrExitPosition();
         verify(binanceService).executeMarketOrderWithQuantity(TEST_SYMBOL, BinanceOrderSide.SELL, tradeBeforeAllProfitExit.getQuantityLeftInPosition());
 
 
@@ -193,7 +193,7 @@ public class SpotNormalTraderIntegrationTest {
         Double coinPriceToStop = tradeBeforeStopLossExit.getStop() * 0.999;
         when(binanceService.getCurrentPrice(TEST_SYMBOL)).thenReturn(coinPriceToStop);
         when(binanceService.executeMarketOrderWithQuantity(TEST_SYMBOL, BinanceOrderSide.SELL, tradeBeforeStopLossExit.getQuantityLeftInPosition())).thenReturn(createBinanceMarketOrder(tradeBeforeStopLossExit.getQuantityLeftInPosition(), coinPriceToStop * tradeBeforeStopLossExit.getQuantityLeftInPosition(), BinanceOrderSide.SELL));
-        proxyService.checkAndExitPositions();
+        proxyService.checkProfitOrExitPosition();
         verify(binanceService).executeMarketOrderWithQuantity(TEST_SYMBOL, BinanceOrderSide.SELL, tradeBeforeStopLossExit.getQuantityLeftInPosition());
 
 
@@ -251,7 +251,7 @@ public class SpotNormalTraderIntegrationTest {
         Double firstPartialExit = SpotNormalTradePriceCalculatorHelper.calculateFirstPartialExitPrice(tradeBeforeFirstPartialExit, spotNormalTradingStrategyConfiguration.getPartialExitPercentageStep());
         when(binanceService.getCurrentPrice(TEST_SYMBOL)).thenReturn(firstPartialExit);
         when(binanceService.executeMarketOrderWithQuantity(TEST_SYMBOL, BinanceOrderSide.SELL, tradeBeforeFirstPartialExit.getQuantityLeftInPosition() / 3)).thenReturn(createBinanceMarketOrder(tradeBeforeFirstPartialExit.getQuantityLeftInPosition() / 3, firstPartialExit * tradeBeforeFirstPartialExit.getQuantityLeftInPosition() / 3, BinanceOrderSide.SELL));
-        proxyService.checkAndExitPositions();
+        proxyService.checkProfitOrExitPosition();
         verify(binanceService).executeMarketOrderWithQuantity(TEST_SYMBOL, BinanceOrderSide.SELL, tradeBeforeFirstPartialExit.getQuantityLeftInPosition() / 3);
         reset(binanceService);
 
@@ -261,7 +261,7 @@ public class SpotNormalTraderIntegrationTest {
         Double coinPriceToStop = tradeBeforeStopLossExit.getAverageEntryPrice() * 0.999;
         when(binanceService.getCurrentPrice(TEST_SYMBOL)).thenReturn(coinPriceToStop);
         when(binanceService.executeMarketOrderWithQuantity(TEST_SYMBOL, BinanceOrderSide.SELL, tradeBeforeStopLossExit.getQuantityLeftInPosition())).thenReturn(createBinanceMarketOrder(tradeBeforeStopLossExit.getQuantityLeftInPosition(), coinPriceToStop * tradeBeforeStopLossExit.getQuantityLeftInPosition(), BinanceOrderSide.SELL));
-        proxyService.checkAndExitPositions();
+        proxyService.checkProfitOrExitPosition();
         verify(binanceService).executeMarketOrderWithQuantity(TEST_SYMBOL, BinanceOrderSide.SELL, tradeBeforeStopLossExit.getQuantityLeftInPosition());
 
 
