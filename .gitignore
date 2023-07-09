@@ -7,7 +7,7 @@ target/
 src/main/resources/**
 !src/main/resources/.gitkeep
 !src/main/resources/application-testci.yml
-
+**/.DS_Store
 
 ### STS ###
 .apt_generated
