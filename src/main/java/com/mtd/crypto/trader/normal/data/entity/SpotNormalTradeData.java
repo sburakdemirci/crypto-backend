@@ -4,7 +4,9 @@ import com.mtd.crypto.core.configuration.EntityAuditBase;
 import com.mtd.crypto.trader.common.enumarator.TradeSource;
 import com.mtd.crypto.trader.common.enumarator.TradeStatus;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -25,13 +27,26 @@ public class SpotNormalTradeData extends EntityAuditBase {
 
     @NotNull
     @Enumerated(EnumType.STRING)
+    @OrderBy("CASE status " +
+            "WHEN 'APPROVAL_WAITING' THEN 1 " +
+            "WHEN 'POSITION_WAITING' THEN 2 " +
+            "WHEN 'CANCELLED_BEFORE_POSITION' THEN 3 " +
+            "WHEN 'EXPIRED' THEN 4 " +
+            "WHEN 'IN_POSITION' THEN 5 " +
+            "WHEN 'CANCELLED_IN_POSITION' THEN 6 " +
+            "WHEN 'POSITION_FINISHED_WITH_PROFIT' THEN 7 " +
+            "WHEN 'POSITION_FINISHED_WITH_LOSS' THEN 8 " +
+            "ELSE 9 " +
+            "END")
     private TradeStatus tradeStatus;
 
     @NotBlank(message = "Symbol is required")
     private String symbol;
 
+/*
     @NotBlank(message = "Base trading symbol is required")
-    private String baseTradingSymbol;
+*/
+    private String quoteAsset;
 
     @Positive(message = "Entry must be greater than zero")
     private Double entry;

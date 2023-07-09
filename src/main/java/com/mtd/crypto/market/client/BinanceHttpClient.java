@@ -13,7 +13,6 @@ import com.mtd.crypto.market.data.response.exchange.info.BinanceExchangeInfoResp
 import com.mtd.crypto.market.exception.BinanceException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -50,6 +49,15 @@ public class BinanceHttpClient {
         return response.getBody().getPrice();
     }
 
+    public List<BinanceCurrentPriceResponse> getAllCoinPrices() throws BinanceException {
+        String url = binanceApiUrlProperties.getApi() + binanceApiUrlProperties.getPath().getPrice();
+        BinanceGetAllCoinPricesRequestDto binanceGetAllCoinPricesRequestDto = new BinanceGetAllCoinPricesRequestDto();
+        BinanceRequest binanceRequest = binanceRequestHandler.createGetRequest(binanceGetAllCoinPricesRequestDto, url, false);
+        ResponseEntity<BinanceCurrentPriceResponse[]> response = binanceRequestHandler.sendRequest(binanceRequest, BinanceCurrentPriceResponse[].class);
+        return Arrays.asList(response.getBody());
+    }
+
+
     /**
      * @return All coins including users coins. It can be used for test wallet environment /api
      */
@@ -84,6 +92,16 @@ public class BinanceHttpClient {
     }
 
 
+    public BinanceExchangeInfoResponse getAllExchangeInfo() throws BinanceException {
+        String url = binanceApiUrlProperties.getApi() + binanceApiUrlProperties.getPath().getExchangeInfo();
+        BinanceAllExchangeInfoRequestDto binanceAllExchangeInfoRequestDto = new BinanceAllExchangeInfoRequestDto();
+        BinanceRequest binanceRequest = binanceRequestHandler.createGetRequest(binanceAllExchangeInfoRequestDto, url, false);
+        ResponseEntity<BinanceExchangeInfoResponse> response = binanceRequestHandler.sendRequest(binanceRequest, BinanceExchangeInfoResponse.class);
+
+        return response.getBody();
+    }
+
+
 /*    public BinanceExchangeInfoResponse getExchangeInfoAllSymbols() throws BinanceException {
         String url = "https://api.binance.com/api/v3/exchangeInfo";
 
@@ -99,9 +117,8 @@ public class BinanceHttpClient {
      * @param interval
      * @param limit    = How many candles.
      * @return
-     * @throws JSONException
      */
-    public List<BinanceCandleStickResponse> getCandles(String symbol, BinanceCandleStickInterval interval, int limit) throws JSONException {
+    public List<BinanceCandleStickResponse> getCandles(String symbol, BinanceCandleStickInterval interval, int limit)  {
         Long endTime = System.currentTimeMillis() - interval.getMilliseconds();
         String url = binanceApiUrlProperties.getApi() + binanceApiUrlProperties.getPath().getKlines();
         BinanceGetCandleRequestDto binanceGetCandleRequest = BinanceGetCandleRequestDto.builder()

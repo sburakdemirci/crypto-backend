@@ -19,12 +19,12 @@ public class SpotNormalTradeDtoTest {
     public void symbolNotBlank() {
         SpotNormalTradeDto trade = SpotNormalTradeDto.builder()
                 .symbol("")
-                .baseTradingSymbol("BTC")
+                .quoteAsset("BTC")
                 .entry(100.0)
                 .takeProfit(120.0)
                 .stop(90.0)
-                .isPriceDropRequired(true)
-                .source(TradeSource.BURAK)
+                .priceDropRequired(true)
+                .burak(true)
                 .walletPercentage(20)
                 .build();
 
@@ -36,12 +36,12 @@ public class SpotNormalTradeDtoTest {
     public void baseTradingSymbolNotBlank() {
         SpotNormalTradeDto trade = SpotNormalTradeDto.builder()
                 .symbol("BTC")
-                .baseTradingSymbol("")
+                .quoteAsset("")
                 .entry(100.0)
                 .takeProfit(120.0)
                 .stop(90.0)
-                .isPriceDropRequired(true)
-                .source(TradeSource.BURAK)
+                .priceDropRequired(true)
+                .burak(true)
                 .walletPercentage(20)
                 .build();
 
@@ -53,12 +53,12 @@ public class SpotNormalTradeDtoTest {
     public void entryPositive() {
         SpotNormalTradeDto trade = SpotNormalTradeDto.builder()
                 .symbol("BTC")
-                .baseTradingSymbol("USDT")
+                .quoteAsset("USDT")
                 .entry(-10.0)
                 .takeProfit(120.0)
                 .stop(90.0)
-                .isPriceDropRequired(true)
-                .source(TradeSource.BURAK)
+                .priceDropRequired(true)
+                .burak(true)
                 .walletPercentage(20)
                 .build();
 
@@ -70,12 +70,12 @@ public class SpotNormalTradeDtoTest {
     public void takeProfitPositive() {
         SpotNormalTradeDto trade = SpotNormalTradeDto.builder()
                 .symbol("BTC")
-                .baseTradingSymbol("USDT")
+                .quoteAsset("USDT")
                 .entry(100.0)
                 .takeProfit(0.0)
                 .stop(90.0)
-                .isPriceDropRequired(true)
-                .source(TradeSource.BURAK)
+                .priceDropRequired(true)
+                .burak(true)
                 .walletPercentage(20)
                 .build();
 
@@ -87,12 +87,12 @@ public class SpotNormalTradeDtoTest {
     public void stopPositive() {
         SpotNormalTradeDto trade = SpotNormalTradeDto.builder()
                 .symbol("BTC")
-                .baseTradingSymbol("USDT")
+                .quoteAsset("USDT")
                 .entry(100.0)
                 .takeProfit(120.0)
                 .stop(-5.0)
-                .isPriceDropRequired(true)
-                .source(TradeSource.BURAK)
+                .priceDropRequired(true)
+                .burak(true)
                 .walletPercentage(20)
                 .build();
 
@@ -104,12 +104,12 @@ public class SpotNormalTradeDtoTest {
     public void isTakeProfitHigherThanStop() {
         SpotNormalTradeDto trade = SpotNormalTradeDto.builder()
                 .symbol("BTC")
-                .baseTradingSymbol("USDT")
+                .quoteAsset("USDT")
                 .entry(100.0)
                 .takeProfit(10.0)
                 .stop(15.0)
-                .isPriceDropRequired(true)
-                .source(TradeSource.BURAK)
+                .priceDropRequired(true)
+                .burak(true)
                 .walletPercentage(20)
                 .build();
 
@@ -121,12 +121,12 @@ public class SpotNormalTradeDtoTest {
     public void isEntryHigherThanStop() {
         SpotNormalTradeDto trade = SpotNormalTradeDto.builder()
                 .symbol("BTC")
-                .baseTradingSymbol("USDT")
+                .quoteAsset("USDT")
                 .entry(20.0)
                 .takeProfit(120.0)
                 .stop(15.0)
-                .isPriceDropRequired(true)
-                .source(TradeSource.BURAK)
+                .priceDropRequired(true)
+                .burak(true)
                 .walletPercentage(20)
                 .build();
 
@@ -138,12 +138,12 @@ public class SpotNormalTradeDtoTest {
     public void isTakeProfitHigherThanEntry() {
         SpotNormalTradeDto trade = SpotNormalTradeDto.builder()
                 .symbol("BTC")
-                .baseTradingSymbol("USDT")
+                .quoteAsset("USDT")
                 .entry(10.0)
                 .takeProfit(5.0)
                 .stop(90.0)
-                .isPriceDropRequired(true)
-                .source(TradeSource.BURAK)
+                .priceDropRequired(true)
+                .burak(true)
                 .walletPercentage(20)
                 .build();
 
@@ -155,12 +155,12 @@ public class SpotNormalTradeDtoTest {
     public void isHighLoss() {
         SpotNormalTradeDto trade = SpotNormalTradeDto.builder()
                 .symbol("BTC")
-                .baseTradingSymbol("USDT")
+                .quoteAsset("USDT")
                 .entry(100.0)
                 .takeProfit(120.0)
                 .stop(85.0)
-                .isPriceDropRequired(true)
-                .source(TradeSource.BURAK)
+                .priceDropRequired(true)
+                .burak(true)
                 .walletPercentage(20)
                 .build();
 
@@ -172,12 +172,12 @@ public class SpotNormalTradeDtoTest {
     public void happyPath() {
         SpotNormalTradeDto trade = SpotNormalTradeDto.builder()
                 .symbol("BTC")
-                .baseTradingSymbol("USDT")
+                .quoteAsset("USDT")
                 .entry(100.0)
                 .takeProfit(120.0)
                 .stop(95.0)
-                .isPriceDropRequired(true)
-                .source(TradeSource.BURAK)
+                .priceDropRequired(true)
+                .burak(true)
                 .walletPercentage(20)
                 .build();
 

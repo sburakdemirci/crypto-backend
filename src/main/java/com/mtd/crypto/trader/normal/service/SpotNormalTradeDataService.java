@@ -2,6 +2,7 @@ package com.mtd.crypto.trader.normal.service;
 
 import com.mtd.crypto.core.aspect.LoggableClass;
 import com.mtd.crypto.market.data.response.BinanceOrderResponse;
+import com.mtd.crypto.trader.common.enumarator.TradeSource;
 import com.mtd.crypto.trader.common.enumarator.TradeStatus;
 import com.mtd.crypto.trader.normal.data.dto.SpotNormalTradeDto;
 import com.mtd.crypto.trader.normal.data.entity.SpotNormalTradeData;
@@ -33,12 +34,12 @@ public class SpotNormalTradeDataService {
         SpotNormalTradeData spotNormalTradeData = SpotNormalTradeData
                 .builder()
                 .symbol(spotNormalTradeDto.getSymbol())
-                .baseTradingSymbol(spotNormalTradeDto.getBaseTradingSymbol())
+                .quoteAsset(spotNormalTradeDto.getQuoteAsset())
                 .entry(spotNormalTradeDto.getEntry())
                 .isPriceDropRequired(spotNormalTradeDto.isPriceDropRequired())
                 .takeProfit(spotNormalTradeDto.getTakeProfit())
                 .stop(spotNormalTradeDto.getStop())
-                .source(spotNormalTradeDto.getSource())
+                .source(spotNormalTradeDto.isBurak()? TradeSource.BURAK:TradeSource.HALUK)
                 .walletPercentage(((double) spotNormalTradeDto.getWalletPercentage() / 100))
                 .tradeStatus(TradeStatus.APPROVAL_WAITING)
                 .build();
@@ -129,9 +130,7 @@ public class SpotNormalTradeDataService {
     @Transactional
     public void cancelTradeInPosition(String tradeDataId) {
         SpotNormalTradeData spotNormalTradeData = findById(tradeDataId);
-        if (spotNormalTradeData.getTradeStatus() != TradeStatus.POSITION_WAITING) {
-            throw new RuntimeException("Only position waiting trades can cancelled");
-        }
+
         spotNormalTradeData.setCancelledAt(Instant.now());
         spotNormalTradeData.setTradeStatus(TradeStatus.CANCELLED_IN_POSITION);
         tradeDataRepository.save(spotNormalTradeData);
@@ -143,9 +142,10 @@ public class SpotNormalTradeDataService {
     }
 
 
-    public List<SpotNormalTradeData> findAllByTradeStatusIn(List<TradeStatus> tradeStatusList) {
-        return tradeDataRepository.findAllByTradeStatusIn(tradeStatusList);
+    public List<SpotNormalTradeData> findTradesByStatusesOrderByStatusAndCreatedTime(List<TradeStatus> tradeStatusList) {
+        return tradeDataRepository.findAllByTradeStatusInOrderByTradeStatusAscCreatedTimeAsc(tradeStatusList);
     }
+
 
     public SpotNormalTradeData findById(String tradeId) {
         return tradeDataRepository.findById(tradeId).orElseThrow(() -> new RuntimeException("Trade not found with given id: " + tradeId));

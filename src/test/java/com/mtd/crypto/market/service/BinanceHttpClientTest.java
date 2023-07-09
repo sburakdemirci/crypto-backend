@@ -1,26 +1,5 @@
 package com.mtd.crypto.market.service;
 
-import com.mtd.crypto.market.client.BinanceHttpClient;
-import com.mtd.crypto.market.data.enumarator.binance.BinanceCandleStickInterval;
-import com.mtd.crypto.market.data.enumarator.binance.BinanceOrderSide;
-import com.mtd.crypto.market.data.enumarator.binance.BinanceOrderStatus;
-import com.mtd.crypto.market.data.response.*;
-import com.mtd.crypto.market.data.response.exchange.info.BinanceExchangeInfoResponse;
-import org.junit.jupiter.api.MethodOrderer;
-import org.junit.jupiter.api.Order;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestMethodOrder;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.configurationprocessor.json.JSONException;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
-
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.*;
-
 /*@SpringBootTest
 @ActiveProfiles("dev")
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)*/
@@ -93,13 +72,6 @@ class BinanceHttpClientTest {
         assertNotNull(price);
     }
 
-    @Test
-    public void testGetCandles() throws JSONException {
-        int CANDLE_LIMIT = 5;
-        List<BinanceCandleStickResponse> candles = binanceHttpClient.getCandles(TEST_SYMBOL, BinanceCandleStickInterval.FOUR_HOURS, CANDLE_LIMIT);
-        assertNotNull(candles);
-        assertEquals(CANDLE_LIMIT, candles.size());
-    }
 
 
     @Test
@@ -126,7 +98,7 @@ class BinanceHttpClientTest {
         // Add more assertions as needed
     }*//*
 
-*//*    @Test
+     *//*    @Test
     public void testExecuteLimitOrder() {
         Double price = binanceHttpClient.getPrice(TEST_SYMBOL);
 
@@ -154,7 +126,7 @@ class BinanceHttpClientTest {
         // Add more assertions as needed
     }*//*
 
-*//*    @Test
+     *//*    @Test
     public void testGetAllOpenOrders() {
         List<BinanceOrderResponse> createdOrders = createMultipleLimitOrders(TEST_SYMBOL, BinanceOrderSide.BUY, 2, 100);
         List<BinanceOrderResponse> allOpenOrders = binanceHttpClient.getAllOpenOrders();

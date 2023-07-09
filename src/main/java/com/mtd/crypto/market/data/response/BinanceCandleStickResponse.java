@@ -2,8 +2,8 @@ package com.mtd.crypto.market.data.response;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
-import org.springframework.boot.configurationprocessor.json.JSONArray;
-import org.springframework.boot.configurationprocessor.json.JSONException;
+import org.json.JSONArray;
+
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,8 +23,8 @@ public class BinanceCandleStickResponse {
     private Double takerBuyBaseAssetVolume;
     private Double takerBuyQuoteAssetVolume;
 
-    public static List<BinanceCandleStickResponse> parse(String responseToParse) throws JSONException {
-        JSONArray jsonArray = new JSONArray(responseToParse);
+    public static List<BinanceCandleStickResponse> parse(String responseToParse)  {
+        org.json.JSONArray jsonArray = new JSONArray(responseToParse);
         List<BinanceCandleStickResponse> candles = new ArrayList<>();
         for (int i = 0; i < jsonArray.length(); i++) {
             JSONArray candleArray = jsonArray.getJSONArray(i);

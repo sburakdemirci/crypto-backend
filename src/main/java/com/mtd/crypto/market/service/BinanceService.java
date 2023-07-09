@@ -10,7 +10,6 @@ import com.mtd.crypto.market.data.enumarator.binance.BinanceOrderSide;
 import com.mtd.crypto.market.data.response.*;
 import com.mtd.crypto.market.data.response.exchange.info.BinanceExchangeInfoResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 
@@ -27,6 +26,10 @@ public class BinanceService {
 
     public Double getCurrentPrice(String symbol) {
         return binanceHttpClient.getPrice(symbol);
+    }
+
+    public List<BinanceCurrentPriceResponse> getAllCoinPrices() {
+        return binanceHttpClient.getAllCoinPrices();
     }
 
     public BinanceSystemStatusResponse getSystemStatus() {
@@ -104,7 +107,7 @@ public class BinanceService {
         return binanceHttpClient.executeLimitOrder(symbol, binanceOrderSide, adjustedQuantity, adjustedLimitPrice);
     }
 
-    public List<BinanceCandleStickResponse> getCandles(String symbol, BinanceCandleStickInterval interval, int limit) throws JSONException {
+    public List<BinanceCandleStickResponse> getCandles(String symbol, BinanceCandleStickInterval interval, int limit)  {
         return binanceHttpClient.getCandles(symbol, interval, limit);
     }
 
@@ -159,8 +162,12 @@ public class BinanceService {
     }
 
 
-    public BinanceExchangeInfoResponse getExchangeInfo(String symbol) throws HttpClientErrorException {
+    public BinanceExchangeInfoResponse getExchangeInfoBySymbol(String symbol) throws HttpClientErrorException {
         return binanceHttpClient.getExchangeInfoBySymbol(symbol);
+    }
+
+    public BinanceExchangeInfoResponse getAllExchangeInfo() throws HttpClientErrorException {
+        return binanceHttpClient.getAllExchangeInfo();
     }
 
 

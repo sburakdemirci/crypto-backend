@@ -12,7 +12,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.boot.configurationprocessor.json.JSONException;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -37,7 +36,7 @@ class SpotNormalTraderCalculatorServiceTest {
 
 
     @Test
-    void isPositionReadyToEnter_NonDrop_GivenCurrentPriceHigherThanEntryPrice_ShouldReturnTrue() throws JSONException {
+    void isPositionReadyToEnter_NonDrop_GivenCurrentPriceHigherThanEntryPrice_ShouldReturnTrue()  {
         SpotNormalTradeData spotNormalTradeData = SpotNormalTradeData.builder().symbol("some-symbol").entry(100.0).takeProfit(110.0).stop(95.0).isPriceDropRequired(false).build();
         BinanceCandleStickResponse candle = new BinanceCandleStickResponse();
         candle.setClose(101.0);
@@ -49,7 +48,7 @@ class SpotNormalTraderCalculatorServiceTest {
 
 
     @Test
-    void isPositionReadyToEnter_NonDrop_Decimals_GivenCurrentPriceHigherThanEntryPrice_ShouldReturnTrue() throws JSONException {
+    void isPositionReadyToEnter_NonDrop_Decimals_GivenCurrentPriceHigherThanEntryPrice_ShouldReturnTrue()  {
         SpotNormalTradeData spotNormalTradeData = SpotNormalTradeData.builder().symbol("some-symbol").entry(0.00045).takeProfit(110.0).stop(0.00043).isPriceDropRequired(false).build();
         BinanceCandleStickResponse candle = new BinanceCandleStickResponse();
         candle.setClose(0.00046);
@@ -60,7 +59,7 @@ class SpotNormalTraderCalculatorServiceTest {
     }
 
     @Test
-    void isPositionReadyToEnter_NonDrop_GivenCurrentPriceLowerThanEntryPrice_HighLoss_ShouldReturnFalse() throws JSONException {
+    void isPositionReadyToEnter_NonDrop_GivenCurrentPriceLowerThanEntryPrice_HighLoss_ShouldReturnFalse()  {
         SpotNormalTradeData spotNormalTradeData = SpotNormalTradeData.builder()
                 .symbol("some-symbol")
                 .entry(100.0)
@@ -80,7 +79,7 @@ class SpotNormalTraderCalculatorServiceTest {
 
 
     @Test
-    void isPositionReadyToEnter_NonDrop_Decimals_GivenCurrentPriceLowerThanEntryPrice_HighLoss_ShouldReturnFalse() throws JSONException {
+    void isPositionReadyToEnter_NonDrop_Decimals_GivenCurrentPriceLowerThanEntryPrice_HighLoss_ShouldReturnFalse()  {
         SpotNormalTradeData spotNormalTradeData = SpotNormalTradeData.builder()
                 .symbol("some-symbol")
                 .entry(0.00045)
@@ -100,7 +99,7 @@ class SpotNormalTraderCalculatorServiceTest {
 
 
     @Test
-    void isPositionReadyToEnter_NonDrop_GivenCurrentPriceEqualToEntryPrice_ShouldReturnTrue() throws JSONException {
+    void isPositionReadyToEnter_NonDrop_GivenCurrentPriceEqualToEntryPrice_ShouldReturnTrue()  {
         SpotNormalTradeData spotNormalTradeData = SpotNormalTradeData.builder()
                 .symbol("some-symbol")
                 .entry(100.0)
@@ -119,7 +118,7 @@ class SpotNormalTraderCalculatorServiceTest {
     }
 
     @Test
-    void isPositionReadyToEnter_NonDrop_Decimals_GivenCurrentPriceEqualToEntryPrice_ShouldReturnTrue() throws JSONException {
+    void isPositionReadyToEnter_NonDrop_Decimals_GivenCurrentPriceEqualToEntryPrice_ShouldReturnTrue()  {
         SpotNormalTradeData spotNormalTradeData = SpotNormalTradeData.builder()
                 .symbol("some-symbol")
                 .entry(0.00045)
@@ -138,7 +137,7 @@ class SpotNormalTraderCalculatorServiceTest {
     }
 
     @Test
-    void isPositionReadyToEnter_NonDrop_GivenCurrentPriceSlightlyLessThanEntryPrice_HighLoss_ReturnsFalse() throws JSONException {
+    void isPositionReadyToEnter_NonDrop_GivenCurrentPriceSlightlyLessThanEntryPrice_HighLoss_ReturnsFalse()  {
         SpotNormalTradeData spotNormalTradeData = SpotNormalTradeData.builder()
                 .symbol("some-symbol")
                 .entry(100.0)
@@ -158,7 +157,7 @@ class SpotNormalTraderCalculatorServiceTest {
 
 
     @Test
-    void isPositionReadyToEnter_NonDrop_GivenCurrentPriceSlightlyHigherThanEntryPrice_ReturnsTrue() throws JSONException {
+    void isPositionReadyToEnter_NonDrop_GivenCurrentPriceSlightlyHigherThanEntryPrice_ReturnsTrue()  {
         SpotNormalTradeData spotNormalTradeData = SpotNormalTradeData.builder()
                 .symbol("some-symbol")
                 .entry(100.0)
@@ -178,7 +177,7 @@ class SpotNormalTraderCalculatorServiceTest {
 
 
     @Test
-    void isPositionReadyToEnter_PriceDropRequired_CurrentPriceGreaterThanSafeEntryPrice_ReturnsFalse() throws JSONException {
+    void isPositionReadyToEnter_PriceDropRequired_CurrentPriceGreaterThanSafeEntryPrice_ReturnsFalse()  {
         SpotNormalTradeData spotNormalTradeData = SpotNormalTradeData.builder()
                 .symbol("some-symbol")
                 .entry(100.0)
@@ -197,7 +196,7 @@ class SpotNormalTraderCalculatorServiceTest {
 
 
     @Test
-    void isPositionReadyToEnter_Decimals_PriceDropRequired_CurrentPriceGreaterThanSafeEntryPrice_ReturnsFalse() throws JSONException {
+    void isPositionReadyToEnter_Decimals_PriceDropRequired_CurrentPriceGreaterThanSafeEntryPrice_ReturnsFalse()  {
         SpotNormalTradeData spotNormalTradeData = SpotNormalTradeData.builder()
                 .symbol("some-symbol")
                 .entry(0.00045)
@@ -216,7 +215,7 @@ class SpotNormalTraderCalculatorServiceTest {
     }
 
     @Test
-    void isPositionReadyToEnter_PriceDropRequired_CurrentPriceEqualToSafeEntryPrice_ReturnsTrue() throws JSONException {
+    void isPositionReadyToEnter_PriceDropRequired_CurrentPriceEqualToSafeEntryPrice_ReturnsTrue()  {
         SpotNormalTradeData spotNormalTradeData = SpotNormalTradeData.builder()
                 .symbol("some-symbol")
                 .entry(100.0)
@@ -234,7 +233,7 @@ class SpotNormalTraderCalculatorServiceTest {
     }
 
     @Test
-    void isPositionReadyToEnter_Decimal_PriceDropRequired_CurrentPriceEqualToSafeEntryPrice_StopLossHigh_ReturnsFalse() throws JSONException {
+    void isPositionReadyToEnter_Decimal_PriceDropRequired_CurrentPriceEqualToSafeEntryPrice_StopLossHigh_ReturnsFalse()  {
         SpotNormalTradeData spotNormalTradeData = SpotNormalTradeData.builder()
                 .symbol("some-symbol")
                 .entry(0.00045)
@@ -252,7 +251,7 @@ class SpotNormalTraderCalculatorServiceTest {
     }
 
     @Test
-    void isPositionReadyToEnter_PriceDropRequired_CurrentPriceLessThanSafeEntryPrice_HighLoss_ReturnsFalse() throws JSONException {
+    void isPositionReadyToEnter_PriceDropRequired_CurrentPriceLessThanSafeEntryPrice_HighLoss_ReturnsFalse()  {
         SpotNormalTradeData spotNormalTradeData = SpotNormalTradeData.builder()
                 .symbol("some-symbol")
                 .entry(100.0)
@@ -271,7 +270,7 @@ class SpotNormalTraderCalculatorServiceTest {
 
 
     @Test
-    void isPositionReadyToEnter_PriceDropRequired_Decimal__CurrentPriceLessThanSafeEntryPrice_ReturnsTrue() throws JSONException {
+    void isPositionReadyToEnter_PriceDropRequired_Decimal__CurrentPriceLessThanSafeEntryPrice_ReturnsTrue()  {
         SpotNormalTradeData spotNormalTradeData = SpotNormalTradeData.builder()
                 .symbol("some-symbol")
                 .entry(0.00045)
@@ -290,7 +289,7 @@ class SpotNormalTraderCalculatorServiceTest {
 
 
     @Test
-    void isPositionReadyToEnter_PriceDropRequired_CurrentPriceSlightlyGreaterThanSafeEntryPrice_HighLoss_ReturnsFalse() throws JSONException {
+    void isPositionReadyToEnter_PriceDropRequired_CurrentPriceSlightlyGreaterThanSafeEntryPrice_HighLoss_ReturnsFalse()  {
         SpotNormalTradeData spotNormalTradeData = SpotNormalTradeData.builder()
                 .symbol("some-symbol")
                 .entry(100.0)
@@ -309,7 +308,7 @@ class SpotNormalTraderCalculatorServiceTest {
     }
 
     @Test
-    void isPositionReadyToEnter_PriceDropRequired_CurrentPriceSlightlyLowerThanSafeEntryPrice_ReturnsTrue() throws JSONException {
+    void isPositionReadyToEnter_PriceDropRequired_CurrentPriceSlightlyLowerThanSafeEntryPrice_ReturnsTrue()  {
         SpotNormalTradeData spotNormalTradeData = SpotNormalTradeData.builder()
                 .symbol("some-symbol")
                 .entry(100.0)

@@ -1,27 +1,27 @@
 package com.mtd.crypto.market.service;
 
 import com.mtd.crypto.market.data.enumarator.binance.BinanceCandleStickInterval;
-import com.mtd.crypto.market.data.enumarator.binance.BinanceOrderSide;
-import com.mtd.crypto.market.data.response.*;
+import com.mtd.crypto.market.data.response.BinanceCandleStickResponse;
 import com.mtd.crypto.market.data.response.exchange.info.BinanceExchangeInfoResponse;
+import com.mtd.crypto.market.data.response.exchange.info.BinanceExchangeInfoResponse_Symbol;
 import org.junit.jupiter.api.MethodOrderer;
-import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
-
-/*@SpringBootTest
+@SpringBootTest
 @ActiveProfiles("dev")
-@TestMethodOrder(MethodOrderer.OrderAnnotation.class)*/
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class BinanceServiceTest {
+
+
+    @Autowired
+    private BinanceService binanceService;
+
 
 /*    private static final String TEST_SYMBOL = "BTCUSDT";
 
@@ -62,13 +62,6 @@ public class BinanceServiceTest {
         assertNotNull(price);
     }
 
-    @Test
-    public void testGetCandles() throws JSONException {
-        int CANDLE_LIMIT = 5;
-        List<BinanceCandleStickResponse> candles = binanceService.getCandles(TEST_SYMBOL, BinanceCandleStickInterval.FOUR_HOURS, CANDLE_LIMIT);
-        assertNotNull(candles);
-        assertEquals(CANDLE_LIMIT, candles.size());
-    }
 
 
     //TODO IMPORTANT NOW YOU CAN TEST THE LIMIT ORDERS. YOU WERE DOING IT WRONG
@@ -143,7 +136,7 @@ public class BinanceServiceTest {
 *//*
         BinanceExchangeInfoResponse abtusdt = binanceService.getExchangeInfo("ABTUSDT");
 *//*
-*//*
+     *//*
         assertNotNull(decimalInfo);
 *//*
     }
@@ -161,6 +154,22 @@ public class BinanceServiceTest {
         }
         return createdOrders;
     }*/
+
+
+    @Test
+    public void getAllExchangeInfo() {
+
+        BinanceExchangeInfoResponse allExchangeInfo = binanceService.getAllExchangeInfo();
+        List<String> collect = allExchangeInfo.getSymbols().stream().filter(symbol -> symbol.getQuoteAsset().equalsIgnoreCase("USDT")).map(BinanceExchangeInfoResponse_Symbol::getSymbol).toList();
+
+    }
+
+    @Test
+    public void testGetCandles()  {
+        int CANDLE_LIMIT = 5;
+        List<BinanceCandleStickResponse> candles = binanceService.getCandles("BTCUSDT", BinanceCandleStickInterval.FOUR_HOURS, CANDLE_LIMIT);
+        System.out.println("");
+    }
 
 
 }

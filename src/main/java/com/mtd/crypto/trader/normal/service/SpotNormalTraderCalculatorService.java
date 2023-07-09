@@ -11,7 +11,6 @@ import com.mtd.crypto.trader.normal.enumarator.SpotNormalMarketOrderPositionComm
 import com.mtd.crypto.trader.normal.helper.SpotNormalTradePriceCalculatorHelper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -32,9 +31,9 @@ public class SpotNormalTraderCalculatorService {
      * @param spotNormalTradeData isPriceDropRequired. Coinin fiyati dusup oradan alip tekrar cikmak icin. Bu yuzden current price'a gore islem yapiyoruz. 4 saatlik beklemeye gerek yok
      *                            Normal durumlarda 4 saat bekliyoruz. Coinin giris noktasina gercekten geldigine emin olmak lazim. Tabi bunu son yarim saatlik fiyat girisin ustunde mi diye de bakilabilir belki.
      * @return
-     * @throws JSONException
+
      */
-    public boolean isPositionReadyToEnter(SpotNormalTradeData spotNormalTradeData) throws JSONException {
+    public boolean isPositionReadyToEnter(SpotNormalTradeData spotNormalTradeData)  {
 
         if (spotNormalTradeData.isPriceDropRequired()) {
             Double currentPrice = binanceService.getCurrentPrice(spotNormalTradeData.getSymbol());

@@ -15,7 +15,6 @@ import com.mtd.crypto.trader.normal.data.entity.SpotNormalTradeMarketOrder;
 import com.mtd.crypto.trader.normal.helper.SpotNormalTradePriceCalculatorHelper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
@@ -40,20 +39,24 @@ import static org.mockito.Mockito.*;
 @ActiveProfiles("dev")
 public class SpotNormalTraderIntegrationTest {
 
+    private static final Double TEST_ENTRY_PRICE = 100.0;
+    private static final Double TEST_BINANCE_MARKET_ENTRY_PRICE = 100.1;
+    private static final Double TEST_TAKE_PROFIT_PRICE = 110.0;
+    private static final Double TEST_STOP_PRICE = 96.0;
+    private static final String TEST_SYMBOL = "BTCUSTD";
+    private static final String TEST_BASE_SYMBOL = "USDT";
+    private static final Double WALLET_AMOUNT = 1500.0;
+    private static final Integer TRADE_WALLET_PERCENTAGE = 20;
     @Container
     static MySQLContainer mySQLContainer = new MySQLContainer<>(DockerImageName.parse("mysql:8.0")).withDatabaseName("cryptotest")
             .withUsername("root")
             .withPassword("test");
-
     @Autowired
     SpotNormalTraderProxyService proxyService;
-
     @Autowired
     SpotNormalTradeDataService dataService;
-
     @Autowired
     SpotNormalTradingStrategyConfiguration spotNormalTradingStrategyConfiguration;
-
     @MockBean
     private BinanceService binanceService;
 
@@ -65,18 +68,8 @@ public class SpotNormalTraderIntegrationTest {
         registry.add("spring.jpa.properties.hibernate.enable_lazy_load_no_trans", () -> true);
     }
 
-    private static final Double TEST_ENTRY_PRICE = 100.0;
-    private static final Double TEST_BINANCE_MARKET_ENTRY_PRICE = 100.1;
-    private static final Double TEST_TAKE_PROFIT_PRICE = 110.0;
-    private static final Double TEST_STOP_PRICE = 96.0;
-    private static final String TEST_SYMBOL = "BTCUSTD";
-    private static final String TEST_BASE_SYMBOL = "USDT";
-    private static final Double WALLET_AMOUNT = 1500.0;
-    private static final Integer TRADE_WALLET_PERCENTAGE = 20;
-
-
     @Test
-    public void testHappyPathNonPriceDrop() throws JSONException {
+    public void testHappyPathNonPriceDrop()  {
 
         //creating trade data
         SpotNormalTradeDto spotNormalTradeDto = createTradeData(false);
@@ -154,7 +147,7 @@ public class SpotNormalTraderIntegrationTest {
 
 
     @Test
-    public void testStopAfterEnter() throws JSONException {
+    public void testStopAfterEnter()  {
 
         //creating trade data
         SpotNormalTradeDto spotNormalTradeDto = createTradeData(false);
@@ -213,7 +206,7 @@ public class SpotNormalTraderIntegrationTest {
 
 
     @Test
-    public void testMakeStopEntryPriceAfterFirstProfitSale() throws JSONException {
+    public void testMakeStopEntryPriceAfterFirstProfitSale()  {
 
         //creating trade data
         SpotNormalTradeDto spotNormalTradeDto = createTradeData(false);
@@ -285,13 +278,13 @@ public class SpotNormalTraderIntegrationTest {
         return SpotNormalTradeDto
                 .builder()
                 .symbol(TEST_SYMBOL)
-                .baseTradingSymbol(TEST_BASE_SYMBOL)
+                .quoteAsset(TEST_BASE_SYMBOL)
                 .entry(TEST_ENTRY_PRICE)
                 .takeProfit(TEST_TAKE_PROFIT_PRICE)
                 .stop(TEST_STOP_PRICE)
                 .walletPercentage(TRADE_WALLET_PERCENTAGE)
-                .isPriceDropRequired(isPriceDrop)
-                .source(TradeSource.BURAK)
+                .priceDropRequired(isPriceDrop)
+                .burak(true)
                 .build();
     }
 

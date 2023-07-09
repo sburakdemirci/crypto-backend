@@ -26,8 +26,12 @@ public class JwtTokenService {
     public String createTokenFromAuthentication(Authentication authentication) {
         UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
         return createToken(userPrincipal.getUser().getId());
-
     }
+
+    public String createTokenFromUserId(String userId) {
+        return createToken(userId);
+    }
+
 
     private String createToken(String userId) {
         Date now = new Date();

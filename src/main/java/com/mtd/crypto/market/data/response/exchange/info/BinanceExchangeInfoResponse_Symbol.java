@@ -6,7 +6,6 @@ import com.mtd.crypto.market.data.enumarator.binance.BinanceSymbolStatus;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.Setter;
-import org.springframework.boot.configurationprocessor.json.JSONException;
 
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -37,7 +36,7 @@ public class BinanceExchangeInfoResponse_Symbol {
     private BinanceFilter binanceFilter;
 
 
-    public void setFilters(List<LinkedHashMap> filters) throws JSONException {
+    public void setFilters(List<LinkedHashMap> filters)  {
         this.binanceFilter = BinanceFilter.parse(filters);
         this.filters = filters;
     }

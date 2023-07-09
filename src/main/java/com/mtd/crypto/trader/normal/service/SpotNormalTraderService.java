@@ -26,7 +26,7 @@ public class SpotNormalTraderService {
 
 
     public void enterPosition(SpotNormalTradeData parentTrade) {
-        Double walletBalance = binanceService.getBalanceBySymbol(parentTrade.getBaseTradingSymbol());
+        Double walletBalance = binanceService.getBalanceBySymbol(parentTrade.getQuoteAsset());
         Double tradeAmountInDollars = walletBalance * parentTrade.getWalletPercentage();
 
         try {

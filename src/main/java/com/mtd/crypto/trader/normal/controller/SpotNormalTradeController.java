@@ -12,6 +12,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Arrays;
 import java.util.List;
 
 @RestController
@@ -45,9 +46,25 @@ public class SpotNormalTradeController {
         notificationService.sendInfoMessage(String.format("Trade Approved \nCoin: %s\nEntry:%,.4f  TakeProfit:%,.4f  Stop:%,.4f\nTradeId: %s \nApproved By: %s", tradeData.getSymbol(), tradeData.getEntry(), tradeData.getTakeProfit(), tradeData.getStop(), tradeId, userPrincipal.getUsername()));
     }
 
-    @GetMapping("trade")
-    public List<SpotNormalTradeData> getTradesByFilter(@RequestParam List<TradeStatus> tradeStatusList) {
-        return dataService.findAllByTradeStatusIn(tradeStatusList);
+    @DeleteMapping("trade/{tradeId}/cancel")
+    public void cancelTrade(@PathVariable String tradeId, @CurrentUser UserPrincipal userPrincipal) {
+        dataService.cancelTradeBeforePosition(tradeId);
+        SpotNormalTradeData tradeData = dataService.findById(tradeId);
+        notificationService.sendInfoMessage(String.format("Trade Cancelled \nCoin: %s\nEntry:%,.4f  TakeProfit:%,.4f  Stop:%,.4f\nTradeId: %s \nApproved By: %s", tradeData.getSymbol(), tradeData.getEntry(), tradeData.getTakeProfit(), tradeData.getStop(), tradeId, userPrincipal.getUsername()));
+    }
+
+    @GetMapping("trade/active")
+    public List<SpotNormalTradeData> getTradesByFilter() {
+        List<TradeStatus> tradeStatuses = Arrays.asList(
+                TradeStatus.APPROVAL_WAITING,
+                TradeStatus.POSITION_WAITING,
+                //  TradeStatus.CANCELLED_BEFORE_POSITION,
+             //   TradeStatus.EXPIRED,
+                TradeStatus.IN_POSITION);
+                // TradeStatus.CANCELLED_IN_POSITION,
+                //    TradeStatus.POSITION_FINISHED_WITH_PROFIT,
+                //    TradeStatus.POSITION_FINISHED_WITH_LOSS);
+        return dataService.findTradesByStatusesOrderByStatusAndCreatedTime(tradeStatuses);
     }
 
 
