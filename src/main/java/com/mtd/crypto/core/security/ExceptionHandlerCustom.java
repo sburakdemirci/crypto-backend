@@ -1,10 +1,13 @@
 package com.mtd.crypto.core.security;
 
+import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
@@ -34,6 +37,25 @@ public class ExceptionHandlerCustom extends ResponseEntityExceptionHandler {
         responseBody.put("errors", errors);
 
         return new ResponseEntity<>(responseBody, headers, status);
+    }
+
+
+    @ExceptionHandler(ConstraintViolationException.class)
+    protected ResponseEntity<Object> handleConstraintViolationException(
+            ConstraintViolationException ex, WebRequest request
+    ) {
+
+        Map<String, Object> responseBody = new LinkedHashMap<>();
+        responseBody.put("timestamp", new Date());
+
+        List<String> errors = ex.getConstraintViolations()
+                .stream()
+                .map(x -> x.getMessage())
+                .collect(Collectors.toList());
+
+        responseBody.put("errors", errors);
+
+        return new ResponseEntity<>(responseBody, new HttpHeaders(), HttpStatus.BAD_REQUEST);
     }
 
 

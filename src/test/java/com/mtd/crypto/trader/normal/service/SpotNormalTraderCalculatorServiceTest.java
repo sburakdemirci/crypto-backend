@@ -1,7 +1,7 @@
 package com.mtd.crypto.trader.normal.service;
 
-import com.mtd.crypto.market.data.enumarator.binance.BinanceCandleStickInterval;
-import com.mtd.crypto.market.data.response.BinanceCandleStickResponse;
+import com.mtd.crypto.market.data.binance.binance.BinanceCandleStickInterval;
+import com.mtd.crypto.market.data.binance.response.BinanceCandleStickResponse;
 import com.mtd.crypto.market.service.BinanceService;
 import com.mtd.crypto.trader.normal.configuration.SpotNormalTradingStrategyConfiguration;
 import com.mtd.crypto.trader.normal.data.entity.SpotNormalTradeData;
@@ -36,8 +36,8 @@ class SpotNormalTraderCalculatorServiceTest {
 
 
     @Test
-    void isPositionReadyToEnter_NonDrop_GivenCurrentPriceHigherThanEntryPrice_ShouldReturnTrue()  {
-        SpotNormalTradeData spotNormalTradeData = SpotNormalTradeData.builder().symbol("some-symbol").entry(100.0).takeProfit(110.0).stop(95.0).isPriceDropRequired(false).build();
+    void isPositionReadyToEnter_NonDrop_GivenCurrentPriceHigherThanEntryPrice_ShouldReturnTrue() {
+        SpotNormalTradeData spotNormalTradeData = SpotNormalTradeData.builder().symbol("some-symbol").entry(100.0).takeProfit(110.0).stop(95.0).priceDropRequired(false).build();
         BinanceCandleStickResponse candle = new BinanceCandleStickResponse();
         candle.setClose(101.0);
         List<BinanceCandleStickResponse> candles = Collections.singletonList(candle);
@@ -48,8 +48,8 @@ class SpotNormalTraderCalculatorServiceTest {
 
 
     @Test
-    void isPositionReadyToEnter_NonDrop_Decimals_GivenCurrentPriceHigherThanEntryPrice_ShouldReturnTrue()  {
-        SpotNormalTradeData spotNormalTradeData = SpotNormalTradeData.builder().symbol("some-symbol").entry(0.00045).takeProfit(110.0).stop(0.00043).isPriceDropRequired(false).build();
+    void isPositionReadyToEnter_NonDrop_Decimals_GivenCurrentPriceHigherThanEntryPrice_ShouldReturnTrue() {
+        SpotNormalTradeData spotNormalTradeData = SpotNormalTradeData.builder().symbol("some-symbol").entry(0.00045).takeProfit(110.0).stop(0.00043).priceDropRequired(false).build();
         BinanceCandleStickResponse candle = new BinanceCandleStickResponse();
         candle.setClose(0.00046);
         List<BinanceCandleStickResponse> candles = Collections.singletonList(candle);
@@ -59,13 +59,13 @@ class SpotNormalTraderCalculatorServiceTest {
     }
 
     @Test
-    void isPositionReadyToEnter_NonDrop_GivenCurrentPriceLowerThanEntryPrice_HighLoss_ShouldReturnFalse()  {
+    void isPositionReadyToEnter_NonDrop_GivenCurrentPriceLowerThanEntryPrice_HighLoss_ShouldReturnFalse() {
         SpotNormalTradeData spotNormalTradeData = SpotNormalTradeData.builder()
                 .symbol("some-symbol")
                 .entry(100.0)
                 .takeProfit(110.0)
                 .stop(95.0)
-                .isPriceDropRequired(false)
+                .priceDropRequired(false)
                 .build();
         BinanceCandleStickResponse candle = new BinanceCandleStickResponse();
         candle.setClose(99.0);
@@ -79,13 +79,13 @@ class SpotNormalTraderCalculatorServiceTest {
 
 
     @Test
-    void isPositionReadyToEnter_NonDrop_Decimals_GivenCurrentPriceLowerThanEntryPrice_HighLoss_ShouldReturnFalse()  {
+    void isPositionReadyToEnter_NonDrop_Decimals_GivenCurrentPriceLowerThanEntryPrice_HighLoss_ShouldReturnFalse() {
         SpotNormalTradeData spotNormalTradeData = SpotNormalTradeData.builder()
                 .symbol("some-symbol")
                 .entry(0.00045)
                 .takeProfit(0.00050)
                 .stop(0.00042)
-                .isPriceDropRequired(false)
+                .priceDropRequired(false)
                 .build();
         BinanceCandleStickResponse candle = new BinanceCandleStickResponse();
         candle.setClose(0.00044);
@@ -99,13 +99,13 @@ class SpotNormalTraderCalculatorServiceTest {
 
 
     @Test
-    void isPositionReadyToEnter_NonDrop_GivenCurrentPriceEqualToEntryPrice_ShouldReturnTrue()  {
+    void isPositionReadyToEnter_NonDrop_GivenCurrentPriceEqualToEntryPrice_ShouldReturnTrue() {
         SpotNormalTradeData spotNormalTradeData = SpotNormalTradeData.builder()
                 .symbol("some-symbol")
                 .entry(100.0)
                 .takeProfit(110.0)
                 .stop(95.0)
-                .isPriceDropRequired(false)
+                .priceDropRequired(false)
                 .build();
         BinanceCandleStickResponse candle = new BinanceCandleStickResponse();
         candle.setClose(100.0);
@@ -113,18 +113,17 @@ class SpotNormalTraderCalculatorServiceTest {
         when(mockBinanceService.getCandles(anyString(), any(BinanceCandleStickInterval.class), anyInt())).thenReturn(candles);
 
         boolean result = calculatorService.isPositionReadyToEnter(spotNormalTradeData);
-
         assertTrue(result);
     }
 
     @Test
-    void isPositionReadyToEnter_NonDrop_Decimals_GivenCurrentPriceEqualToEntryPrice_ShouldReturnTrue()  {
+    void isPositionReadyToEnter_NonDrop_Decimals_GivenCurrentPriceEqualToEntryPrice_ShouldReturnTrue() {
         SpotNormalTradeData spotNormalTradeData = SpotNormalTradeData.builder()
                 .symbol("some-symbol")
                 .entry(0.00045)
                 .takeProfit(0.00050)
                 .stop(0.00043)
-                .isPriceDropRequired(false)
+                .priceDropRequired(false)
                 .build();
         BinanceCandleStickResponse candle = new BinanceCandleStickResponse();
         candle.setClose(0.00045);
@@ -137,13 +136,13 @@ class SpotNormalTraderCalculatorServiceTest {
     }
 
     @Test
-    void isPositionReadyToEnter_NonDrop_GivenCurrentPriceSlightlyLessThanEntryPrice_HighLoss_ReturnsFalse()  {
+    void isPositionReadyToEnter_NonDrop_GivenCurrentPriceSlightlyLessThanEntryPrice_HighLoss_ReturnsFalse() {
         SpotNormalTradeData spotNormalTradeData = SpotNormalTradeData.builder()
                 .symbol("some-symbol")
                 .entry(100.0)
                 .takeProfit(110.0)
                 .stop(96.0)
-                .isPriceDropRequired(false)
+                .priceDropRequired(false)
                 .build();
         BinanceCandleStickResponse candle = new BinanceCandleStickResponse();
         candle.setClose(99.99999);
@@ -157,13 +156,13 @@ class SpotNormalTraderCalculatorServiceTest {
 
 
     @Test
-    void isPositionReadyToEnter_NonDrop_GivenCurrentPriceSlightlyHigherThanEntryPrice_ReturnsTrue()  {
+    void isPositionReadyToEnter_NonDrop_GivenCurrentPriceSlightlyHigherThanEntryPrice_ReturnsTrue() {
         SpotNormalTradeData spotNormalTradeData = SpotNormalTradeData.builder()
                 .symbol("some-symbol")
                 .entry(100.0)
                 .takeProfit(110.0)
                 .stop(96.0)
-                .isPriceDropRequired(false)
+                .priceDropRequired(false)
                 .build();
         BinanceCandleStickResponse candle = new BinanceCandleStickResponse();
         candle.setClose(100.0001);
@@ -177,13 +176,13 @@ class SpotNormalTraderCalculatorServiceTest {
 
 
     @Test
-    void isPositionReadyToEnter_PriceDropRequired_CurrentPriceGreaterThanSafeEntryPrice_ReturnsFalse()  {
+    void isPositionReadyToEnter_PriceDropRequired_CurrentPriceGreaterThanSafeEntryPrice_ReturnsFalse() {
         SpotNormalTradeData spotNormalTradeData = SpotNormalTradeData.builder()
                 .symbol("some-symbol")
                 .entry(100.0)
                 .takeProfit(110.0)
                 .stop(95.0)
-                .isPriceDropRequired(true)
+                .priceDropRequired(true)
                 .build();
         double safeEntryPercentage = 0.1; // Adjust this value as needed
         when(mockBinanceService.getCurrentPrice(anyString())).thenReturn(111.0);
@@ -196,13 +195,13 @@ class SpotNormalTraderCalculatorServiceTest {
 
 
     @Test
-    void isPositionReadyToEnter_Decimals_PriceDropRequired_CurrentPriceGreaterThanSafeEntryPrice_ReturnsFalse()  {
+    void isPositionReadyToEnter_Decimals_PriceDropRequired_CurrentPriceGreaterThanSafeEntryPrice_ReturnsFalse() {
         SpotNormalTradeData spotNormalTradeData = SpotNormalTradeData.builder()
                 .symbol("some-symbol")
                 .entry(0.00045)
                 .takeProfit(0.00070)
                 .stop(0.00043)
-                .isPriceDropRequired(true)
+                .priceDropRequired(true)
                 .build();
         double safeEntryPercentage = 0.1; // Adjust this value as needed
 
@@ -215,13 +214,13 @@ class SpotNormalTraderCalculatorServiceTest {
     }
 
     @Test
-    void isPositionReadyToEnter_PriceDropRequired_CurrentPriceEqualToSafeEntryPrice_ReturnsTrue()  {
+    void isPositionReadyToEnter_PriceDropRequired_CurrentPriceEqualToSafeEntryPrice_ReturnsTrue() {
         SpotNormalTradeData spotNormalTradeData = SpotNormalTradeData.builder()
                 .symbol("some-symbol")
                 .entry(100.0)
                 .stop(95.0)
                 .takeProfit(140.0)
-                .isPriceDropRequired(true)
+                .priceDropRequired(true)
                 .build();
         double safeEntryPercentage = 0.1; // =110
         when(mockBinanceService.getCurrentPrice(anyString())).thenReturn(110.0);
@@ -233,13 +232,13 @@ class SpotNormalTraderCalculatorServiceTest {
     }
 
     @Test
-    void isPositionReadyToEnter_Decimal_PriceDropRequired_CurrentPriceEqualToSafeEntryPrice_StopLossHigh_ReturnsFalse()  {
+    void isPositionReadyToEnter_Decimal_PriceDropRequired_CurrentPriceEqualToSafeEntryPrice_StopLossHigh_ReturnsFalse() {
         SpotNormalTradeData spotNormalTradeData = SpotNormalTradeData.builder()
                 .symbol("some-symbol")
                 .entry(0.00045)
                 .takeProfit(0.00050)
                 .stop(0.00043)
-                .isPriceDropRequired(true)
+                .priceDropRequired(true)
                 .build();
         double safeEntryPercentage = 0.1; // =110
         when(mockBinanceService.getCurrentPrice(anyString())).thenReturn(0.000495);
@@ -251,13 +250,13 @@ class SpotNormalTraderCalculatorServiceTest {
     }
 
     @Test
-    void isPositionReadyToEnter_PriceDropRequired_CurrentPriceLessThanSafeEntryPrice_HighLoss_ReturnsFalse()  {
+    void isPositionReadyToEnter_PriceDropRequired_CurrentPriceLessThanSafeEntryPrice_HighLoss_ReturnsFalse() {
         SpotNormalTradeData spotNormalTradeData = SpotNormalTradeData.builder()
                 .symbol("some-symbol")
                 .entry(100.0)
                 .takeProfit(110.0)
                 .stop(96.0)
-                .isPriceDropRequired(true)
+                .priceDropRequired(true)
                 .build();
         double safeEntryPercentage = 0.1; // = 110
         when(mockSpotNormalTradingStrategyConfiguration.getPriceDropSafeEntryPercentage()).thenReturn(safeEntryPercentage);
@@ -270,13 +269,13 @@ class SpotNormalTraderCalculatorServiceTest {
 
 
     @Test
-    void isPositionReadyToEnter_PriceDropRequired_Decimal__CurrentPriceLessThanSafeEntryPrice_ReturnsTrue()  {
+    void isPositionReadyToEnter_PriceDropRequired_Decimal__CurrentPriceLessThanSafeEntryPrice_ReturnsTrue() {
         SpotNormalTradeData spotNormalTradeData = SpotNormalTradeData.builder()
                 .symbol("some-symbol")
                 .entry(0.00045)
                 .takeProfit(0.00050)
                 .stop(0.00043)
-                .isPriceDropRequired(true)
+                .priceDropRequired(true)
                 .build();
         double safeEntryPercentage = 0.1; // = 110
         when(mockSpotNormalTradingStrategyConfiguration.getPriceDropSafeEntryPercentage()).thenReturn(safeEntryPercentage);
@@ -289,13 +288,13 @@ class SpotNormalTraderCalculatorServiceTest {
 
 
     @Test
-    void isPositionReadyToEnter_PriceDropRequired_CurrentPriceSlightlyGreaterThanSafeEntryPrice_HighLoss_ReturnsFalse()  {
+    void isPositionReadyToEnter_PriceDropRequired_CurrentPriceSlightlyGreaterThanSafeEntryPrice_HighLoss_ReturnsFalse() {
         SpotNormalTradeData spotNormalTradeData = SpotNormalTradeData.builder()
                 .symbol("some-symbol")
                 .entry(100.0)
                 .stop(95.0)
                 .takeProfit(110.0)
-                .isPriceDropRequired(true)
+                .priceDropRequired(true)
                 .build();
         double safeEntryPercentage = 0.1; // Adjust this value as needed
 
@@ -308,13 +307,13 @@ class SpotNormalTraderCalculatorServiceTest {
     }
 
     @Test
-    void isPositionReadyToEnter_PriceDropRequired_CurrentPriceSlightlyLowerThanSafeEntryPrice_ReturnsTrue()  {
+    void isPositionReadyToEnter_PriceDropRequired_CurrentPriceSlightlyLowerThanSafeEntryPrice_ReturnsTrue() {
         SpotNormalTradeData spotNormalTradeData = SpotNormalTradeData.builder()
                 .symbol("some-symbol")
                 .entry(100.0)
                 .takeProfit(110.0)
                 .stop(95.0)
-                .isPriceDropRequired(true)
+                .priceDropRequired(true)
                 .build();
         double safeEntryPercentage = 0.001; // Adjust this value as needed
 
@@ -356,8 +355,9 @@ class SpotNormalTraderCalculatorServiceTest {
                 .stop(98.0)
                 .averageEntryPrice(100.0)
                 .takeProfit(110.0)
-                .symbol("some-symbol").
-                build();
+                .symbol("some-symbol")
+                .gradualProfit(true)
+                .build();
 
         List<SpotNormalTradeMarketOrder> marketOrders = Collections.emptyList();
         when(mockBinanceService.getCurrentPrice(anyString())).thenReturn(104.0);
@@ -376,6 +376,7 @@ class SpotNormalTraderCalculatorServiceTest {
                 .builder()
                 .stop(98.0)
                 .averageEntryPrice(100.0)
+                .gradualProfit(true)
                 .takeProfit(110.0)
                 .symbol("some-symbol").
                 build();
@@ -397,8 +398,9 @@ class SpotNormalTraderCalculatorServiceTest {
                 .stop(98.0)
                 .averageEntryPrice(100.0)
                 .takeProfit(110.0)
-                .symbol("some-symbol").
-                build();
+                .symbol("some-symbol")
+                .gradualProfit(true)
+                .build();
 
         List<SpotNormalTradeMarketOrder> marketOrders = Collections.singletonList(new SpotNormalTradeMarketOrder());
         when(mockBinanceService.getCurrentPrice(anyString())).thenReturn(107.0);
@@ -418,8 +420,9 @@ class SpotNormalTraderCalculatorServiceTest {
                 .stop(98.0)
                 .averageEntryPrice(100.0)
                 .takeProfit(110.0)
-                .symbol("some-symbol").
-                build();
+                .symbol("some-symbol")
+                .gradualProfit(true)
+                .build();
 
         List<SpotNormalTradeMarketOrder> marketOrders = Collections.singletonList(new SpotNormalTradeMarketOrder());
         when(mockBinanceService.getCurrentPrice(anyString())).thenReturn(106.6);
@@ -557,8 +560,9 @@ class SpotNormalTraderCalculatorServiceTest {
                 .stop(98.0)
                 .averageEntryPrice(100.0)
                 .takeProfit(110.0)
-                .symbol("some-symbol").
-                build();
+                .symbol("some-symbol")
+                .gradualProfit(true)
+                .build();
 
         List<SpotNormalTradeMarketOrder> marketOrders = Collections.emptyList();
         when(mockBinanceService.getCurrentPrice(anyString())).thenReturn(109.0);

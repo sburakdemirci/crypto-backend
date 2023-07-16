@@ -33,8 +33,10 @@ public class LoggingAspect {
 
         // Log method invocation
 
-        // Proceed with the method execution
+        // Proceed with the method execution'
+
         Object result = joinPoint.proceed();
+
 
         // Stop the stopwatch
         stopWatch.stop();

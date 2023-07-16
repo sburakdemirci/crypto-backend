@@ -43,9 +43,6 @@ public class SpotNormalTradeData extends EntityAuditBase {
     @NotBlank(message = "Symbol is required")
     private String symbol;
 
-/*
-    @NotBlank(message = "Base trading symbol is required")
-*/
     private String quoteAsset;
 
     @Positive(message = "Entry must be greater than zero")
@@ -57,7 +54,8 @@ public class SpotNormalTradeData extends EntityAuditBase {
     @Positive(message = "Stop must be greater than zero")
     private Double stop;
 
-    private boolean isPriceDropRequired;
+    private boolean priceDropRequired;
+    private boolean gradualProfit;
 
     @NotNull(message = "Source is required")
     @Enumerated(EnumType.STRING)

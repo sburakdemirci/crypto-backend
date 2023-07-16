@@ -2,8 +2,9 @@ package com.mtd.crypto.market.client;
 
 import com.mtd.crypto.core.aspect.LoggableClass;
 import com.mtd.crypto.market.configuration.BinanceSecretProperties;
-import com.mtd.crypto.market.data.request.BinanceRequestBase;
+import com.mtd.crypto.market.data.binance.request.BinanceRequestBase;
 import com.mtd.crypto.market.exception.BinanceException;
+import com.mtd.crypto.trader.normal.notification.SpotNormalTradeNotificationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpMethod;
@@ -22,6 +23,7 @@ public class BinanceRequestHandler {
     private static final int MAX_RETRY_COUNT = 5;
     private final RestTemplate restTemplate;
     private final BinanceSecretProperties binanceSecretProperties;
+    private final SpotNormalTradeNotificationService notificationService;
 
 
 //todo burak log loglog log
@@ -83,11 +85,9 @@ public class BinanceRequestHandler {
 
         try {
             return restTemplate.exchange(binanceRequest.getUrl(), binanceRequest.getHttpMethod(), binanceRequest.getHttpEntity(), responseEntity);
-        } catch (HttpClientErrorException.BadRequest e) {
-            e.printStackTrace();
-            throw new BinanceException(e.getMessage(), e.getStatusCode());
         } catch (HttpClientErrorException e) {
             e.printStackTrace();
+            notificationService.sendErrorMessage("Problem with binance request. \nError:" + e.getMessage() + "\nStatus Code:" + e.getStatusCode() + "\nRequested URL:" + binanceRequest.getUrl());
             throw new BinanceException(e.getMessage(), e.getStatusCode());
         }
     }

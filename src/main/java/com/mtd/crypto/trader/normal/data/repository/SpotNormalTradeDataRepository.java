@@ -3,8 +3,6 @@ package com.mtd.crypto.trader.normal.data.repository;
 import com.mtd.crypto.trader.common.enumarator.TradeStatus;
 import com.mtd.crypto.trader.normal.data.entity.SpotNormalTradeData;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;

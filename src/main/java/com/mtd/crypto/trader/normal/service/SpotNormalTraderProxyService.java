@@ -23,6 +23,7 @@ public class SpotNormalTraderProxyService {
     private final SpotNormalTraderService traderService;
     private final SpotNormalTradeNotificationService notificationService;
 
+
     public void checkAndEnterPositions() {
         List<SpotNormalTradeData> positionWaitingTrades = dataService.findAllByTradeStatus(TradeStatus.POSITION_WAITING);
 
@@ -70,5 +71,15 @@ public class SpotNormalTraderProxyService {
                 notificationService.sendErrorMessage(String.format("EXIT PROFIT EXECUTION ERROR\nCoin: %s \nTradeId: %s \nError: %s", trade.getSymbol(), trade.getId(), e.getMessage()));
             }
         });
+    }
+
+
+    public SpotNormalTradeData cancelTrade(SpotNormalTradeData data) {
+        if (data.getTradeStatus() == TradeStatus.IN_POSITION) {
+            return traderService.cancelTradeExit(data);
+        } else {
+            return dataService.cancelTradeBeforePosition(data.getId());
+        }
+
     }
 }

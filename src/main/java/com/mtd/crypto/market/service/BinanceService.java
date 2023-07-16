@@ -3,12 +3,12 @@ package com.mtd.crypto.market.service;
 import com.mtd.crypto.core.aspect.LoggableClass;
 import com.mtd.crypto.market.client.BinanceHttpClient;
 import com.mtd.crypto.market.configuration.BinanceTradeProperties;
+import com.mtd.crypto.market.data.binance.binance.BinanceCandleStickInterval;
+import com.mtd.crypto.market.data.binance.binance.BinanceOrderSide;
+import com.mtd.crypto.market.data.binance.dto.BinanceDecimalInfoDto;
+import com.mtd.crypto.market.data.binance.response.*;
+import com.mtd.crypto.market.data.binance.response.exchange.info.BinanceExchangeInfoResponse;
 import com.mtd.crypto.market.data.custom.AdjustedDecimal;
-import com.mtd.crypto.market.data.dto.BinanceDecimalInfoDto;
-import com.mtd.crypto.market.data.enumarator.binance.BinanceCandleStickInterval;
-import com.mtd.crypto.market.data.enumarator.binance.BinanceOrderSide;
-import com.mtd.crypto.market.data.response.*;
-import com.mtd.crypto.market.data.response.exchange.info.BinanceExchangeInfoResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
@@ -36,7 +36,7 @@ public class BinanceService {
         return binanceHttpClient.getSystemStatus();
     }
 
-    public List<UserAssetResponse> getUserAsset() {
+    public List<BinanceUserAssetResponse> getWallet() {
         return binanceHttpClient.getUserAsset();
     }
 
@@ -107,7 +107,7 @@ public class BinanceService {
         return binanceHttpClient.executeLimitOrder(symbol, binanceOrderSide, adjustedQuantity, adjustedLimitPrice);
     }
 
-    public List<BinanceCandleStickResponse> getCandles(String symbol, BinanceCandleStickInterval interval, int limit)  {
+    public List<BinanceCandleStickResponse> getCandles(String symbol, BinanceCandleStickInterval interval, int limit) {
         return binanceHttpClient.getCandles(symbol, interval, limit);
     }
 
@@ -168,6 +168,11 @@ public class BinanceService {
 
     public BinanceExchangeInfoResponse getAllExchangeInfo() throws HttpClientErrorException {
         return binanceHttpClient.getAllExchangeInfo();
+    }
+
+    public void executeHealthCheck() {
+        BinanceOrderResponse binanceOrderResponse = executeMarketOrderWithDollar("BTCUSDT", BinanceOrderSide.BUY, 15);
+        executeMarketOrderWithQuantity("BTCUSDT", BinanceOrderSide.SELL, binanceOrderResponse.getExecutedQty());
     }
 
 

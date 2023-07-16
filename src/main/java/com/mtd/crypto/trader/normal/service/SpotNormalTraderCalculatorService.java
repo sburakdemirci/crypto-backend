@@ -1,8 +1,8 @@
 package com.mtd.crypto.trader.normal.service;
 
 import com.mtd.crypto.core.aspect.LoggableClass;
-import com.mtd.crypto.market.data.enumarator.binance.BinanceCandleStickInterval;
-import com.mtd.crypto.market.data.response.BinanceCandleStickResponse;
+import com.mtd.crypto.market.data.binance.binance.BinanceCandleStickInterval;
+import com.mtd.crypto.market.data.binance.response.BinanceCandleStickResponse;
 import com.mtd.crypto.market.service.BinanceService;
 import com.mtd.crypto.trader.normal.configuration.SpotNormalTradingStrategyConfiguration;
 import com.mtd.crypto.trader.normal.data.entity.SpotNormalTradeData;
@@ -31,9 +31,8 @@ public class SpotNormalTraderCalculatorService {
      * @param spotNormalTradeData isPriceDropRequired. Coinin fiyati dusup oradan alip tekrar cikmak icin. Bu yuzden current price'a gore islem yapiyoruz. 4 saatlik beklemeye gerek yok
      *                            Normal durumlarda 4 saat bekliyoruz. Coinin giris noktasina gercekten geldigine emin olmak lazim. Tabi bunu son yarim saatlik fiyat girisin ustunde mi diye de bakilabilir belki.
      * @return
-
      */
-    public boolean isPositionReadyToEnter(SpotNormalTradeData spotNormalTradeData)  {
+    public boolean isPositionReadyToEnter(SpotNormalTradeData spotNormalTradeData) {
 
         if (spotNormalTradeData.isPriceDropRequired()) {
             Double currentPrice = binanceService.getCurrentPrice(spotNormalTradeData.getSymbol());
@@ -81,14 +80,19 @@ public class SpotNormalTraderCalculatorService {
 
         //Second partial sale. If price reaches secondPartialExit without executing first partial exit, next cron will execute this one.
         //Maybe in the future I can support hype price increases. I can sell directly secondPartialExit.
-        if (currentPrice >= secondPartialExit && partialProfitOrders.size() == 1) {
-            return SpotNormalMarketOrderPositionCommandType.PROFIT_SALE_2;
+        //TODO you can add a condition "enableGradualSelling". It can be true by default. It can enable gradual selling
+        if (spotNormalTradeData.isGradualProfit()) {
+
+            if (currentPrice >= secondPartialExit && partialProfitOrders.size() == 1) {
+                return SpotNormalMarketOrderPositionCommandType.PROFIT_SALE_2;
+            }
+
+            //First partial sale.
+            if (currentPrice >= firstPartialExit && partialProfitOrders.isEmpty()) {
+                return SpotNormalMarketOrderPositionCommandType.PROFIT_SALE_1;
+            }
         }
 
-        //First partial sale.
-        if (currentPrice >= firstPartialExit && partialProfitOrders.isEmpty()) {
-            return SpotNormalMarketOrderPositionCommandType.PROFIT_SALE_1;
-        }
         return SpotNormalMarketOrderPositionCommandType.NONE;
     }
 

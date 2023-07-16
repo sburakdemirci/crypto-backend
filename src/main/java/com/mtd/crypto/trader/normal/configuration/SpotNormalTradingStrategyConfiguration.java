@@ -10,12 +10,8 @@ import org.springframework.stereotype.Component;
 @Component
 @ConfigurationProperties(prefix = "app.trading.normal.strategy")
 public class SpotNormalTradingStrategyConfiguration {
-
     private Double priceDropSafeEntryPercentage;
     private Double partialExitPercentageStep;
-    private Double safeExitPercentage;
-    private Double maximumStopLossPercentage;
-
 }
 
 

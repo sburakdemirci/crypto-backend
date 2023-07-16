@@ -12,7 +12,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,7 +21,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("authentication")
 @RequiredArgsConstructor
-//@CrossOrigin(origins = "http://192.168.4.22:8082")
 
 public class AuthenticationController {
 
@@ -40,10 +38,9 @@ public class AuthenticationController {
                         loginRequest.getPassword()
                 )
         );
-        SecurityContextHolder.getContext().setAuthentication(authentication);
+        //SecurityContextHolder.getContext().setAuthentication(authentication);
         UserPrincipal principal = (UserPrincipal) authentication.getPrincipal();
-        String accessToken = jwtTokenService.createTokenFromAuthentication(
-                authentication);
+        String accessToken = jwtTokenService.createTokenFromAuthentication(authentication);
 
         RefreshToken refreshToken = refreshTokenService.getToken(principal.getUser());
 

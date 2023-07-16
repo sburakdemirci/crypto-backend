@@ -1,17 +1,16 @@
 package com.mtd.crypto.trader.normal.service;
 
 
-import com.mtd.crypto.market.data.enumarator.binance.BinanceCandleStickInterval;
-import com.mtd.crypto.market.data.enumarator.binance.BinanceOrderSide;
-import com.mtd.crypto.market.data.response.BinanceCandleStickResponse;
-import com.mtd.crypto.market.data.response.BinanceOrderResponse;
+import com.mtd.crypto.market.data.binance.binance.BinanceCandleStickInterval;
+import com.mtd.crypto.market.data.binance.binance.BinanceOrderSide;
+import com.mtd.crypto.market.data.binance.response.BinanceCandleStickResponse;
+import com.mtd.crypto.market.data.binance.response.BinanceOrderResponse;
 import com.mtd.crypto.market.service.BinanceService;
-import com.mtd.crypto.trader.common.enumarator.TradeSource;
 import com.mtd.crypto.trader.common.enumarator.TradeStatus;
 import com.mtd.crypto.trader.normal.configuration.SpotNormalTradingStrategyConfiguration;
-import com.mtd.crypto.trader.normal.data.dto.SpotNormalTradeDto;
 import com.mtd.crypto.trader.normal.data.entity.SpotNormalTradeData;
 import com.mtd.crypto.trader.normal.data.entity.SpotNormalTradeMarketOrder;
+import com.mtd.crypto.trader.normal.data.request.SpotNormalTradeCreateRequest;
 import com.mtd.crypto.trader.normal.helper.SpotNormalTradePriceCalculatorHelper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -69,11 +68,11 @@ public class SpotNormalTraderIntegrationTest {
     }
 
     @Test
-    public void testHappyPathNonPriceDrop()  {
+    public void testHappyPathNonPriceDrop() {
 
         //creating trade data
-        SpotNormalTradeDto spotNormalTradeDto = createTradeData(false);
-        SpotNormalTradeData tradeData = dataService.createTradeData(spotNormalTradeDto);
+        SpotNormalTradeCreateRequest spotNormalTradeCreateRequest = createTradeData(false, true);
+        SpotNormalTradeData tradeData = dataService.createTradeData(spotNormalTradeCreateRequest);
         assertNotNull(tradeData.getCreatedTime());
 
         dataService.approveTrade(tradeData.getId());
@@ -147,11 +146,11 @@ public class SpotNormalTraderIntegrationTest {
 
 
     @Test
-    public void testStopAfterEnter()  {
+    public void testStopAfterEnter() {
 
         //creating trade data
-        SpotNormalTradeDto spotNormalTradeDto = createTradeData(false);
-        SpotNormalTradeData tradeData = dataService.createTradeData(spotNormalTradeDto);
+        SpotNormalTradeCreateRequest spotNormalTradeCreateRequest = createTradeData(false, true);
+        SpotNormalTradeData tradeData = dataService.createTradeData(spotNormalTradeCreateRequest);
         assertNotNull(tradeData.getCreatedTime());
 
         dataService.approveTrade(tradeData.getId());
@@ -206,11 +205,11 @@ public class SpotNormalTraderIntegrationTest {
 
 
     @Test
-    public void testMakeStopEntryPriceAfterFirstProfitSale()  {
+    public void testMakeStopEntryPriceAfterFirstProfitSale() {
 
         //creating trade data
-        SpotNormalTradeDto spotNormalTradeDto = createTradeData(false);
-        SpotNormalTradeData tradeData = dataService.createTradeData(spotNormalTradeDto);
+        SpotNormalTradeCreateRequest spotNormalTradeCreateRequest = createTradeData(false, true);
+        SpotNormalTradeData tradeData = dataService.createTradeData(spotNormalTradeCreateRequest);
         assertNotNull(tradeData.getCreatedTime());
 
         dataService.approveTrade(tradeData.getId());
@@ -274,8 +273,8 @@ public class SpotNormalTraderIntegrationTest {
         assertNotNull(tradeDataFinished.getPositionFinishedAt());
     }
 
-    private SpotNormalTradeDto createTradeData(boolean isPriceDrop) {
-        return SpotNormalTradeDto
+    private SpotNormalTradeCreateRequest createTradeData(boolean isPriceDrop, boolean isGradual) {
+        return SpotNormalTradeCreateRequest
                 .builder()
                 .symbol(TEST_SYMBOL)
                 .quoteAsset(TEST_BASE_SYMBOL)
@@ -284,6 +283,7 @@ public class SpotNormalTraderIntegrationTest {
                 .stop(TEST_STOP_PRICE)
                 .walletPercentage(TRADE_WALLET_PERCENTAGE)
                 .priceDropRequired(isPriceDrop)
+                .gradualSelling(isGradual)
                 .burak(true)
                 .build();
     }

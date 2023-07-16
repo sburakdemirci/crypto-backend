@@ -2,14 +2,14 @@ package com.mtd.crypto.market.client;
 
 import com.mtd.crypto.core.aspect.LoggableClass;
 import com.mtd.crypto.market.configuration.BinanceApiUrlProperties;
+import com.mtd.crypto.market.data.binance.binance.BinanceCandleStickInterval;
+import com.mtd.crypto.market.data.binance.binance.BinanceOrderSide;
+import com.mtd.crypto.market.data.binance.binance.BinanceOrderTimeInForce;
+import com.mtd.crypto.market.data.binance.binance.BinanceOrderType;
+import com.mtd.crypto.market.data.binance.request.*;
+import com.mtd.crypto.market.data.binance.response.*;
+import com.mtd.crypto.market.data.binance.response.exchange.info.BinanceExchangeInfoResponse;
 import com.mtd.crypto.market.data.custom.AdjustedDecimal;
-import com.mtd.crypto.market.data.enumarator.binance.BinanceCandleStickInterval;
-import com.mtd.crypto.market.data.enumarator.binance.BinanceOrderSide;
-import com.mtd.crypto.market.data.enumarator.binance.BinanceOrderTimeInForce;
-import com.mtd.crypto.market.data.enumarator.binance.BinanceOrderType;
-import com.mtd.crypto.market.data.request.*;
-import com.mtd.crypto.market.data.response.*;
-import com.mtd.crypto.market.data.response.exchange.info.BinanceExchangeInfoResponse;
 import com.mtd.crypto.market.exception.BinanceException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -72,11 +72,11 @@ public class BinanceHttpClient {
     /**
      * @return Coins that i have in my wallet. /sapi its only available for prod
      */
-    public List<UserAssetResponse> getUserAsset() {
+    public List<BinanceUserAssetResponse> getUserAsset() {
         String url = binanceApiUrlProperties.getApi() + binanceApiUrlProperties.getPath().getUserAsset();
         BinanceGetUserAssetRequest binanceGetUserAssetRequest = new BinanceGetUserAssetRequest();
         BinanceRequest binanceRequest = binanceRequestHandler.createPostRequest(binanceGetUserAssetRequest, url);
-        ResponseEntity<UserAssetResponse[]> response = binanceRequestHandler.sendRequest(binanceRequest, UserAssetResponse[].class);
+        ResponseEntity<BinanceUserAssetResponse[]> response = binanceRequestHandler.sendRequest(binanceRequest, BinanceUserAssetResponse[].class);
         return Arrays.asList(response.getBody());
     }
 
@@ -118,7 +118,7 @@ public class BinanceHttpClient {
      * @param limit    = How many candles.
      * @return
      */
-    public List<BinanceCandleStickResponse> getCandles(String symbol, BinanceCandleStickInterval interval, int limit)  {
+    public List<BinanceCandleStickResponse> getCandles(String symbol, BinanceCandleStickInterval interval, int limit) {
         Long endTime = System.currentTimeMillis() - interval.getMilliseconds();
         String url = binanceApiUrlProperties.getApi() + binanceApiUrlProperties.getPath().getKlines();
         BinanceGetCandleRequestDto binanceGetCandleRequest = BinanceGetCandleRequestDto.builder()

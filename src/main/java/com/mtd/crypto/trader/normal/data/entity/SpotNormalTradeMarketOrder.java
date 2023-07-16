@@ -1,25 +1,26 @@
 package com.mtd.crypto.trader.normal.data.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.mtd.crypto.core.configuration.EntityAuditBase;
-import com.mtd.crypto.market.data.enumarator.binance.BinanceOrderSide;
+import com.mtd.crypto.market.data.binance.binance.BinanceOrderSide;
 import com.mtd.crypto.trader.normal.enumarator.SpotNormalTradeMarketOrderType;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Entity
-@Data
 @Builder
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString(exclude = "parentTrade")
 public class SpotNormalTradeMarketOrder extends EntityAuditBase {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
 
     private String id;
 
+
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parentTradeId")
     private SpotNormalTradeData parentTrade;

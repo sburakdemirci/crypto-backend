@@ -1,20 +1,23 @@
 package com.mtd.crypto.trader.normal.service;
 
 import com.mtd.crypto.core.aspect.LoggableClass;
-import com.mtd.crypto.market.data.response.BinanceOrderResponse;
+import com.mtd.crypto.market.data.binance.binance.BinanceOrderSide;
+import com.mtd.crypto.market.data.binance.response.BinanceOrderResponse;
 import com.mtd.crypto.trader.common.enumarator.TradeSource;
 import com.mtd.crypto.trader.common.enumarator.TradeStatus;
-import com.mtd.crypto.trader.normal.data.dto.SpotNormalTradeDto;
 import com.mtd.crypto.trader.normal.data.entity.SpotNormalTradeData;
 import com.mtd.crypto.trader.normal.data.entity.SpotNormalTradeMarketOrder;
 import com.mtd.crypto.trader.normal.data.repository.SpotNormalTradeDataRepository;
 import com.mtd.crypto.trader.normal.data.repository.SpotNormalTradeMarketOrderRepository;
+import com.mtd.crypto.trader.normal.data.request.SpotNormalTradeAdjustRequest;
+import com.mtd.crypto.trader.normal.data.request.SpotNormalTradeCreateRequest;
 import com.mtd.crypto.trader.normal.enumarator.SpotNormalTradeMarketOrderType;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.annotation.Validated;
 
 import java.time.Instant;
 import java.util.List;
@@ -23,24 +26,26 @@ import java.util.List;
 @Slf4j
 @Service
 @RequiredArgsConstructor
+@Validated
 public class SpotNormalTradeDataService {
 
     private final SpotNormalTradeDataRepository tradeDataRepository;
     private final SpotNormalTradeMarketOrderRepository marketOrderRepository;
 
     @Transactional(rollbackFor = Exception.class)
-    public SpotNormalTradeData createTradeData(@Valid SpotNormalTradeDto spotNormalTradeDto) {
+    public SpotNormalTradeData createTradeData(@Valid SpotNormalTradeCreateRequest spotNormalTradeCreateRequest) {
 
         SpotNormalTradeData spotNormalTradeData = SpotNormalTradeData
                 .builder()
-                .symbol(spotNormalTradeDto.getSymbol())
-                .quoteAsset(spotNormalTradeDto.getQuoteAsset())
-                .entry(spotNormalTradeDto.getEntry())
-                .isPriceDropRequired(spotNormalTradeDto.isPriceDropRequired())
-                .takeProfit(spotNormalTradeDto.getTakeProfit())
-                .stop(spotNormalTradeDto.getStop())
-                .source(spotNormalTradeDto.isBurak()? TradeSource.BURAK:TradeSource.HALUK)
-                .walletPercentage(((double) spotNormalTradeDto.getWalletPercentage() / 100))
+                .symbol(spotNormalTradeCreateRequest.getSymbol())
+                .quoteAsset(spotNormalTradeCreateRequest.getQuoteAsset())
+                .entry(spotNormalTradeCreateRequest.getEntry())
+                .priceDropRequired(spotNormalTradeCreateRequest.isPriceDropRequired())
+                .gradualProfit(spotNormalTradeCreateRequest.isGradualSelling())
+                .takeProfit(spotNormalTradeCreateRequest.getTakeProfit())
+                .stop(spotNormalTradeCreateRequest.getStop())
+                .source(spotNormalTradeCreateRequest.isBurak() ? TradeSource.BURAK : TradeSource.HALUK)
+                .walletPercentage(((double) spotNormalTradeCreateRequest.getWalletPercentage() / 100))
                 .tradeStatus(TradeStatus.APPROVAL_WAITING)
                 .build();
         return tradeDataRepository.save(spotNormalTradeData);
@@ -63,14 +68,14 @@ public class SpotNormalTradeDataService {
         return marketOrderRepository.save(spotNormalTradeMarketOrder);
     }
 
-    public void approveTrade(String tradeDataId) {
+    public SpotNormalTradeData approveTrade(String tradeDataId) {
         SpotNormalTradeData spotNormalTradeData = findById(tradeDataId);
         if (spotNormalTradeData.getTradeStatus() != TradeStatus.APPROVAL_WAITING) {
             throw new RuntimeException("Trade cannot be approved! Current status is: " + spotNormalTradeData.getTradeStatus().toString());
         }
         spotNormalTradeData.setApprovedAt(Instant.now());
         spotNormalTradeData.setTradeStatus(TradeStatus.POSITION_WAITING);
-        tradeDataRepository.save(spotNormalTradeData);
+        return tradeDataRepository.save(spotNormalTradeData);
     }
 
     public void enterPosition(String tradeDataId, SpotNormalTradeMarketOrder marketBuyOrder) {
@@ -116,24 +121,36 @@ public class SpotNormalTradeDataService {
     }
 
     //TODO exception handling. Make sure you are sending messages via ControllerAdvice
-
-    public void cancelTradeBeforePosition(String tradeDataId) {
+    public SpotNormalTradeData cancelTradeBeforePosition(String tradeDataId) {
         SpotNormalTradeData spotNormalTradeData = findById(tradeDataId);
-        if (spotNormalTradeData.getTradeStatus() != TradeStatus.POSITION_WAITING) {
-            throw new RuntimeException("Only position waiting trades can cancelled");
+        if (spotNormalTradeData.getTradeStatus() == TradeStatus.POSITION_WAITING || spotNormalTradeData.getTradeStatus() == TradeStatus.APPROVAL_WAITING) {
+            spotNormalTradeData.setCancelledAt(Instant.now());
+            spotNormalTradeData.setTradeStatus(TradeStatus.CANCELLED_BEFORE_POSITION);
+            return tradeDataRepository.save(spotNormalTradeData);
+        } else {
+            throw new RuntimeException("Trade is not before position");
         }
-        spotNormalTradeData.setCancelledAt(Instant.now());
-        spotNormalTradeData.setTradeStatus(TradeStatus.CANCELLED_BEFORE_POSITION);
-        tradeDataRepository.save(spotNormalTradeData);
+
     }
 
     @Transactional
-    public void cancelTradeInPosition(String tradeDataId) {
+    public SpotNormalTradeData cancelTradeInPosition(String tradeDataId, SpotNormalTradeMarketOrder marketSellOrder) {
         SpotNormalTradeData spotNormalTradeData = findById(tradeDataId);
-
-        spotNormalTradeData.setCancelledAt(Instant.now());
+        spotNormalTradeData.setQuantityLeftInPosition(spotNormalTradeData.getQuantityLeftInPosition() - marketSellOrder.getQuantity());
         spotNormalTradeData.setTradeStatus(TradeStatus.CANCELLED_IN_POSITION);
-        tradeDataRepository.save(spotNormalTradeData);
+        spotNormalTradeData.setPositionFinishedAt(Instant.now());
+        spotNormalTradeData.setCancelledAt(Instant.now());
+        return tradeDataRepository.save(spotNormalTradeData);
+    }
+
+    @Transactional
+    public SpotNormalTradeData adjustTradeInPosition(String tradeId, @Valid SpotNormalTradeAdjustRequest spotNormalTradeAdjustRequest) {
+        SpotNormalTradeData tradeData = findById(tradeId);
+        tradeData.setStop(spotNormalTradeAdjustRequest.getStop());
+        tradeData.setTakeProfit(spotNormalTradeAdjustRequest.getTakeProfit());
+        tradeData.setGradualProfit(spotNormalTradeAdjustRequest.isGradualSelling());
+        return tradeDataRepository.save(tradeData);
+
     }
 
 
@@ -153,6 +170,11 @@ public class SpotNormalTradeDataService {
 
     public List<SpotNormalTradeMarketOrder> findMarketOrderByParentTradeAndType(String parentTradeId, SpotNormalTradeMarketOrderType spotNormalTradeMarketOrderType) {
         return marketOrderRepository.findAllByParentTradeIdAndType(parentTradeId, spotNormalTradeMarketOrderType);
+    }
+
+
+    public List<SpotNormalTradeMarketOrder> findAllMarketOrdersByParentTradeIdAndSide(String parentTradeId, BinanceOrderSide side) {
+        return marketOrderRepository.findAllByParentTradeIdAndSide(parentTradeId, side);
     }
 
 

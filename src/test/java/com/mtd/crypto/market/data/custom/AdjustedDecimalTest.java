@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+
 class AdjustedDecimalTest {
 
 
@@ -70,6 +71,5 @@ class AdjustedDecimalTest {
         String result = decimal.toString();
         assertEquals("0.001", result);
     }
-
 
 }

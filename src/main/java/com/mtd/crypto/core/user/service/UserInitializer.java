@@ -1,6 +1,5 @@
 package com.mtd.crypto.core.user.service;
 
-import com.mtd.crypto.core.user.data.entity.User;
 import com.mtd.crypto.core.user.data.repository.RefreshTokenRepository;
 import com.mtd.crypto.core.user.data.repository.UserRepository;
 import jakarta.annotation.PostConstruct;
@@ -22,14 +21,14 @@ public class UserInitializer {
     public void createAdminUser() {
 
 
-        User user = userRepository.save(User.builder()
+ /*       User user = userRepository.save(User.builder()
                 .name("")
                 .email("")
                         .password(this.passwordEncoder.encode(""))
                         .build());
 
 
-        userRepository.setUserEnabled(user.getId(), true);
+        userRepository.setUserEnabled(user.getId(), true);*/
 
     }
 }

@@ -1,9 +1,9 @@
 package com.mtd.crypto.market.service;
 
-import com.mtd.crypto.market.data.enumarator.binance.BinanceCandleStickInterval;
-import com.mtd.crypto.market.data.response.BinanceCandleStickResponse;
-import com.mtd.crypto.market.data.response.exchange.info.BinanceExchangeInfoResponse;
-import com.mtd.crypto.market.data.response.exchange.info.BinanceExchangeInfoResponse_Symbol;
+import com.mtd.crypto.market.data.binance.binance.BinanceCandleStickInterval;
+import com.mtd.crypto.market.data.binance.response.BinanceCandleStickResponse;
+import com.mtd.crypto.market.data.binance.response.exchange.info.BinanceExchangeInfoResponse;
+import com.mtd.crypto.market.data.binance.response.exchange.info.BinanceExchangeInfoResponse_Symbol;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
@@ -165,7 +165,7 @@ public class BinanceServiceTest {
     }
 
     @Test
-    public void testGetCandles()  {
+    public void testGetCandles() {
         int CANDLE_LIMIT = 5;
         List<BinanceCandleStickResponse> candles = binanceService.getCandles("BTCUSDT", BinanceCandleStickInterval.FOUR_HOURS, CANDLE_LIMIT);
         System.out.println("");

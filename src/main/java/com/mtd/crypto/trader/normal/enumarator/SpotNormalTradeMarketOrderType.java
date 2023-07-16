@@ -6,5 +6,6 @@ public enum SpotNormalTradeMarketOrderType {
     EXIT_ALL_PROFIT,
     PARTIAL_STOP_LOSS,
     EXIT_ALL_STOP_LOSS,
-    EXIT_STOP_AFTER_PROFIT
+    EXIT_STOP_AFTER_PROFIT,
+    POSITION_CANCELLED
 }

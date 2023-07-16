@@ -1,0 +1,15 @@
+package com.mtd.crypto.market.data.binance.response.exchange.info;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.mtd.crypto.market.data.binance.binance.BinanceExchangeInfoInterval;
+import com.mtd.crypto.market.data.binance.binance.BinanceRateLimitType;
+import lombok.Data;
+
+@Data
+@JsonIgnoreProperties(ignoreUnknown = true)
+public class BinanceExchangeInfoResponse_RateLimit {
+    private BinanceRateLimitType rateLimitType;
+    private BinanceExchangeInfoInterval interval;
+    private int intervalNum;
+    private int limit;
+}
