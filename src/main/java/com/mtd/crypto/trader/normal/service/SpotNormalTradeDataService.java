@@ -174,7 +174,7 @@ public class SpotNormalTradeDataService {
         return tradeDataRepository.findById(tradeId).orElseThrow(() -> new RuntimeException("Trade not found with given id: " + tradeId));
     }
 
-    public List<SpotNormalTradeMarketOrder> findMarketOrderByParentTradeAndType(String parentTradeId, SpotNormalTradeMarketOrderType spotNormalTradeMarketOrderType) {
+    public List<SpotNormalTradeMarketOrder> findAllMarketOrderByParentTradeAndType(String parentTradeId, SpotNormalTradeMarketOrderType spotNormalTradeMarketOrderType) {
         return marketOrderRepository.findAllByParentTradeIdAndType(parentTradeId, spotNormalTradeMarketOrderType);
     }
 
@@ -184,7 +184,7 @@ public class SpotNormalTradeDataService {
     }
 
 
-    public List<SpotNormalTradeMarketOrder> findMarketOrderByParentTrade(String parentTradeId) {
+    public List<SpotNormalTradeMarketOrder> findAllMarketOrderByParentTrade(String parentTradeId) {
         return marketOrderRepository.findAllByParentTradeId(parentTradeId);
     }
 

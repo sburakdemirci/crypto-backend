@@ -49,7 +49,7 @@ public class SpotNormalTraderProxyService {
 
         tradesInPosition.forEach(trade -> {
             try {
-                List<SpotNormalTradeMarketOrder> partialProfitOrders = dataService.findMarketOrderByParentTradeAndType(trade.getId(), SpotNormalTradeMarketOrderType.PARTIAL_PROFIT);
+                List<SpotNormalTradeMarketOrder> partialProfitOrders = dataService.findAllMarketOrderByParentTradeAndType(trade.getId(), SpotNormalTradeMarketOrderType.PARTIAL_PROFIT);
                 SpotNormalMarketOrderPositionCommandType spotNormalMarketOrderPositionCommandType = calculatorService.checkPartialOrFullExit(trade, partialProfitOrders);
 
                 switch (spotNormalMarketOrderPositionCommandType) {

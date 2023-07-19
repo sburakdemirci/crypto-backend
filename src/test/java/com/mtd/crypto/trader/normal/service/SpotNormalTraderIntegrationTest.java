@@ -130,7 +130,7 @@ public class SpotNormalTraderIntegrationTest {
 
         //Verify the whole position after finish
         SpotNormalTradeData tradeDataFinished = dataService.findById(tradeData.getId());
-        List<SpotNormalTradeMarketOrder> marketOrdersFinished = dataService.findMarketOrderByParentTrade(tradeData.getId());
+        List<SpotNormalTradeMarketOrder> marketOrdersFinished = dataService.findAllMarketOrderByParentTrade(tradeData.getId());
 
         List<SpotNormalTradeMarketOrder> profitSellOrders = marketOrdersFinished.stream()
                 .filter(marketOrder -> marketOrder.getSide() == BinanceOrderSide.SELL)
@@ -191,7 +191,7 @@ public class SpotNormalTraderIntegrationTest {
 
         //Verify the whole position after finish
         SpotNormalTradeData tradeDataFinished = dataService.findById(tradeData.getId());
-        List<SpotNormalTradeMarketOrder> marketOrdersFinished = dataService.findMarketOrderByParentTrade(tradeData.getId());
+        List<SpotNormalTradeMarketOrder> marketOrdersFinished = dataService.findAllMarketOrderByParentTrade(tradeData.getId());
 
         assertEquals(2, marketOrdersFinished.size());
 
@@ -259,7 +259,7 @@ public class SpotNormalTraderIntegrationTest {
 
         //Verify the whole position after finish
         SpotNormalTradeData tradeDataFinished = dataService.findById(tradeData.getId());
-        List<SpotNormalTradeMarketOrder> marketOrdersFinished = dataService.findMarketOrderByParentTrade(tradeData.getId());
+        List<SpotNormalTradeMarketOrder> marketOrdersFinished = dataService.findAllMarketOrderByParentTrade(tradeData.getId());
 
         List<SpotNormalTradeMarketOrder> sellOrders = marketOrdersFinished.stream()
                 .filter(marketOrder -> marketOrder.getSide() == BinanceOrderSide.SELL)

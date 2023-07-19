@@ -84,7 +84,7 @@ public class SpotNormalTradeController {
 
 
         return activeTrades.stream().map(trade -> {
-            List<SpotNormalTradeMarketOrder> marketOrders = dataService.findAllMarketOrdersByParentTradeIdAndSide(trade.getId(), BinanceOrderSide.SELL);
+            List<SpotNormalTradeMarketOrder> marketOrders = dataService.findAllMarketOrderByParentTrade(trade.getId());
             Double currentPrice = binanceService.getCurrentPrice(trade.getSymbol());
 
             SpotNormalTradeResponse spotNormalTradeResponse = new SpotNormalTradeResponse();
