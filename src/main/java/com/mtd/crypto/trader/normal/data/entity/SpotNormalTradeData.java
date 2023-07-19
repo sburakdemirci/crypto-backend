@@ -33,7 +33,7 @@ public class SpotNormalTradeData extends EntityAuditBase {
             "WHEN 'CANCELLED_BEFORE_POSITION' THEN 3 " +
             "WHEN 'EXPIRED' THEN 4 " +
             "WHEN 'IN_POSITION' THEN 5 " +
-            "WHEN 'CANCELLED_IN_POSITION' THEN 6 " +
+            "WHEN 'CLOSED_IN_POSITION' THEN 6 " +
             "WHEN 'POSITION_FINISHED_WITH_PROFIT' THEN 7 " +
             "WHEN 'POSITION_FINISHED_WITH_LOSS' THEN 8 " +
             "ELSE 9 " +
@@ -45,8 +45,8 @@ public class SpotNormalTradeData extends EntityAuditBase {
 
     private String quoteAsset;
 
-    @Positive(message = "Entry must be greater than zero")
     private Double entry;
+    private boolean enterCurrentPrice;
 
     @Positive(message = "Take profit must be greater than zero")
     private Double takeProfit;

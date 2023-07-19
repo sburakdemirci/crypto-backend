@@ -76,14 +76,11 @@ public class SpotNormalTradeController {
         notificationService.sendInfoMessage(String.format("Trade Cancelled \nCoin: %s\nEntry:%,.4f  TakeProfit:%,.4f  Stop:%,.4f\nTradeId: %s \nApproved By: %s", tradeData.getSymbol(), tradeData.getEntry(), tradeData.getTakeProfit(), tradeData.getStop(), tradeId, userPrincipal.getUsername()));
     }
 
-    @GetMapping("active")
-    public List<SpotNormalTradeResponse> getTradesByFilter() {
-        List<TradeStatus> tradeStatuses = Arrays.asList(
-                TradeStatus.APPROVAL_WAITING,
-                TradeStatus.POSITION_WAITING,
-                TradeStatus.IN_POSITION);
+    @GetMapping("all")
+    public List<SpotNormalTradeResponse> getAllTrades() {
 
-        List<SpotNormalTradeData> activeTrades = dataService.findTradesByStatusesOrderByStatusAndCreatedTime(tradeStatuses);
+
+        List<SpotNormalTradeData> activeTrades = dataService.findAllByOrderByCreatedTimeDesc();
 
 
         return activeTrades.stream().map(trade -> {
@@ -96,10 +93,15 @@ public class SpotNormalTradeController {
 
             if (trade.getTradeStatus() == TradeStatus.IN_POSITION) {
                 spotNormalTradeResponse.setMarketOrders(marketOrders);
-                spotNormalTradeResponse.setCollectedProfit(SpotNormalTradeEstimatedProfitLossCalculator.calculateGradualProfits(trade, marketOrders, currentPrice));
+                spotNormalTradeResponse.setCollectedProfit(SpotNormalTradeEstimatedProfitLossCalculator.calculateGradualProfits(trade, marketOrders));
+                spotNormalTradeResponse.setCurrentEstimatedProfitLoss(SpotNormalTradeEstimatedProfitLossCalculator.calculateCurrentEstimatedProfitLoss(trade, currentPrice));
+            }
 
-                spotNormalTradeResponse.setCurrentEstimatedProfit(SpotNormalTradeEstimatedProfitLossCalculator.calculateCurrentEstimatedProfit(trade, marketOrders, currentPrice));
+            List<TradeStatus> finishedTradeStatuses = Arrays.asList(TradeStatus.CLOSED_IN_POSITION,TradeStatus.POSITION_FINISHED_WITH_PROFIT,TradeStatus.POSITION_FINISHED_WITH_LOSS);
 
+            if (finishedTradeStatuses.contains(trade.getTradeStatus())) {
+                spotNormalTradeResponse.setMarketOrders(marketOrders);
+                spotNormalTradeResponse.setFinishedProfitLoss(SpotNormalTradeEstimatedProfitLossCalculator.calculateFinishedPositionProfitLoss(marketOrders));
             }
             return spotNormalTradeResponse;
         }).collect(Collectors.toList());

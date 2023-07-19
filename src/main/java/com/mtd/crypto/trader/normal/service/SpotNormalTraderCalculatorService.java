@@ -34,6 +34,10 @@ public class SpotNormalTraderCalculatorService {
      */
     public boolean isPositionReadyToEnter(SpotNormalTradeData spotNormalTradeData) {
 
+        if (spotNormalTradeData.isEnterCurrentPrice()) {
+            return true;
+        }
+
         if (spotNormalTradeData.isPriceDropRequired()) {
             Double currentPrice = binanceService.getCurrentPrice(spotNormalTradeData.getSymbol());
             Double safeEntryPrice = (spotNormalTradeData.getEntry() * (1 + spotNormalTradingStrategyConfiguration.getPriceDropSafeEntryPercentage()));

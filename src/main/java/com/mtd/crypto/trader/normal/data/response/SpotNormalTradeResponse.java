@@ -19,5 +19,6 @@ public class SpotNormalTradeResponse {
     private List<SpotNormalTradeMarketOrder> marketOrders;
     private double currentPrice;
     private Double collectedProfit;
-    private Double currentEstimatedProfit;
+    private Double currentEstimatedProfitLoss;
+    private Double finishedProfitLoss;
 }

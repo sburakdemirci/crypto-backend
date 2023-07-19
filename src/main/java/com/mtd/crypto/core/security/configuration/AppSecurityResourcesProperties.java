@@ -14,5 +14,6 @@ import java.util.List;
 public class AppSecurityResourcesProperties {
 
     private List<String> unauthorizedPatterns;
+    private List<String> cronPatterns;
     private List<String> allowedOrigins;
 }

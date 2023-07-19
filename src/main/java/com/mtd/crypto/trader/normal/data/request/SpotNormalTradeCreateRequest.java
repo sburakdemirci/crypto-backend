@@ -18,8 +18,8 @@ public class SpotNormalTradeCreateRequest {
 
     private String quoteAsset;
 
-    @Positive(message = "Entry must be greater than zero")
     private Double entry;
+    private boolean enterCurrentPrice;
 
     @Positive(message = "Take profit must be greater than zero")
     private Double takeProfit;
@@ -43,16 +43,21 @@ public class SpotNormalTradeCreateRequest {
 
     @AssertTrue(message = "Stop price cannot be higher than entry price")
     private boolean isEntryHigherThanStop() {
-        return entry > stop;
+        return enterCurrentPrice || entry > stop;
     }
 
     @AssertTrue(message = "Entry price cannot be higher than take profit price")
     private boolean isTakeProfitHigherThanEntry() {
-        return takeProfit > entry;
+        return enterCurrentPrice || takeProfit > entry;
     }
 
     @AssertTrue(message = "Stop price is too low for entry price")
     private boolean isHighLoss() {
-        return stop > entry * 0.9;
+        return enterCurrentPrice || stop > entry * 0.9;
+    }
+
+    @AssertFalse(message = "Enter current price cannot be used with isPriceDrop")
+    private boolean isNotCurrentPriceEnterAndPriceDrop(){
+        return priceDropRequired && enterCurrentPrice;
     }
 }

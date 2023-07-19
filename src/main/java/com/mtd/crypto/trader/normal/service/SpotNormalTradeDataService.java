@@ -40,6 +40,7 @@ public class SpotNormalTradeDataService {
                 .symbol(spotNormalTradeCreateRequest.getSymbol())
                 .quoteAsset(spotNormalTradeCreateRequest.getQuoteAsset())
                 .entry(spotNormalTradeCreateRequest.getEntry())
+                .enterCurrentPrice(spotNormalTradeCreateRequest.isEnterCurrentPrice())
                 .priceDropRequired(spotNormalTradeCreateRequest.isPriceDropRequired())
                 .gradualProfit(spotNormalTradeCreateRequest.isGradualSelling())
                 .takeProfit(spotNormalTradeCreateRequest.getTakeProfit())
@@ -137,7 +138,7 @@ public class SpotNormalTradeDataService {
     public SpotNormalTradeData cancelTradeInPosition(String tradeDataId, SpotNormalTradeMarketOrder marketSellOrder) {
         SpotNormalTradeData spotNormalTradeData = findById(tradeDataId);
         spotNormalTradeData.setQuantityLeftInPosition(spotNormalTradeData.getQuantityLeftInPosition() - marketSellOrder.getQuantity());
-        spotNormalTradeData.setTradeStatus(TradeStatus.CANCELLED_IN_POSITION);
+        spotNormalTradeData.setTradeStatus(TradeStatus.CLOSED_IN_POSITION);
         spotNormalTradeData.setPositionFinishedAt(Instant.now());
         spotNormalTradeData.setCancelledAt(Instant.now());
         return tradeDataRepository.save(spotNormalTradeData);
@@ -156,6 +157,11 @@ public class SpotNormalTradeDataService {
 
     public List<SpotNormalTradeData> findAllByTradeStatus(TradeStatus tradeStatus) {
         return tradeDataRepository.findAllByTradeStatus(tradeStatus);
+    }
+
+
+    public List<SpotNormalTradeData> findAllByOrderByCreatedTimeDesc() {
+        return tradeDataRepository.findAllByOrderByCreatedTimeDesc();
     }
 
 

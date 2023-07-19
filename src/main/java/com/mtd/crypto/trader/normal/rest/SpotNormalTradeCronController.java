@@ -1,33 +1,38 @@
-package com.mtd.crypto.trader.normal.cron;
+package com.mtd.crypto.trader.normal.rest;
+
 
 import com.mtd.crypto.trader.normal.service.SpotNormalTraderProxyService;
 import com.mtd.crypto.trader.settings.service.SettingsService;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-
-@Service
+@RestController
+@RequestMapping("cron")
 @RequiredArgsConstructor
-@Slf4j
-public class SpotNormalTradeCron {
+//@SecurityRequirement(name = "bearerAuth")
+public class SpotNormalTradeCronController {
+
 
     private final SpotNormalTraderProxyService spotNormalTraderProxyService;
     private final SettingsService settingsService;
 
-    @Scheduled(cron = "${app.trading.normal.cron.position-enter}")
+    @GetMapping("spot-normal-enter")
     public void checkAndEnterPositions() {
         if (settingsService.getSettings().isSpotNormalTradeActivated()) {
             spotNormalTraderProxyService.checkAndEnterPositions();
         }
     }
 
-    @Scheduled(cron = "${app.trading.normal.cron.position-exit}")
+
+    @GetMapping("spot-normal-exit")
     public void checkAndExitPositions() {
         if (settingsService.getSettings().isSpotNormalTradeActivated()) {
             spotNormalTraderProxyService.checkProfitOrExitPosition();
 
         }
     }
+
+
 }

@@ -39,10 +39,10 @@ public class User extends EntityAuditBase {
 
 
     @Builder
-    public User(String email, String name, String password) {
+    public User(String email, String name, String password,Role role) {
         this.email = email;
         this.name = name;
         this.password = password;
-        this.authorities = List.of(Role.ROLE_ADMIN);
+        this.authorities = List.of(role);
     }
 }

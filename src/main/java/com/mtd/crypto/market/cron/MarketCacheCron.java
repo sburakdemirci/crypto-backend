@@ -14,7 +14,7 @@ public class MarketCacheCron {
     private final MarketCacheService marketCacheService;
 
     //TODO burak make it like 1 hour or more. It will not change frequently
-    @Scheduled(cron = "${app.binance.cron.evict-exchange-info-cache-cron}")
+    @Scheduled(fixedRate = 3600000)
     public void evictExchangeInfoCache() {
         log.info("Evicting exchanceInfo cache with cron");
         marketCacheService.evictExchangeInfoCache();

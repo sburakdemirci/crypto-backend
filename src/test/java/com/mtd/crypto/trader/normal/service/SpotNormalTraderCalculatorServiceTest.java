@@ -327,6 +327,22 @@ class SpotNormalTraderCalculatorServiceTest {
 
 
     @Test
+    void isPositionReadyToEnter_EnterCurrentPriceEntry_ReturnsTrue() {
+        SpotNormalTradeData spotNormalTradeData = SpotNormalTradeData.builder()
+                .symbol("some-symbol")
+                .enterCurrentPrice(true)
+                .takeProfit(110.0)
+                .stop(95.0)
+                .priceDropRequired(true)
+                .build();
+
+        boolean result = calculatorService.isPositionReadyToEnter(spotNormalTradeData);
+
+        assertTrue(result);
+    }
+
+
+    @Test
     void checkPartialOrFullExit_NoMarketSellOrders_GivenCurrentPriceGreaterThanStopAndLessThanFirstProfit_ShouldReturnNone() {
 
         SpotNormalTradeData spotNormalTradeData = SpotNormalTradeData
@@ -648,5 +664,7 @@ class SpotNormalTraderCalculatorServiceTest {
 
         assertEquals(SpotNormalMarketOrderPositionCommandType.EXIT_STOP_AFTER_PROFIT, spotNormalMarketOrderPositionCommandType);
     }
+
+
 
 }

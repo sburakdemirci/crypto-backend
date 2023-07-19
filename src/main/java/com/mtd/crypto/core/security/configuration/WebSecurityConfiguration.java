@@ -42,7 +42,11 @@ public class WebSecurityConfiguration {
                         )
                         .permitAll()
 
-                        .anyRequest().authenticated()
+                        .requestMatchers(appSecurityResourcesProperties.getCronPatterns()
+                                .toArray(String[]::new)
+                        )
+                        .hasAnyRole("ADMIN","CRON")
+                        .anyRequest().hasRole("ADMIN")
 
                 );
         return http.build();

@@ -3,6 +3,7 @@ package com.mtd.crypto.trader.normal.service;
 import com.mtd.crypto.core.aspect.LoggableClass;
 import com.mtd.crypto.market.data.binance.binance.BinanceOrderSide;
 import com.mtd.crypto.market.data.binance.response.BinanceOrderResponse;
+import com.mtd.crypto.market.data.binance.response.BinanceUserAssetResponse;
 import com.mtd.crypto.market.service.BinanceService;
 import com.mtd.crypto.trader.normal.data.entity.SpotNormalTradeData;
 import com.mtd.crypto.trader.normal.data.entity.SpotNormalTradeMarketOrder;
@@ -10,6 +11,8 @@ import com.mtd.crypto.trader.normal.enumarator.SpotNormalTradeMarketOrderType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 
 @Slf4j
@@ -26,8 +29,9 @@ public class SpotNormalTraderService {
 
 
     public void enterPosition(SpotNormalTradeData parentTrade) {
-        Double walletBalance = binanceService.getBalanceBySymbol(parentTrade.getQuoteAsset());
-        Double tradeAmountInDollars = walletBalance * parentTrade.getWalletPercentage();
+        List<BinanceUserAssetResponse> wallet = binanceService.getWallet();
+        BinanceUserAssetResponse btcusdt = wallet.stream().filter(w -> w.getAsset().equalsIgnoreCase("USDT")).findAny().orElseThrow(() -> new RuntimeException("BTCUSDT not found in wallet to start position"));
+        Double tradeAmountInDollars = btcusdt.getFree().doubleValue() * parentTrade.getWalletPercentage();
 
         BinanceOrderResponse binanceOrderResponse = binanceService.executeMarketOrderWithDollar(parentTrade.getSymbol(), BinanceOrderSide.BUY, tradeAmountInDollars.intValue());
         SpotNormalTradeMarketOrder spotNormalTradeMarketOrder = dataService.saveMarketOrder(parentTrade.getId(), binanceOrderResponse, SpotNormalTradeMarketOrderType.ENTRY);
