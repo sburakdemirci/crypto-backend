@@ -28,8 +28,5 @@ class SpotNormalTradeNotificationServiceTest {
     }
 
     @Test
-    void sendReportMessage() {
-        spotNormalTradeNotificationService.sendReportMessage("Test Report message");
-
-    }
+    void sendReportMessage() {spotNormalTradeNotificationService.sendReportMessage("Test Report message");}
 }

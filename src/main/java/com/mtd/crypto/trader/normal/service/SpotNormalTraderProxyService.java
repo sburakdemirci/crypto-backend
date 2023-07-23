@@ -42,7 +42,6 @@ public class SpotNormalTraderProxyService {
         });
     }
 
-
     public void checkProfitOrExitPosition() {
         //IMPORTANT, IF YOU NEED TO ADD SOMETHING LIKE TradeStatus.IN_PARTIAL_PROFIT_STATE, you need to fetch it as well to calculate in position Data.
         List<SpotNormalTradeData> tradesInPosition = dataService.findAllByTradeStatus(TradeStatus.IN_POSITION);

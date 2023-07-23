@@ -3,7 +3,13 @@ package com.mtd.crypto.trader.normal.data.entity;
 import com.mtd.crypto.core.configuration.EntityAuditBase;
 import com.mtd.crypto.trader.common.enumarator.TradeSource;
 import com.mtd.crypto.trader.common.enumarator.TradeStatus;
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OrderBy;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
@@ -66,6 +72,7 @@ public class SpotNormalTradeData extends EntityAuditBase {
     private Double totalQuantity;
     private Double averageEntryPrice;
     private Double quantityLeftInPosition;
+    private String notes;
 
     private Instant approvedAt;
     private Instant cancelledAt;

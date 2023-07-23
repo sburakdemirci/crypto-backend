@@ -1,6 +1,10 @@
 package com.mtd.crypto.trader.normal.data.request;
 
-import jakarta.validation.constraints.*;
+import jakarta.validation.constraints.AssertFalse;
+import jakarta.validation.constraints.AssertTrue;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Positive;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -33,8 +37,9 @@ public class SpotNormalTradeCreateRequest {
     private boolean burak;
 
     @Min(1)
-    @Max(29)
-    private Integer walletPercentage = 30;
+    private Integer walletPercentage;
+
+    private String notes;
 
     @AssertTrue(message = "Stop price cannot be higher than take profit price")
     private boolean isTakeProfitHigherThanStop() {
@@ -57,7 +62,7 @@ public class SpotNormalTradeCreateRequest {
     }
 
     @AssertFalse(message = "Enter current price cannot be used with isPriceDrop")
-    private boolean isNotCurrentPriceEnterAndPriceDrop(){
+    private boolean isNotCurrentPriceEnterAndPriceDrop() {
         return priceDropRequired && enterCurrentPrice;
     }
 }

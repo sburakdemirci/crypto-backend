@@ -79,9 +79,7 @@ public class SpotNormalTradeController {
     @GetMapping("all")
     public List<SpotNormalTradeResponse> getAllTrades() {
 
-
-        List<SpotNormalTradeData> activeTrades = dataService.findAllByOrderByCreatedTimeDesc();
-
+        List<SpotNormalTradeData> activeTrades = dataService.findAllByOrderByTradeStatusAscCreatedTimeAsc();
 
         return activeTrades.stream().map(trade -> {
             List<SpotNormalTradeMarketOrder> marketOrders = dataService.findAllMarketOrderByParentTrade(trade.getId());

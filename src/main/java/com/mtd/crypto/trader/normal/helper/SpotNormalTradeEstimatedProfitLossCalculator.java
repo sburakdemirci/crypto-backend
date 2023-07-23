@@ -9,7 +9,7 @@ import java.util.List;
 public class SpotNormalTradeEstimatedProfitLossCalculator {
 
     public static double calculateGradualProfits(SpotNormalTradeData tradeData, List<SpotNormalTradeMarketOrder> marketOrderList) {
-        return marketOrderList.stream().filter(marketOrder-> marketOrder.getSide()==BinanceOrderSide.SELL).map(marketOrder -> marketOrder.getQuantity() * (tradeData.getAverageEntryPrice() - marketOrder.getAveragePrice())).mapToDouble(d -> d).sum();
+        return marketOrderList.stream().filter(marketOrder -> marketOrder.getSide() == BinanceOrderSide.SELL).map(marketOrder -> marketOrder.getQuantity() * (marketOrder.getAveragePrice() - tradeData.getAverageEntryPrice())).mapToDouble(d -> d).sum();
     }
 
     public static double calculateCurrentEstimatedProfitLoss(SpotNormalTradeData tradeData, double currentPrice) {

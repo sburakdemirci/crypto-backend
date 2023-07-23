@@ -29,9 +29,8 @@ public class SpotNormalTraderService {
 
 
     public void enterPosition(SpotNormalTradeData parentTrade) {
-        List<BinanceUserAssetResponse> wallet = binanceService.getWallet();
-        BinanceUserAssetResponse btcusdt = wallet.stream().filter(w -> w.getAsset().equalsIgnoreCase("USDT")).findAny().orElseThrow(() -> new RuntimeException("BTCUSDT not found in wallet to start position"));
-        Double tradeAmountInDollars = btcusdt.getFree().doubleValue() * parentTrade.getWalletPercentage();
+        BinanceUserAssetResponse balance = binanceService.getBalanceBySymbol("USDT");
+        Double tradeAmountInDollars = balance.getFree().doubleValue() * parentTrade.getWalletPercentage();
 
         BinanceOrderResponse binanceOrderResponse = binanceService.executeMarketOrderWithDollar(parentTrade.getSymbol(), BinanceOrderSide.BUY, tradeAmountInDollars.intValue());
         SpotNormalTradeMarketOrder spotNormalTradeMarketOrder = dataService.saveMarketOrder(parentTrade.getId(), binanceOrderResponse, SpotNormalTradeMarketOrderType.ENTRY);

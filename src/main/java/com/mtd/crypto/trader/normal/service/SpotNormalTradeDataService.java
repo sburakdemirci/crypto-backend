@@ -3,6 +3,7 @@ package com.mtd.crypto.trader.normal.service;
 import com.mtd.crypto.core.aspect.LoggableClass;
 import com.mtd.crypto.market.data.binance.binance.BinanceOrderSide;
 import com.mtd.crypto.market.data.binance.response.BinanceOrderResponse;
+import com.mtd.crypto.market.service.BinanceService;
 import com.mtd.crypto.trader.common.enumarator.TradeSource;
 import com.mtd.crypto.trader.common.enumarator.TradeStatus;
 import com.mtd.crypto.trader.normal.data.entity.SpotNormalTradeData;
@@ -31,6 +32,7 @@ public class SpotNormalTradeDataService {
 
     private final SpotNormalTradeDataRepository tradeDataRepository;
     private final SpotNormalTradeMarketOrderRepository marketOrderRepository;
+    private final BinanceService binanceService;
 
     @Transactional(rollbackFor = Exception.class)
     public SpotNormalTradeData createTradeData(@Valid SpotNormalTradeCreateRequest spotNormalTradeCreateRequest) {
@@ -48,6 +50,7 @@ public class SpotNormalTradeDataService {
                 .source(spotNormalTradeCreateRequest.isBurak() ? TradeSource.BURAK : TradeSource.HALUK)
                 .walletPercentage(((double) spotNormalTradeCreateRequest.getWalletPercentage() / 100))
                 .tradeStatus(TradeStatus.APPROVAL_WAITING)
+                .notes(spotNormalTradeCreateRequest.getNotes())
                 .build();
         return tradeDataRepository.save(spotNormalTradeData);
     }
@@ -65,9 +68,28 @@ public class SpotNormalTradeDataService {
                 .quantity(binanceOrderResponse.getExecutedQty())
                 .averagePrice(averagePrice)
                 .type(spotNormalTradeMarketOrderType)
+                .commission(getUsdtCommission(binanceOrderResponse))
                 .build();
         return marketOrderRepository.save(spotNormalTradeMarketOrder);
     }
+
+    /**
+     * If commission asset includes USD for example its USDT or BUSD etc. It will count as a commission
+     * If commission asset is not in dollars, it will fetch the price and calculate price in dollars.
+     *
+     * @param binanceOrderResponse
+     * @return
+     */
+    private double getUsdtCommission(BinanceOrderResponse binanceOrderResponse) {
+        return binanceOrderResponse.getFills().stream().map(fill -> {
+            if (!fill.getCommissionAsset().contains("USD")) {
+                return binanceService.getCurrentPrice(fill.getCommissionAsset() + "USDT") * fill.getCommission();
+            } else {
+                return fill.getCommission();
+            }
+        }).mapToDouble(d -> d).sum();
+    }
+
 
     public SpotNormalTradeData approveTrade(String tradeDataId) {
         SpotNormalTradeData spotNormalTradeData = findById(tradeDataId);
@@ -159,6 +181,10 @@ public class SpotNormalTradeDataService {
         return tradeDataRepository.findAllByTradeStatus(tradeStatus);
     }
 
+
+    public List<SpotNormalTradeData> findAllByOrderByTradeStatusAscCreatedTimeAsc() {
+        return tradeDataRepository.findAllByOrderByTradeStatusAscCreatedTimeAsc();
+    }
 
     public List<SpotNormalTradeData> findAllByOrderByCreatedTimeDesc() {
         return tradeDataRepository.findAllByOrderByCreatedTimeDesc();

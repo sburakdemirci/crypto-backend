@@ -28,7 +28,6 @@ public class SpotNormalTradeAdjustRequest {
 
     private boolean gradualSelling;
 
-
     @AssertTrue(message = "Stop price cannot be higher than take profit price")
     private boolean isTakeProfitHigherThanStop() {
         return takeProfit > stop;

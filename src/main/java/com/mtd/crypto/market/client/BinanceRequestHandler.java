@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.retry.support.RetrySynchronizationManager;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
@@ -81,13 +82,21 @@ public class BinanceRequestHandler {
 
     public <T> ResponseEntity<T> sendRequest(BinanceRequest binanceRequest, Class<T> responseEntity) {
         //todo burak save request and response to database
-        //TODO Add retry mechanism except for the HttpClientErrorException.BadRequest. If server gives 500 or otheer than bad request retry 3 times
 
         try {
             return restTemplate.exchange(binanceRequest.getUrl(), binanceRequest.getHttpMethod(), binanceRequest.getHttpEntity(), responseEntity);
         } catch (HttpClientErrorException e) {
             e.printStackTrace();
-            notificationService.sendErrorMessage("Problem with binance request. \nError:" + e.getMessage() + "\nStatus Code:" + e.getStatusCode() + "\nRequested URL:" + binanceRequest.getUrl());
+
+            int retryCount = -1;
+
+            if (RetrySynchronizationManager.getContext() != null) {
+                retryCount = RetrySynchronizationManager.getContext().getRetryCount();
+            }
+
+            if (retryCount > 0) {
+                notificationService.sendErrorMessage("Problem with binance request.\nRequest will be retried.\nRetry count:" + retryCount + "\nError:" + e.getMessage() + "\nStatus Code:" + e.getStatusCode() + "\nRequested URL:" + binanceRequest.getUrl());
+            }
             throw new BinanceException(e.getMessage(), e.getStatusCode());
         }
     }

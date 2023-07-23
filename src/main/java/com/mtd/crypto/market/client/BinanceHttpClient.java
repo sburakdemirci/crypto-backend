@@ -6,8 +6,32 @@ import com.mtd.crypto.market.data.binance.binance.BinanceCandleStickInterval;
 import com.mtd.crypto.market.data.binance.binance.BinanceOrderSide;
 import com.mtd.crypto.market.data.binance.binance.BinanceOrderTimeInForce;
 import com.mtd.crypto.market.data.binance.binance.BinanceOrderType;
-import com.mtd.crypto.market.data.binance.request.*;
-import com.mtd.crypto.market.data.binance.response.*;
+import com.mtd.crypto.market.data.binance.request.BinanceAllExchangeInfoRequestDto;
+import com.mtd.crypto.market.data.binance.request.BinanceCancelAllOrdersRequestDto;
+import com.mtd.crypto.market.data.binance.request.BinanceCancelOCOOrderRequestDto;
+import com.mtd.crypto.market.data.binance.request.BinanceCancelOrderRequestDto;
+import com.mtd.crypto.market.data.binance.request.BinanceExchangeInfoRequestDto;
+import com.mtd.crypto.market.data.binance.request.BinanceGetAllCoinPricesRequestDto;
+import com.mtd.crypto.market.data.binance.request.BinanceGetAllOpenOrdersRequestDto;
+import com.mtd.crypto.market.data.binance.request.BinanceGetCandleRequestDto;
+import com.mtd.crypto.market.data.binance.request.BinanceGetOrderRequestDto;
+import com.mtd.crypto.market.data.binance.request.BinanceGetPriceRequestDto;
+import com.mtd.crypto.market.data.binance.request.BinanceGetTradesRequestDto;
+import com.mtd.crypto.market.data.binance.request.BinanceGetUserAssetRequest;
+import com.mtd.crypto.market.data.binance.request.BinanceLimitBuyRequestDto;
+import com.mtd.crypto.market.data.binance.request.BinanceMarketBuyRequestDto;
+import com.mtd.crypto.market.data.binance.request.BinanceOcoRequestDto;
+import com.mtd.crypto.market.data.binance.request.BinanceSystemStatusRequestDto;
+import com.mtd.crypto.market.data.binance.request.BinanceWalletRequest;
+import com.mtd.crypto.market.data.binance.response.AccountData;
+import com.mtd.crypto.market.data.binance.response.BinanceCandleStickResponse;
+import com.mtd.crypto.market.data.binance.response.BinanceCurrentPriceResponse;
+import com.mtd.crypto.market.data.binance.response.BinanceOCOOrderResponse;
+import com.mtd.crypto.market.data.binance.response.BinanceOrderResponse;
+import com.mtd.crypto.market.data.binance.response.BinanceQueryOCOResponse;
+import com.mtd.crypto.market.data.binance.response.BinanceSystemStatusResponse;
+import com.mtd.crypto.market.data.binance.response.BinanceTradeResponse;
+import com.mtd.crypto.market.data.binance.response.BinanceUserAssetResponse;
 import com.mtd.crypto.market.data.binance.response.exchange.info.BinanceExchangeInfoResponse;
 import com.mtd.crypto.market.data.custom.AdjustedDecimal;
 import com.mtd.crypto.market.exception.BinanceException;
@@ -15,6 +39,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
@@ -24,6 +50,7 @@ import java.util.List;
 @Service
 @LoggableClass
 @RequiredArgsConstructor
+@Retryable(retryFor = BinanceException.class, maxAttempts = 3, backoff = @Backoff(delay = 100))
 public class BinanceHttpClient {
 
     private final BinanceApiUrlProperties binanceApiUrlProperties;
@@ -41,6 +68,7 @@ public class BinanceHttpClient {
         return response.getBody();
     }
 
+
     public Double getPrice(String symbol) throws BinanceException {
         String url = binanceApiUrlProperties.getApi() + binanceApiUrlProperties.getPath().getPrice();
         BinanceGetPriceRequestDto binanceGetPriceRequest = new BinanceGetPriceRequestDto(symbol);
@@ -56,6 +84,13 @@ public class BinanceHttpClient {
         ResponseEntity<BinanceCurrentPriceResponse[]> response = binanceRequestHandler.sendRequest(binanceRequest, BinanceCurrentPriceResponse[].class);
         return Arrays.asList(response.getBody());
     }
+
+ /*Retry recover example. Method signatures and response types should be same for each method to use recover
+   @Recover
+    public List<BinanceCurrentPriceResponse> getAllCoinPricesRecover(BinanceException e)  {
+        System.out.println("s");
+        return null;
+    }*/
 
 
     /**

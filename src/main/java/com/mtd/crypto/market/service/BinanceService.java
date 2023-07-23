@@ -6,7 +6,15 @@ import com.mtd.crypto.market.configuration.BinanceTradeProperties;
 import com.mtd.crypto.market.data.binance.binance.BinanceCandleStickInterval;
 import com.mtd.crypto.market.data.binance.binance.BinanceOrderSide;
 import com.mtd.crypto.market.data.binance.dto.BinanceDecimalInfoDto;
-import com.mtd.crypto.market.data.binance.response.*;
+import com.mtd.crypto.market.data.binance.response.AccountData;
+import com.mtd.crypto.market.data.binance.response.BinanceCandleStickResponse;
+import com.mtd.crypto.market.data.binance.response.BinanceCurrentPriceResponse;
+import com.mtd.crypto.market.data.binance.response.BinanceOCOOrderResponse;
+import com.mtd.crypto.market.data.binance.response.BinanceOrderResponse;
+import com.mtd.crypto.market.data.binance.response.BinanceQueryOCOResponse;
+import com.mtd.crypto.market.data.binance.response.BinanceSystemStatusResponse;
+import com.mtd.crypto.market.data.binance.response.BinanceTradeResponse;
+import com.mtd.crypto.market.data.binance.response.BinanceUserAssetResponse;
 import com.mtd.crypto.market.data.binance.response.exchange.info.BinanceExchangeInfoResponse;
 import com.mtd.crypto.market.data.custom.AdjustedDecimal;
 import lombok.RequiredArgsConstructor;
@@ -40,14 +48,19 @@ public class BinanceService {
         return binanceHttpClient.getUserAsset();
     }
 
+    public BinanceUserAssetResponse getBalanceBySymbol(String symbol) {
+        return binanceHttpClient.getUserAsset().stream().filter(asset -> asset.getAsset().equalsIgnoreCase(symbol)).findAny().orElseThrow(() -> new RuntimeException("Symbol not found int wallet"));
+    }
+
+
     public AccountData getAccountInfo() {
         return binanceHttpClient.getAccountInfo();
     }
 
-    public Double getBalanceBySymbol(String symbol) {
+/*    public Double getBalanceBySymbol(String symbol) {
         AccountData accountInfo = binanceHttpClient.getAccountInfo();
         return accountInfo.getBalances().stream().filter(balances -> balances.getAsset().equalsIgnoreCase(symbol)).findFirst().orElseThrow(() -> new RuntimeException("Asset could not found in the wallet")).getFree();
-    }
+    }*/
 
     //TODO test all the logic. Test it with given tick and quantity step prices. Make sure price is adjusting with correct values for AdjustedDecimal objects
 

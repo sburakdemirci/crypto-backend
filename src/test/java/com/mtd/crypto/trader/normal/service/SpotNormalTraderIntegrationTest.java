@@ -5,6 +5,7 @@ import com.mtd.crypto.market.data.binance.binance.BinanceCandleStickInterval;
 import com.mtd.crypto.market.data.binance.binance.BinanceOrderSide;
 import com.mtd.crypto.market.data.binance.response.BinanceCandleStickResponse;
 import com.mtd.crypto.market.data.binance.response.BinanceOrderResponse;
+import com.mtd.crypto.market.data.binance.response.BinanceUserAssetResponse;
 import com.mtd.crypto.market.service.BinanceService;
 import com.mtd.crypto.trader.common.enumarator.TradeStatus;
 import com.mtd.crypto.trader.normal.configuration.SpotNormalTradingStrategyConfiguration;
@@ -24,6 +25,7 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.utility.DockerImageName;
 
+import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -82,7 +84,10 @@ public class SpotNormalTraderIntegrationTest {
         validEntryCandleStickResponse.setClose(100.0);
 
         when(binanceService.getCandles(TEST_SYMBOL, BinanceCandleStickInterval.FOUR_HOURS, 1)).thenReturn(Collections.singletonList(validEntryCandleStickResponse));
-        when(binanceService.getBalanceBySymbol(TEST_BASE_SYMBOL)).thenReturn(WALLET_AMOUNT);
+
+        BinanceUserAssetResponse assetResponse = new BinanceUserAssetResponse();
+        assetResponse.setFree(BigDecimal.valueOf(WALLET_AMOUNT));
+        when(binanceService.getBalanceBySymbol(TEST_BASE_SYMBOL)).thenReturn(assetResponse);
 
 
         //Enter Position
@@ -160,7 +165,9 @@ public class SpotNormalTraderIntegrationTest {
         validEntryCandleStickResponse.setClose(100.0);
 
         when(binanceService.getCandles(TEST_SYMBOL, BinanceCandleStickInterval.FOUR_HOURS, 1)).thenReturn(Collections.singletonList(validEntryCandleStickResponse));
-        when(binanceService.getBalanceBySymbol(TEST_BASE_SYMBOL)).thenReturn(WALLET_AMOUNT);
+        BinanceUserAssetResponse assetResponse = new BinanceUserAssetResponse();
+        assetResponse.setFree(BigDecimal.valueOf(WALLET_AMOUNT));
+        when(binanceService.getBalanceBySymbol(TEST_BASE_SYMBOL)).thenReturn(assetResponse);
 
 
         //Enter Position
@@ -219,7 +226,9 @@ public class SpotNormalTraderIntegrationTest {
         validEntryCandleStickResponse.setClose(100.0);
 
         when(binanceService.getCandles(TEST_SYMBOL, BinanceCandleStickInterval.FOUR_HOURS, 1)).thenReturn(Collections.singletonList(validEntryCandleStickResponse));
-        when(binanceService.getBalanceBySymbol(TEST_BASE_SYMBOL)).thenReturn(WALLET_AMOUNT);
+        BinanceUserAssetResponse assetResponse = new BinanceUserAssetResponse();
+        assetResponse.setFree(BigDecimal.valueOf(WALLET_AMOUNT));
+        when(binanceService.getBalanceBySymbol(TEST_BASE_SYMBOL)).thenReturn(assetResponse);
 
 
         //Enter Position

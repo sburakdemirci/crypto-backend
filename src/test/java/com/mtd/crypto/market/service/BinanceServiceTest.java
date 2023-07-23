@@ -1,20 +1,29 @@
 package com.mtd.crypto.market.service;
 
-import com.mtd.crypto.market.data.binance.binance.BinanceCandleStickInterval;
-import com.mtd.crypto.market.data.binance.response.BinanceCandleStickResponse;
+
+import com.mtd.crypto.market.data.binance.binance.BinanceOrderSide;
+import com.mtd.crypto.market.data.binance.response.AccountData;
+import com.mtd.crypto.market.data.binance.response.BinanceOCOOrderResponse;
+import com.mtd.crypto.market.data.binance.response.BinanceOrderResponse;
+import com.mtd.crypto.market.data.binance.response.BinanceQueryOCOResponse;
+import com.mtd.crypto.market.data.binance.response.BinanceSystemStatusResponse;
 import com.mtd.crypto.market.data.binance.response.exchange.info.BinanceExchangeInfoResponse;
-import com.mtd.crypto.market.data.binance.response.exchange.info.BinanceExchangeInfoResponse_Symbol;
 import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 @SpringBootTest
-@ActiveProfiles("dev")
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class BinanceServiceTest {
 
@@ -23,13 +32,12 @@ public class BinanceServiceTest {
     private BinanceService binanceService;
 
 
-/*    private static final String TEST_SYMBOL = "BTCUSDT";
+    private static final String TEST_SYMBOL = "BTCUSDT";
 
     //TODO IMPORTANT!! Run this test daily with test environment yaml.
 
 
-    @Autowired
-    private BinanceService binanceService;
+
 
     @Order(1)
     @Test
@@ -54,6 +62,11 @@ public class BinanceServiceTest {
         BinanceSystemStatusResponse systemStatus = binanceService.getSystemStatus();
         assertNotNull(systemStatus);
         assertEquals(0, systemStatus.getStatus());
+    }
+
+    @Test
+    public void accountInfo(){
+        AccountData accountInfo = binanceService.getAccountInfo();
     }
 
     @Test
@@ -124,7 +137,7 @@ public class BinanceServiceTest {
         });
     }
 
-    @Test
+/*    @Test
     public void testGetExchangeInfo() {
 
         try {
@@ -133,13 +146,13 @@ public class BinanceServiceTest {
         } catch (Exception e) {
             System.out.println("");
         }
-*//*
+
         BinanceExchangeInfoResponse abtusdt = binanceService.getExchangeInfo("ABTUSDT");
-*//*
-     *//*
+
+
         assertNotNull(decimalInfo);
-*//*
-    }
+
+    }*/
 
 
     // Helper method to create multiple oco sell orders
@@ -153,24 +166,25 @@ public class BinanceServiceTest {
             //  createdOrders.add(binanceNewOCOOrderResponse);
         }
         return createdOrders;
-    }*/
+    }
 
 
-    @Test
+/*    @Test
     public void getAllExchangeInfo() {
 
         BinanceExchangeInfoResponse allExchangeInfo = binanceService.getAllExchangeInfo();
         List<String> collect = allExchangeInfo.getSymbols().stream().filter(symbol -> symbol.getQuoteAsset().equalsIgnoreCase("USDT")).map(BinanceExchangeInfoResponse_Symbol::getSymbol).toList();
 
     }
+    */
 
-    @Test
+ /*   @Test
     public void testGetCandles() {
         int CANDLE_LIMIT = 5;
         List<BinanceCandleStickResponse> candles = binanceService.getCandles("BTCUSDT", BinanceCandleStickInterval.FOUR_HOURS, CANDLE_LIMIT);
         System.out.println("");
     }
-
+*/
 
 }
 

@@ -8,7 +8,7 @@ import org.springframework.context.annotation.Configuration;
 
 
 @Configuration
-@OpenAPIDefinition(info = @Info(title = "DeskMate Backend", version = "v0.1.0"))
+@OpenAPIDefinition(info = @Info(title = "SBD Trader Backend", version = "v0.1.0"))
 @SecurityScheme(
         name = "bearerAuth",
         type = SecuritySchemeType.HTTP,

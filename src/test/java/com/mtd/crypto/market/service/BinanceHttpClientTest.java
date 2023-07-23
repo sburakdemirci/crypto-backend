@@ -1,9 +1,23 @@
 package com.mtd.crypto.market.service;
 
-/*@SpringBootTest
+import com.mtd.crypto.market.client.BinanceHttpClient;
+import com.mtd.crypto.market.data.binance.binance.BinanceOrderSide;
+import com.mtd.crypto.market.data.binance.response.BinanceOrderResponse;
+import com.mtd.crypto.market.data.custom.AdjustedDecimal;
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
+
+@SpringBootTest
 @ActiveProfiles("dev")
-@TestMethodOrder(MethodOrderer.OrderAnnotation.class)*/
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class BinanceHttpClientTest {
+
+    @Autowired
+    private BinanceHttpClient binanceHttpClient;
 
 /*    private static final String TEST_SYMBOL = "BTCUSDT";
 
@@ -367,6 +381,8 @@ class BinanceHttpClientTest {
             // Add more assertions as needed
         });
     }*/
+
+
 
 }
 

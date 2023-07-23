@@ -32,6 +32,7 @@ public class SpotNormalTradeMarketOrder extends EntityAuditBase {
 
     private Double quantity;
     private Double averagePrice;
+    private Double commission;
 
     @Enumerated(EnumType.STRING)
     private SpotNormalTradeMarketOrderType type;

@@ -14,6 +14,9 @@ public interface SpotNormalTradeDataRepository extends JpaRepository<SpotNormalT
 
     List<SpotNormalTradeData> findAllByTradeStatusIn(List<TradeStatus> tradeStatuses);
 
+    List<SpotNormalTradeData> findAllByOrderByTradeStatusAscCreatedTimeAsc();
+
+
     List<SpotNormalTradeData> findAllByOrderByCreatedTimeDesc();
 
     List<SpotNormalTradeData> findAllByTradeStatusInOrderByTradeStatusAscCreatedTimeAsc(List<TradeStatus> tradeStatuses);

@@ -5,8 +5,8 @@ import com.mtd.crypto.market.data.binance.response.BinanceUserAssetResponse;
 import com.mtd.crypto.market.service.BinanceService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -32,7 +32,11 @@ public class MarketController {
     @GetMapping("wallet")
     public List<BinanceUserAssetResponse> getWallet() {
         return binanceService.getWallet();
+    }
 
+    @GetMapping("wallet/{symbol}")
+    public BinanceUserAssetResponse getBalanceBySymbol(@PathVariable String symbol) {
+        return binanceService.getBalanceBySymbol(symbol);
     }
 
 }
