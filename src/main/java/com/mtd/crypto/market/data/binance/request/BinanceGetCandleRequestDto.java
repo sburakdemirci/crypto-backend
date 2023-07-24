@@ -1,6 +1,6 @@
 package com.mtd.crypto.market.data.binance.request;
 
-import com.mtd.crypto.market.data.binance.binance.BinanceCandleStickInterval;
+import com.mtd.crypto.market.data.binance.enumarator.BinanceCandleStickInterval;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

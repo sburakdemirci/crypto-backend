@@ -1,9 +1,9 @@
 package com.mtd.crypto.market.data.binance.response;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.mtd.crypto.market.data.binance.binance.BinanceContingencyType;
-import com.mtd.crypto.market.data.binance.binance.BinanceListOrderStatus;
-import com.mtd.crypto.market.data.binance.binance.BinanceListStatusType;
+import com.mtd.crypto.market.data.binance.enumarator.BinanceContingencyType;
+import com.mtd.crypto.market.data.binance.enumarator.BinanceListOrderStatus;
+import com.mtd.crypto.market.data.binance.enumarator.BinanceListStatusType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

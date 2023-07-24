@@ -1,20 +1,18 @@
 package com.mtd.crypto.market.service;
 
 
-import com.mtd.crypto.market.data.binance.binance.BinanceOrderSide;
+import com.mtd.crypto.market.data.binance.enumarator.BinanceOrderSide;
 import com.mtd.crypto.market.data.binance.response.AccountData;
 import com.mtd.crypto.market.data.binance.response.BinanceOCOOrderResponse;
 import com.mtd.crypto.market.data.binance.response.BinanceOrderResponse;
 import com.mtd.crypto.market.data.binance.response.BinanceQueryOCOResponse;
 import com.mtd.crypto.market.data.binance.response.BinanceSystemStatusResponse;
-import com.mtd.crypto.market.data.binance.response.exchange.info.BinanceExchangeInfoResponse;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,16 +26,11 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 public class BinanceServiceTest {
 
 
+    private static final String TEST_SYMBOL = "BTCUSDT";
     @Autowired
     private BinanceService binanceService;
 
-
-    private static final String TEST_SYMBOL = "BTCUSDT";
-
     //TODO IMPORTANT!! Run this test daily with test environment yaml.
-
-
-
 
     @Order(1)
     @Test
@@ -65,7 +58,7 @@ public class BinanceServiceTest {
     }
 
     @Test
-    public void accountInfo(){
+    public void accountInfo() {
         AccountData accountInfo = binanceService.getAccountInfo();
     }
 
@@ -74,7 +67,6 @@ public class BinanceServiceTest {
         Double price = binanceService.getCurrentPrice(TEST_SYMBOL);
         assertNotNull(price);
     }
-
 
 
     //TODO IMPORTANT NOW YOU CAN TEST THE LIMIT ORDERS. YOU WERE DOING IT WRONG

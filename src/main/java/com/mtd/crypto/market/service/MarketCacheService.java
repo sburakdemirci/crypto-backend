@@ -5,7 +5,11 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class MarketCacheService {
-    @CacheEvict(value = "exchangeInfo", allEntries = true)
-    public void evictExchangeInfoCache() {
+    @CacheEvict(value = "spotExchangeInfo", allEntries = true)
+    public void evictSpotExchangeInfoCache() {
+    }
+
+    @CacheEvict(value = "futuresExchangeInfo", allEntries = true)
+    public void evictFuturesExchangeInfoCache() {
     }
 }

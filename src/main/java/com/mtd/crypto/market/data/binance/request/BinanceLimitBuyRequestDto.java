@@ -1,8 +1,8 @@
 package com.mtd.crypto.market.data.binance.request;
 
-import com.mtd.crypto.market.data.binance.binance.BinanceOrderSide;
-import com.mtd.crypto.market.data.binance.binance.BinanceOrderTimeInForce;
-import com.mtd.crypto.market.data.binance.binance.BinanceOrderType;
+import com.mtd.crypto.market.data.binance.enumarator.BinanceOrderSide;
+import com.mtd.crypto.market.data.binance.enumarator.BinanceOrderTimeInForce;
+import com.mtd.crypto.market.data.binance.enumarator.BinanceOrderType;
 import com.mtd.crypto.market.data.custom.AdjustedDecimal;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

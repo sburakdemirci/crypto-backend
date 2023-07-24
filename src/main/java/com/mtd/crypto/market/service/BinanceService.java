@@ -1,11 +1,11 @@
 package com.mtd.crypto.market.service;
 
 import com.mtd.crypto.core.aspect.LoggableClass;
-import com.mtd.crypto.market.client.BinanceHttpClient;
-import com.mtd.crypto.market.configuration.BinanceTradeProperties;
-import com.mtd.crypto.market.data.binance.binance.BinanceCandleStickInterval;
-import com.mtd.crypto.market.data.binance.binance.BinanceOrderSide;
+import com.mtd.crypto.market.client.BinanceSpotHttpClient;
+import com.mtd.crypto.market.configuration.BinanceSpotTradeProperties;
 import com.mtd.crypto.market.data.binance.dto.BinanceDecimalInfoDto;
+import com.mtd.crypto.market.data.binance.enumarator.BinanceCandleStickInterval;
+import com.mtd.crypto.market.data.binance.enumarator.BinanceOrderSide;
 import com.mtd.crypto.market.data.binance.response.AccountData;
 import com.mtd.crypto.market.data.binance.response.BinanceCandleStickResponse;
 import com.mtd.crypto.market.data.binance.response.BinanceCurrentPriceResponse;
@@ -29,32 +29,32 @@ import java.util.List;
 @RequiredArgsConstructor
 public class BinanceService {
 
-    private final BinanceHttpClient binanceHttpClient;
-    private final BinanceTradeProperties binanceTradeProperties;
+    private final BinanceSpotHttpClient binanceSpotHttpClient;
+    private final BinanceSpotTradeProperties binanceSpotTradeProperties;
 
     public Double getCurrentPrice(String symbol) {
-        return binanceHttpClient.getPrice(symbol);
+        return binanceSpotHttpClient.getPrice(symbol);
     }
 
     public List<BinanceCurrentPriceResponse> getAllCoinPrices() {
-        return binanceHttpClient.getAllCoinPrices();
+        return binanceSpotHttpClient.getAllCoinPrices();
     }
 
     public BinanceSystemStatusResponse getSystemStatus() {
-        return binanceHttpClient.getSystemStatus();
+        return binanceSpotHttpClient.getSystemStatus();
     }
 
     public List<BinanceUserAssetResponse> getWallet() {
-        return binanceHttpClient.getUserAsset();
+        return binanceSpotHttpClient.getUserAsset();
     }
 
     public BinanceUserAssetResponse getBalanceBySymbol(String symbol) {
-        return binanceHttpClient.getUserAsset().stream().filter(asset -> asset.getAsset().equalsIgnoreCase(symbol)).findAny().orElseThrow(() -> new RuntimeException("Symbol not found int wallet"));
+        return binanceSpotHttpClient.getUserAsset().stream().filter(asset -> asset.getAsset().equalsIgnoreCase(symbol)).findAny().orElseThrow(() -> new RuntimeException("Symbol not found int wallet"));
     }
 
 
     public AccountData getAccountInfo() {
-        return binanceHttpClient.getAccountInfo();
+        return binanceSpotHttpClient.getAccountInfo();
     }
 
 /*    public Double getBalanceBySymbol(String symbol) {
@@ -67,7 +67,7 @@ public class BinanceService {
     //TODO test getExchangeInfo method cache.
     public BinanceOCOOrderResponse executeOcoSellOrder(String symbol, Double quantity, Double takeProfitPrice, Double stopPrice) {
 
-        Double currentPrice = binanceHttpClient.getPrice(symbol);
+        Double currentPrice = binanceSpotHttpClient.getPrice(symbol);
         BinanceDecimalInfoDto decimalInfo = getDecimalInfo(symbol);
 
 
@@ -80,19 +80,19 @@ public class BinanceService {
         validateOcoSellOrder(currentPrice, takeProfitPrice, stopPrice, calculatedLimitPrice);
         validateQuantity(quantity.intValue());
 
-        return binanceHttpClient.executeOCOSellOrder(symbol, adjustedQuantity, adjustedTakeProfit, adjustedStop, adjustedLimit);
+        return binanceSpotHttpClient.executeOCOSellOrder(symbol, adjustedQuantity, adjustedTakeProfit, adjustedStop, adjustedLimit);
     }
 
 
     public BinanceOrderResponse executeMarketOrderWithDollar(String symbol, BinanceOrderSide binanceOrderSide, Integer quantityInDollars) {
-        Double currentPrice = binanceHttpClient.getPrice(symbol);
+        Double currentPrice = binanceSpotHttpClient.getPrice(symbol);
         BinanceDecimalInfoDto decimalInfoDto = getDecimalInfo(symbol);
 
         Double calculatedQuantity = convertQuantity(quantityInDollars, currentPrice);
         AdjustedDecimal adjustedQuantity = new AdjustedDecimal(calculatedQuantity, decimalInfoDto.getQuantityStepSize());
 
         validateQuantity(quantityInDollars);
-        return binanceHttpClient.executeMarketOrder(symbol, binanceOrderSide, adjustedQuantity);
+        return binanceSpotHttpClient.executeMarketOrder(symbol, binanceOrderSide, adjustedQuantity);
     }
 
 
@@ -102,13 +102,13 @@ public class BinanceService {
         AdjustedDecimal adjustedQuantity = new AdjustedDecimal(quantity, decimalInfoDto.getQuantityStepSize());
 
         validateQuantity(quantity.intValue());
-        return binanceHttpClient.executeMarketOrder(symbol, binanceOrderSide, adjustedQuantity);
+        return binanceSpotHttpClient.executeMarketOrder(symbol, binanceOrderSide, adjustedQuantity);
     }
 
 
     //TODO BURAK mark them as @Transactional if necessary
     public BinanceOrderResponse executeLimitOrder(String symbol, BinanceOrderSide binanceOrderSide, Integer quantityInDollars, Double limitPrice) {
-        Double currentPrice = binanceHttpClient.getPrice(symbol);
+        Double currentPrice = binanceSpotHttpClient.getPrice(symbol);
         validateLimitOrder(binanceOrderSide, limitPrice, currentPrice);
         BinanceDecimalInfoDto decimalInfoDto = getDecimalInfo(symbol);
 
@@ -117,35 +117,35 @@ public class BinanceService {
         AdjustedDecimal adjustedLimitPrice = new AdjustedDecimal(limitPrice, decimalInfoDto.getPriceTickSize());
         validateQuantity(quantityInDollars);
 
-        return binanceHttpClient.executeLimitOrder(symbol, binanceOrderSide, adjustedQuantity, adjustedLimitPrice);
+        return binanceSpotHttpClient.executeLimitOrder(symbol, binanceOrderSide, adjustedQuantity, adjustedLimitPrice);
     }
 
     public List<BinanceCandleStickResponse> getCandles(String symbol, BinanceCandleStickInterval interval, int limit) {
-        return binanceHttpClient.getCandles(symbol, interval, limit);
+        return binanceSpotHttpClient.getCandles(symbol, interval, limit);
     }
 
 
     public BinanceOrderResponse cancelOrderBySymbolAndOrderId(String symbol, Long orderId) {
-        return binanceHttpClient.cancelOrderBySymbolAndOrderId(symbol, orderId);
+        return binanceSpotHttpClient.cancelOrderBySymbolAndOrderId(symbol, orderId);
     }
 
 
     public List<BinanceOrderResponse> getAllOpenOrders() {
-        return binanceHttpClient.getAllOpenOrders();
+        return binanceSpotHttpClient.getAllOpenOrders();
     }
 
     public List<BinanceOrderResponse> getAllOpenOrdersBySymbol(String symbol) {
-        return binanceHttpClient.getAllOpenOrdersBySymbol(symbol);
+        return binanceSpotHttpClient.getAllOpenOrdersBySymbol(symbol);
     }
 
 
     public BinanceOrderResponse getOrderById(String symbol, Long orderId) {
-        return binanceHttpClient.getOrderById(symbol, orderId);
+        return binanceSpotHttpClient.getOrderById(symbol, orderId);
     }
 
 
     public List<BinanceTradeResponse> getTradesByOrderId(String symbol, Long orderId) {
-        return binanceHttpClient.getTradesByOrderId(symbol, orderId);
+        return binanceSpotHttpClient.getTradesByOrderId(symbol, orderId);
     }
 
 /*    public List<BinanceOrderResponse> cancelAllOrdersBySymbol(String symbol) {
@@ -153,20 +153,20 @@ public class BinanceService {
     }*/
 
     public BinanceOCOOrderResponse cancelOcoOrderBySymbolAndOrderListId(String symbol, Long orderListId) {
-        return binanceHttpClient.cancelOcoOrdersBySymbolAndOrderListId(symbol, orderListId);
+        return binanceSpotHttpClient.cancelOcoOrdersBySymbolAndOrderListId(symbol, orderListId);
     }
 
     public List<BinanceQueryOCOResponse> getAllOpenOCOOrders() {
-        return binanceHttpClient.getAllOpenOCOOrders();
+        return binanceSpotHttpClient.getAllOpenOCOOrders();
     }
 
     public List<BinanceQueryOCOResponse> getAllOCOOrders() {
-        return binanceHttpClient.getAllOCOOrders();
+        return binanceSpotHttpClient.getAllOCOOrders();
     }
 
 
     public BinanceDecimalInfoDto getDecimalInfo(String symbol) {
-        BinanceExchangeInfoResponse exchangeInfoBySymbol = binanceHttpClient.getExchangeInfoBySymbol(symbol);
+        BinanceExchangeInfoResponse exchangeInfoBySymbol = binanceSpotHttpClient.getExchangeInfoBySymbol(symbol);
         return BinanceDecimalInfoDto.builder()
                 .priceTickSize(exchangeInfoBySymbol.getSymbols().get(0).getBinanceFilter().getPriceFilter().getTickSize())
                 .quantityStepSize(exchangeInfoBySymbol.getSymbols().get(0).getBinanceFilter().getLotSizeFilter().getStepSize())
@@ -176,12 +176,9 @@ public class BinanceService {
 
 
     public BinanceExchangeInfoResponse getExchangeInfoBySymbol(String symbol) throws HttpClientErrorException {
-        return binanceHttpClient.getExchangeInfoBySymbol(symbol);
+        return binanceSpotHttpClient.getExchangeInfoBySymbol(symbol);
     }
 
-    public BinanceExchangeInfoResponse getAllExchangeInfo() throws HttpClientErrorException {
-        return binanceHttpClient.getAllExchangeInfo();
-    }
 
     public void executeHealthCheck() {
         BinanceOrderResponse binanceOrderResponse = executeMarketOrderWithDollar("BTCUSDT", BinanceOrderSide.BUY, 15);
@@ -232,7 +229,7 @@ public class BinanceService {
 
 
     private void validateQuantity(Integer quantityInDollars) {
-        if (quantityInDollars > binanceTradeProperties.getMaxAllowedDollarsTrade())
+        if (quantityInDollars > binanceSpotTradeProperties.getMaxAllowedDollarsTrade())
             throw new RuntimeException("Order cannot be greater than max allowed quantity");
     }
 

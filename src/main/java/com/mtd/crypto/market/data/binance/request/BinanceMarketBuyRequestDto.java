@@ -1,8 +1,8 @@
 package com.mtd.crypto.market.data.binance.request;
 
-import com.mtd.crypto.market.data.binance.binance.BinanceNewOrderResponseType;
-import com.mtd.crypto.market.data.binance.binance.BinanceOrderSide;
-import com.mtd.crypto.market.data.binance.binance.BinanceOrderType;
+import com.mtd.crypto.market.data.binance.enumarator.BinanceNewOrderResponseType;
+import com.mtd.crypto.market.data.binance.enumarator.BinanceOrderSide;
+import com.mtd.crypto.market.data.binance.enumarator.BinanceOrderType;
 import com.mtd.crypto.market.data.custom.AdjustedDecimal;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -21,8 +21,5 @@ public class BinanceMarketBuyRequestDto extends BinanceRequestBase {
     private BinanceOrderSide side;
     private BinanceOrderType type;
     private AdjustedDecimal quantity;
-
-    //todo burak calculate average price
-
 
 }

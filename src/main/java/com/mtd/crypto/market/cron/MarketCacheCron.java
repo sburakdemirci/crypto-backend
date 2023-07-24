@@ -14,9 +14,16 @@ public class MarketCacheCron {
     private final MarketCacheService marketCacheService;
 
     @Scheduled(fixedRate = 3600000)
-    public void evictExchangeInfoCache() {
+    public void evictSpotExchangeInfoCache() {
         log.info("Evicting exchanceInfo cache with cron");
-        marketCacheService.evictExchangeInfoCache();
+        marketCacheService.evictSpotExchangeInfoCache();
+    }
+
+
+    @Scheduled(fixedRate = 3600000)
+    public void evictFuturesExchangeInfoCache() {
+        log.info("Evicting exchanceInfo cache with cron");
+        marketCacheService.evictFuturesExchangeInfoCache();
     }
 
 }

@@ -1,8 +1,8 @@
 package com.mtd.crypto.market.data.binance.response.exchange.info;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.mtd.crypto.market.data.binance.binance.BinanceOrderType;
-import com.mtd.crypto.market.data.binance.binance.BinanceSymbolStatus;
+import com.mtd.crypto.market.data.binance.enumarator.BinanceOrderType;
+import com.mtd.crypto.market.data.binance.enumarator.BinanceSymbolStatus;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.Setter;

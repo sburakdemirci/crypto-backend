@@ -45,7 +45,7 @@ public class WebSecurityConfiguration {
                         .requestMatchers(appSecurityResourcesProperties.getCronPatterns()
                                 .toArray(String[]::new)
                         )
-                        .hasAnyRole("ADMIN","CRON")
+                        .hasAnyRole("ADMIN", "CRON")
                         .anyRequest().hasRole("ADMIN")
 
                 );
