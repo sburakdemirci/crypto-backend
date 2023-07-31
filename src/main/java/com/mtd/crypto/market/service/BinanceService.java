@@ -6,15 +6,7 @@ import com.mtd.crypto.market.configuration.BinanceSpotTradeProperties;
 import com.mtd.crypto.market.data.binance.dto.BinanceDecimalInfoDto;
 import com.mtd.crypto.market.data.binance.enumarator.BinanceCandleStickInterval;
 import com.mtd.crypto.market.data.binance.enumarator.BinanceOrderSide;
-import com.mtd.crypto.market.data.binance.response.AccountData;
-import com.mtd.crypto.market.data.binance.response.BinanceCandleStickResponse;
-import com.mtd.crypto.market.data.binance.response.BinanceCurrentPriceResponse;
-import com.mtd.crypto.market.data.binance.response.BinanceOCOOrderResponse;
-import com.mtd.crypto.market.data.binance.response.BinanceOrderResponse;
-import com.mtd.crypto.market.data.binance.response.BinanceQueryOCOResponse;
-import com.mtd.crypto.market.data.binance.response.BinanceSystemStatusResponse;
-import com.mtd.crypto.market.data.binance.response.BinanceTradeResponse;
-import com.mtd.crypto.market.data.binance.response.BinanceUserAssetResponse;
+import com.mtd.crypto.market.data.binance.response.*;
 import com.mtd.crypto.market.data.binance.response.exchange.info.BinanceExchangeInfoResponse;
 import com.mtd.crypto.market.data.custom.AdjustedDecimal;
 import lombok.RequiredArgsConstructor;
@@ -78,7 +70,6 @@ public class BinanceService {
         AdjustedDecimal adjustedLimit = new AdjustedDecimal(calculatedLimitPrice, decimalInfo.getPriceTickSize());
 
         validateOcoSellOrder(currentPrice, takeProfitPrice, stopPrice, calculatedLimitPrice);
-        validateQuantity(quantity.intValue());
 
         return binanceSpotHttpClient.executeOCOSellOrder(symbol, adjustedQuantity, adjustedTakeProfit, adjustedStop, adjustedLimit);
     }
@@ -91,7 +82,6 @@ public class BinanceService {
         Double calculatedQuantity = convertQuantity(quantityInDollars, currentPrice);
         AdjustedDecimal adjustedQuantity = new AdjustedDecimal(calculatedQuantity, decimalInfoDto.getQuantityStepSize());
 
-        validateQuantity(quantityInDollars);
         return binanceSpotHttpClient.executeMarketOrder(symbol, binanceOrderSide, adjustedQuantity);
     }
 
@@ -101,7 +91,6 @@ public class BinanceService {
         BinanceDecimalInfoDto decimalInfoDto = getDecimalInfo(symbol);
         AdjustedDecimal adjustedQuantity = new AdjustedDecimal(quantity, decimalInfoDto.getQuantityStepSize());
 
-        validateQuantity(quantity.intValue());
         return binanceSpotHttpClient.executeMarketOrder(symbol, binanceOrderSide, adjustedQuantity);
     }
 
@@ -115,7 +104,6 @@ public class BinanceService {
         Double calculatedQuantity = convertQuantity(quantityInDollars, currentPrice);
         AdjustedDecimal adjustedQuantity = new AdjustedDecimal(calculatedQuantity, decimalInfoDto.getQuantityStepSize());
         AdjustedDecimal adjustedLimitPrice = new AdjustedDecimal(limitPrice, decimalInfoDto.getPriceTickSize());
-        validateQuantity(quantityInDollars);
 
         return binanceSpotHttpClient.executeLimitOrder(symbol, binanceOrderSide, adjustedQuantity, adjustedLimitPrice);
     }
@@ -227,10 +215,5 @@ public class BinanceService {
             throw new RuntimeException("Limit price cannot be less than %2 of stop price for OCO orders");
     }
 
-
-    private void validateQuantity(Integer quantityInDollars) {
-        if (quantityInDollars > binanceSpotTradeProperties.getMaxAllowedDollarsTrade())
-            throw new RuntimeException("Order cannot be greater than max allowed quantity");
-    }
 
 }
