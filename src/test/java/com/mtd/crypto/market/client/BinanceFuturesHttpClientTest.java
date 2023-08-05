@@ -1,13 +1,12 @@
 package com.mtd.crypto.market.client;
 
+import com.mtd.crypto.market.data.binance.custom.AdjustedDecimal;
 import com.mtd.crypto.market.data.binance.enumarator.BinanceOrderSide;
 import com.mtd.crypto.market.data.binance.response.BinanceCurrentPriceResponse;
 import com.mtd.crypto.market.data.binance.response.exchange.info.BinanceExchangeInfoResponse;
-import com.mtd.crypto.market.data.binance.response.futures.BinanceAdjustLeverageResponse;
 import com.mtd.crypto.market.data.binance.response.futures.BinanceFuturesOrderResponse;
-import com.mtd.crypto.market.data.binance.response.futures.BinanceFuturesPositionRiskResponse;
+import com.mtd.crypto.market.data.binance.response.futures.BinanceFuturesTradeHistoryResponse;
 import com.mtd.crypto.market.data.binance.response.futures.BinanceMarkPriceResponse;
-import com.mtd.crypto.market.data.custom.AdjustedDecimal;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -58,11 +57,17 @@ class BinanceFuturesHttpClientTest {
     @Test
     void executeMarketOrder() {
         String symbol = "BTCUSDT";
+/*
         BinanceAdjustLeverageResponse binanceAdjustLeverageResponse = httpClient.adjustLeverage(symbol, 3);
-        httpClient.setMarginTypeIsolated(symbol);
+*/
+        /* httpClient.setMarginTypeIsolated(symbol);*/
 
         BinanceFuturesOrderResponse btcusdt = httpClient.executeMarketOrder(symbol, BinanceOrderSide.BUY, new AdjustedDecimal(0.005, 0.001));
+
+        BinanceFuturesTradeHistoryResponse trade = httpClient.getTrade(symbol, btcusdt.getOrderId());
+/*
         BinanceFuturesPositionRiskResponse positionRisk = httpClient.getPositionRisk(symbol);
+*/
         System.out.println("");
     }
 }

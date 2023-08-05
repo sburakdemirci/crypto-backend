@@ -1,15 +1,13 @@
 package com.mtd.crypto.market.data.binance.request;
 
+import com.mtd.crypto.market.data.binance.custom.AdjustedDecimal;
 import com.mtd.crypto.market.data.binance.enumarator.BinanceNewOrderResponseType;
 import com.mtd.crypto.market.data.binance.enumarator.BinanceOrderSide;
 import com.mtd.crypto.market.data.binance.enumarator.BinanceOrderType;
-import com.mtd.crypto.market.data.custom.AdjustedDecimal;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 
+@EqualsAndHashCode(callSuper = true)
 @Data
 @Builder
 @NoArgsConstructor

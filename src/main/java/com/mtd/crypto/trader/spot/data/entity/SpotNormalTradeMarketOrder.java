@@ -4,21 +4,10 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.mtd.crypto.core.configuration.EntityAuditBase;
 import com.mtd.crypto.market.data.binance.enumarator.BinanceOrderSide;
 import com.mtd.crypto.trader.spot.enumarator.SpotNormalTradeMarketOrderType;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import jakarta.persistence.*;
+import lombok.*;
 
+@EqualsAndHashCode(callSuper = true)
 @Entity
 @Builder
 @Data

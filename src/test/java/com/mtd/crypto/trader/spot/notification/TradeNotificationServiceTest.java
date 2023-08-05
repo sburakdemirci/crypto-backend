@@ -1,5 +1,6 @@
 package com.mtd.crypto.trader.spot.notification;
 
+import com.mtd.crypto.trader.common.notification.TradeNotificationService;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;

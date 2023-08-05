@@ -1,15 +1,9 @@
 package com.mtd.crypto.trader.spot.data.entity;
 
 import com.mtd.crypto.core.configuration.EntityAuditBase;
-import com.mtd.crypto.trader.common.enumarator.TradeSource;
 import com.mtd.crypto.trader.common.enumarator.TradeStatus;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.OrderBy;
+import com.mtd.crypto.trader.spot.enumarator.SpotNormalTradeEntryAlgorithm;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
@@ -35,49 +29,53 @@ public class SpotNormalTradeData extends EntityAuditBase {
     @Enumerated(EnumType.STRING)
     @OrderBy("CASE status " +
             "WHEN 'APPROVAL_WAITING' THEN 1 " +
-            "WHEN 'POSITION_WAITING' THEN 2 " +
-            "WHEN 'CANCELLED_BEFORE_POSITION' THEN 3 " +
-            "WHEN 'EXPIRED' THEN 4 " +
+            "WHEN 'IN_POSITION' THEN 2 " +
+            "WHEN 'POSITION_WAITING' THEN 3 " +
+            "WHEN 'MANUALLY_CLOSED' THEN 4 " +
             "WHEN 'IN_POSITION' THEN 5 " +
-            "WHEN 'CLOSED_IN_POSITION' THEN 6 " +
-            "WHEN 'POSITION_FINISHED_WITH_PROFIT' THEN 7 " +
-            "WHEN 'POSITION_FINISHED_WITH_LOSS' THEN 8 " +
-            "ELSE 9 " +
+            "ELSE 6 " +
             "END")
     private TradeStatus tradeStatus;
 
     @NotBlank(message = "Symbol is required")
     private String symbol;
 
-    private String quoteAsset;
-
     private Double entry;
-    private boolean enterCurrentPrice;
 
     @Positive(message = "Take profit must be greater than zero")
     private Double takeProfit;
 
     @Positive(message = "Stop must be greater than zero")
-    private Double stop;
+    private Double initialStop;
 
-    private boolean priceDropRequired;
-    private boolean gradualProfit;
+    @Positive(message = "Stop must be greater than zero")
+    private Double currentStop;
 
-    @NotNull(message = "Source is required")
+    private Integer positionAmountInDollar;
+
     @Enumerated(EnumType.STRING)
-    private TradeSource source;
+    private SpotNormalTradeEntryAlgorithm entryAlgorithm;
 
-    private Double walletPercentage;
+    //todo exit algoritmalari icin de ayni sekilde enum olustur. Exit stratejilerinden pipeline olustur her bir strateji icin. Bu algoritmalari bir interface ile bagla. Ve sonunda o algoritmayi secerek devam ettir Map<ExitAlgorithmType, SpotExitAlgorihmInterface> gibi
 
-    private Double totalQuantity;
+
+    private boolean gradualProfit;
+    private boolean scalingOutProfit;
+
+
     private Double averageEntryPrice;
+    private Double totalQuantity;
     private Double quantityLeftInPosition;
+
+    //INFO
     private String notes;
 
+    /**
+     * Info is a field to represent info for this coin. For example if the wallet does not have enought usdt to enter a position, coin will be endup in approval_waiting position with an info says "No available amount to execute this order."
+     */
+    private String info;
     private Instant approvedAt;
-    private Instant cancelledAt;
-    private Instant positionStartedAt;
-    private Instant positionFinishedAt;
-
+    private Instant startedAt;
+    private Instant finishedAt;
 
 }

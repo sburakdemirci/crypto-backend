@@ -1,6 +1,7 @@
 package com.mtd.crypto.market.data.custom;
 
 
+import com.mtd.crypto.market.data.binance.custom.AdjustedDecimal;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;

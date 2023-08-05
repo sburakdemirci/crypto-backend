@@ -1,11 +1,7 @@
 package com.mtd.crypto.market.data.binance.response;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.mtd.crypto.market.data.binance.enumarator.BinanceOrderSide;
-import com.mtd.crypto.market.data.binance.enumarator.BinanceOrderStatus;
-import com.mtd.crypto.market.data.binance.enumarator.BinanceOrderTimeInForce;
-import com.mtd.crypto.market.data.binance.enumarator.BinanceOrderType;
-import com.mtd.crypto.market.data.binance.enumarator.BinanceSelfTradePreventionMode;
+import com.mtd.crypto.market.data.binance.enumarator.*;
 import lombok.Data;
 
 @Data

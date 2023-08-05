@@ -1,4 +1,4 @@
-package com.mtd.crypto.market.data.custom;
+package com.mtd.crypto.market.data.binance.custom;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

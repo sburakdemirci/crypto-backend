@@ -3,6 +3,7 @@ package com.mtd.crypto.market.client;
 
 import com.mtd.crypto.core.aspect.LoggableClass;
 import com.mtd.crypto.market.configuration.BinanceFuturesApiUrlProperties;
+import com.mtd.crypto.market.data.binance.custom.AdjustedDecimal;
 import com.mtd.crypto.market.data.binance.enumarator.BinanceFuturesMarginType;
 import com.mtd.crypto.market.data.binance.enumarator.BinanceFuturesOrderType;
 import com.mtd.crypto.market.data.binance.enumarator.BinanceOrderSide;
@@ -11,14 +12,10 @@ import com.mtd.crypto.market.data.binance.request.BinanceSymbolRequestDto;
 import com.mtd.crypto.market.data.binance.request.futures.BinanceAdjustLeverageRequestDto;
 import com.mtd.crypto.market.data.binance.request.futures.BinanceChangeMarginTypeRequestDto;
 import com.mtd.crypto.market.data.binance.request.futures.BinanceFuturesNewOrderRequestDto;
+import com.mtd.crypto.market.data.binance.request.futures.BinanceFuturesUserTradesRequestDto;
 import com.mtd.crypto.market.data.binance.response.BinanceCurrentPriceResponse;
 import com.mtd.crypto.market.data.binance.response.exchange.info.BinanceExchangeInfoResponse;
-import com.mtd.crypto.market.data.binance.response.futures.BinanceAdjustLeverageResponse;
-import com.mtd.crypto.market.data.binance.response.futures.BinanceChangeMarginTypeResponse;
-import com.mtd.crypto.market.data.binance.response.futures.BinanceFuturesOrderResponse;
-import com.mtd.crypto.market.data.binance.response.futures.BinanceFuturesPositionRiskResponse;
-import com.mtd.crypto.market.data.binance.response.futures.BinanceMarkPriceResponse;
-import com.mtd.crypto.market.data.custom.AdjustedDecimal;
+import com.mtd.crypto.market.data.binance.response.futures.*;
 import com.mtd.crypto.market.exception.BinanceException;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
@@ -120,7 +117,6 @@ public class BinanceFuturesHttpClient {
         return response.getBody();
     }
 
-
     //TODO bunu duzenli araliklarla cagirabilirsin. Yada her order'da cagir hata alsan da no problem
     public void setMarginTypeIsolated(String symbol) throws BinanceException {
         String url = apiUrlProperties.getApi() + apiUrlProperties.getPath().getChangeMarginType();
@@ -129,7 +125,6 @@ public class BinanceFuturesHttpClient {
         try {
             httpRequestHandler.sendRequest(binanceRequest, BinanceChangeMarginTypeResponse.class);
 
-
         } catch (BinanceException e) {
             //400 Bad Request: "{"code":-4046,"msg":"No need to change margin type."} this is safe. Because asset is already in isolated mode. Stupid error but ok"
             if (e.getMessage().contains("4046")) {
@@ -137,8 +132,23 @@ public class BinanceFuturesHttpClient {
             } else {
                 throw e;
             }
-
         }
+    }
+
+    /**
+     * Commission only can found with getTrade.
+     *
+     * @param symbol
+     * @param orderId
+     * @return
+     * @throws BinanceException
+     */
+    public BinanceFuturesTradeHistoryResponse getTrade(String symbol, Long orderId) throws BinanceException {
+        String url = apiUrlProperties.getApi() + apiUrlProperties.getPath().getUserTrades();
+        BinanceFuturesUserTradesRequestDto binanceAdjustLeverageRequest = BinanceFuturesUserTradesRequestDto.builder().symbol(symbol).orderId(orderId).build();
+        BinanceRequest binanceRequest = httpRequestHandler.createGetRequest(binanceAdjustLeverageRequest, url, true);
+        ResponseEntity<BinanceFuturesTradeHistoryResponse[]> response = httpRequestHandler.sendRequest(binanceRequest, BinanceFuturesTradeHistoryResponse[].class);
+        return response.getBody()[0];
     }
 
 

@@ -22,6 +22,7 @@ public class BinanceOrderResponse {
     private Double origQty;
     private Double executedQty;
     private Double cummulativeQuoteQty;
+    private Double commission;
     private BinanceOrderStatus status;
     private BinanceOrderTimeInForce timeInForce;
     private BinanceOrderType type;

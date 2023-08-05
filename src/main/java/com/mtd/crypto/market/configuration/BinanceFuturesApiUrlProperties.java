@@ -24,6 +24,7 @@ public class BinanceFuturesApiUrlProperties {
         private String positionRisk;
         private String adjustLeverage;
         private String changeMarginType;
+        private String userTrades;
     }
 }
 

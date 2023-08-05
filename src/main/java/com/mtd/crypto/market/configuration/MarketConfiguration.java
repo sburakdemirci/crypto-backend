@@ -1,7 +1,7 @@
 package com.mtd.crypto.market.configuration;
 
 import com.mtd.crypto.market.service.BinanceService;
-import com.mtd.crypto.trader.spot.notification.TradeNotificationService;
+import com.mtd.crypto.trader.common.notification.TradeNotificationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;

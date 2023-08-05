@@ -1,4 +1,4 @@
-package com.mtd.crypto.trader.spot.notification;
+package com.mtd.crypto.trader.common.notification;
 
 import com.mtd.crypto.notification.service.TelegramService;
 import com.mtd.crypto.trader.spot.configuration.SpotNormalTradeNotificationConfiguration;

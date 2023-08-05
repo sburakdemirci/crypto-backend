@@ -1,9 +1,9 @@
 package com.mtd.crypto.trader.spot.data.request;
 
-import jakarta.validation.constraints.AssertFalse;
+import com.mtd.crypto.trader.spot.enumarator.SpotNormalTradeEntryAlgorithm;
 import jakarta.validation.constraints.AssertTrue;
-import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -20,10 +20,8 @@ public class SpotNormalTradeCreateRequest {
     @NotBlank(message = "Symbol is required")
     private String symbol;
 
-    private String quoteAsset;
-
+    @Positive(message = "Entry must be greater than zero")
     private Double entry;
-    private boolean enterCurrentPrice;
 
     @Positive(message = "Take profit must be greater than zero")
     private Double takeProfit;
@@ -31,13 +29,13 @@ public class SpotNormalTradeCreateRequest {
     @Positive(message = "Stop must be greater than zero")
     private Double stop;
 
-    private boolean priceDropRequired;
+    @NotNull
+    private SpotNormalTradeEntryAlgorithm entryAlgorithm;
+
     private boolean gradualSelling;
 
-    private boolean burak;
-
-    @Min(1)
-    private Integer walletPercentage;
+    @NotNull
+    private Integer positionAmountInDollar;
 
     private String notes;
 
@@ -48,21 +46,17 @@ public class SpotNormalTradeCreateRequest {
 
     @AssertTrue(message = "Stop price cannot be higher than entry price")
     private boolean isEntryHigherThanStop() {
-        return enterCurrentPrice || entry > stop;
+        return entryAlgorithm == SpotNormalTradeEntryAlgorithm.CURRENT_PRICE || entry > stop;
     }
 
     @AssertTrue(message = "Entry price cannot be higher than take profit price")
     private boolean isTakeProfitHigherThanEntry() {
-        return enterCurrentPrice || takeProfit > entry;
+        return entryAlgorithm == SpotNormalTradeEntryAlgorithm.CURRENT_PRICE || takeProfit > entry;
     }
 
     @AssertTrue(message = "Stop price is too low for entry price")
     private boolean isHighLoss() {
-        return enterCurrentPrice || stop > entry * 0.9;
+        return entryAlgorithm == SpotNormalTradeEntryAlgorithm.CURRENT_PRICE || stop > entry * 0.9;
     }
 
-    @AssertFalse(message = "Enter current price cannot be used with isPriceDrop")
-    private boolean isNotCurrentPriceEnterAndPriceDrop() {
-        return priceDropRequired && enterCurrentPrice;
-    }
 }

@@ -4,7 +4,7 @@ import com.mtd.crypto.core.aspect.LoggableClass;
 import com.mtd.crypto.market.configuration.BinanceSecretProperties;
 import com.mtd.crypto.market.data.binance.request.BinanceRequestBase;
 import com.mtd.crypto.market.exception.BinanceException;
-import com.mtd.crypto.trader.spot.notification.TradeNotificationService;
+import com.mtd.crypto.trader.common.notification.TradeNotificationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpMethod;

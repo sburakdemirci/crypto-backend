@@ -21,6 +21,10 @@ public class SpotNormalTradeEstimatedProfitLossCalculator {
         Double totalExitSells = marketOrders.stream().filter(marketOrder -> marketOrder.getSide() == BinanceOrderSide.SELL).map(marketOrder -> marketOrder.getQuantity() * marketOrder.getAveragePrice()).mapToDouble(d -> d).sum();
 
         return totalExitSells - entryCost;
+    }
 
+
+    public static double calculatePossibleLoss(SpotNormalTradeData tradeData) {
+        return tradeData.getQuantityLeftInPosition() * (tradeData.getAverageEntryPrice() - tradeData.getCurrentStop());
     }
 }
